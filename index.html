@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>KINORA — Haori & Kimono</title>
+<meta name="description" content="Японски кимона и хаори, ръчно изтъкани в Киото. Доставка в цяла България."/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,200;0,300;1,200;1,300;1,400&family=Space+Grotesk:wght@300;400;500&family=Noto+Serif+JP:wght@200;300&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --B:#4a0c1a;--B2:#5c1222;--B3:#7a1a30;--B4:#3a0814;
+  --OL:#2e3018;--OL2:#4a4e28;--OL3:#7c8240;
+  --BG:#e4d8c0;--BG2:#f0e8d4;--BG3:#faf5ec;
+  --NV:#0c0608;--NV2:#180c10;
+  --GD:#c4a464;--GD2:#dfc090;
+  --line:rgba(228,216,192,.08);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Space Grotesk',sans-serif;background:var(--B4);color:var(--BG);overflow-x:hidden;cursor:none}
+body.no-scroll{overflow:hidden}
+#CUR{position:fixed;width:8px;height:8px;background:var(--BG);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .15s,height .15s,background .2s;border-radius:50%}
+#CUR2{position:fixed;width:30px;height:30px;border:1px solid rgba(228,216,192,.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .1s,top .1s}
+#CUR.big{width:0;height:0}
+#CUR2.big{width:56px;height:56px;border-color:rgba(228,216,192,.55)}
+
+/* NAV */
+nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2.4rem;background:rgba(58,8,20,.9);backdrop-filter:blur(28px);border-bottom:1px solid var(--line)}
+.nav-logo{display:flex;flex-direction:column;gap:1px;line-height:1;text-decoration:none}
+.nav-logo-m{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:.34em;color:var(--BG)}
+.nav-logo-s{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:9.5px;letter-spacing:.26em;color:var(--GD)}
+.nav-right{display:flex;align-items:center;gap:1.8rem}
+.nav-cart-btn{background:none;border:1px solid rgba(228,216,192,.22);color:var(--BG);padding:8px 20px;font-family:inherit;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;cursor:none;display:flex;align-items:center;gap:8px;transition:all .25s}
+.nav-cart-btn:hover{background:var(--BG);color:var(--B)}
+.bct{background:var(--OL3);color:var(--BG3);width:16px;height:16px;font-size:9px;display:inline-flex;align-items:center;justify-content:center}
+.burger{background:none;border:none;cursor:none;display:flex;flex-direction:column;gap:5px;padding:4px}
+.burger span{display:block;width:26px;height:1px;background:var(--BG);transition:all .4s cubic-bezier(.23,1,.32,1);transform-origin:center}
+.burger.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.burger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+/* FULLSCREEN MENU */
+.full-menu{position:fixed;inset:0;z-index:700;background:var(--NV);display:flex;clip-path:inset(0 0 100% 0);transition:clip-path .7s cubic-bezier(.77,0,.175,1)}
+.full-menu.open{clip-path:inset(0 0 0% 0)}
+.fm-left{flex:1;display:flex;flex-direction:column;justify-content:center;padding:6rem 4rem 4rem;position:relative;overflow:hidden}
+.fm-left::before{content:'KINORA';position:absolute;bottom:-2rem;left:-1rem;font-family:'Bebas Neue',sans-serif;font-size:22vw;color:rgba(228,216,192,.022);letter-spacing:-.02em;pointer-events:none;line-height:1}
+.fm-links{list-style:none}
+.fm-links li{overflow:hidden;margin-bottom:.2rem}
+.fm-link{display:block;font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,9vw,100px);letter-spacing:.06em;color:rgba(228,216,192,.18);line-height:1.05;cursor:none;transition:color .3s;transform:translateY(100%);transition:transform .6s cubic-bezier(.77,0,.175,1),color .3s;text-decoration:none;position:relative}
+.fm-link::after{content:attr(data-en);position:absolute;right:0;bottom:.4rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;letter-spacing:.18em;color:rgba(228,216,192,.2);transition:color .3s}
+.fm-link:hover{color:var(--BG)}
+.fm-link:hover::after{color:var(--GD)}
+.full-menu.open .fm-link{transform:translateY(0)}
+.full-menu.open .fm-links li:nth-child(1) .fm-link{transition-delay:.08s}
+.full-menu.open .fm-links li:nth-child(2) .fm-link{transition-delay:.16s}
+.full-menu.open .fm-links li:nth-child(3) .fm-link{transition-delay:.24s}
+.full-menu.open .fm-links li:nth-child(4) .fm-link{transition-delay:.32s}
+.fm-right{width:320px;background:var(--B4);display:flex;flex-direction:column;justify-content:flex-end;padding:3rem 2.5rem;border-left:1px solid var(--line);gap:1.8rem}
+.fm-meta{opacity:0;transform:translateX(20px);transition:all .5s .5s}
+.full-menu.open .fm-meta{opacity:1;transform:translateX(0)}
+.fm-meta-label{font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:var(--OL3);margin-bottom:.7rem}
+.fm-meta a{font-size:12px;color:rgba(228,216,192,.3);text-decoration:none;letter-spacing:.06em;display:block;padding:3px 0;transition:color .2s}
+.fm-meta a:hover{color:var(--GD)}
+.fm-meta-tag{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(228,216,192,.2);line-height:1.7;margin-top:.5rem}
+
+/* HERO */
+.hero{min-height:100vh;padding-top:60px;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.hero-vid{position:absolute;inset:0;background:var(--B4);overflow:hidden}
+.hero-vid video{width:100%;height:100%;object-fit:cover;opacity:.85}
+.hero-vid-ph{width:100%;height:100%;background:var(--B4);position:relative;display:flex;align-items:center;justify-content:center}
+.hero-vid-ph::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(228,216,192,.012) 4px)}
+.hero-ph-inner{display:flex;flex-direction:column;align-items:center;gap:1.2rem;position:relative;z-index:1}
+.hero-ph-icon{width:70px;height:70px;border:1px solid rgba(228,216,192,.15);display:flex;align-items:center;justify-content:center}
+.hero-ph-icon svg{width:22px;height:22px;fill:rgba(228,216,192,.25)}
+.hero-ph-label{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:rgba(228,216,192,.2)}
+.hero-grain{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");background-size:180px}
+.hero-grad{position:absolute;inset:0;z-index:2;background:linear-gradient(to bottom,rgba(58,8,20,.1) 0%,transparent 25%,transparent 50%,rgba(58,8,20,.65) 78%,rgba(58,8,20,.97) 100%);pointer-events:none}
+.hero-vign{position:absolute;inset:0;z-index:2;background:linear-gradient(to right,rgba(58,8,20,.5) 0%,transparent 28%,transparent 72%,rgba(58,8,20,.5) 100%);pointer-events:none}
+.hero-content{position:relative;z-index:3;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 2.8rem 4.5rem}
+.hero-eyebrow{font-size:8.5px;letter-spacing:.52em;text-transform:uppercase;color:var(--GD);margin-bottom:1.4rem;display:flex;align-items:center;gap:14px;opacity:0;animation:sUp .8s .1s ease forwards}
+.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--GD);opacity:.55}
+.hero-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,13vw,190px);letter-spacing:.05em;line-height:.87;color:var(--BG);margin-bottom:.6rem;opacity:0;animation:sUp .8s .25s ease forwards}
+.hero-h1-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:200;font-size:clamp(16px,2.2vw,28px);letter-spacing:.45em;color:var(--GD);display:block;margin-bottom:3rem;opacity:0;animation:sUp .8s .4s ease forwards}
+.hero-bottom{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:2rem;opacity:0;animation:sUp .8s .55s ease forwards}
+.hero-desc{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(14px,1.5vw,17px);color:rgba(228,216,192,.48);line-height:1.9;max-width:400px}
+.hero-actions{display:flex;flex-direction:column;align-items:flex-end;gap:1rem}
+.hero-scroll{position:absolute;bottom:2.2rem;right:2.8rem;z-index:4;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:fadeI .8s 1.2s ease forwards}
+.hero-scroll-line{width:1px;height:48px;background:rgba(228,216,192,.12);position:relative;overflow:hidden}
+.hero-scroll-line::after{content:'';position:absolute;top:-100%;left:0;width:100%;height:50%;background:var(--GD);opacity:.7;animation:sline 2.2s ease-in-out infinite}
+@keyframes sline{0%{top:-100%}100%{top:200%}}
+.hero-scroll span{font-size:7.5px;letter-spacing:.45em;text-transform:uppercase;color:rgba(228,216,192,.22);writing-mode:vertical-rl}
+@keyframes sUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeI{to{opacity:1}}
+
+/* BUTTONS */
+.btn-A{background:var(--BG);color:var(--B);border:none;padding:14px 38px;font-family:'Space Grotesk',sans-serif;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;cursor:none;font-weight:500;transition:all .25s}
+.btn-A:hover{background:var(--GD);color:var(--NV)}
+.btn-B{background:none;color:var(--BG);border:1px solid rgba(228,216,192,.22);padding:13px 36px;font-family:'Space Grotesk',sans-serif;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;cursor:none;transition:all .25s}
+.btn-B:hover{border-color:var(--BG);background:rgba(228,216,192,.05)}
+
+/* TICKER */
+.ticker{background:var(--NV);overflow:hidden;white-space:nowrap;padding:12px 0;border-top:1px solid rgba(228,216,192,.04)}
+.ticker-i{display:inline-block;animation:tick 48s linear infinite;font-size:8.5px;letter-spacing:.4em;text-transform:uppercase;color:rgba(228,216,192,.28)}
+.ticker-i b{color:var(--GD);margin:0 2.5rem;font-weight:400}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* SECTIONS */
+.sec{padding:9rem 2.8rem}
+.sec-n{font-family:'Bebas Neue',sans-serif;font-size:9.5px;letter-spacing:.55em;color:rgba(228,216,192,.12);margin-bottom:.4rem}
+.sec-lbl{font-size:8.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--OL3);margin-bottom:1rem;display:flex;align-items:center;gap:12px}
+.sec-lbl::before{content:'';width:18px;height:1px;background:var(--OL3)}
+.sec-h{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,7vw,90px);letter-spacing:.08em;color:var(--BG);line-height:.9;margin-bottom:.5rem}
+.sec-h em{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:200;color:var(--GD)}
+
+/* HAORI SPLIT */
+.haori-split{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:4rem}
+.haori-split-ph{aspect-ratio:4/5;background:var(--NV2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.haori-split-ph img{width:100%;height:100%;object-fit:cover}
+.ph-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem}
+.ph-placeholder span{font-size:7.5px;letter-spacing:.4em;text-transform:uppercase;color:rgba(228,216,192,.18)}
+
+/* PRODUCT GRID */
+.collection-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2px;margin-top:3.5rem}
+.pc{background:var(--NV2);position:relative;cursor:none;overflow:hidden;transition:transform .55s cubic-bezier(.23,1,.32,1)}
+.pc:hover{transform:translateY(-8px)}
+.pc:hover .pco{opacity:1;transform:translateY(0)}
+.pcv{display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;aspect-ratio:3/4;background:var(--NV2)}
+.pcv img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.23,1,.32,1)}
+.pc:hover .pcv img{transform:scale(1.04)}
+.pco{position:absolute;inset:0;background:rgba(12,6,8,.68);display:flex;align-items:flex-end;justify-content:center;padding-bottom:2.2rem;opacity:0;transition:all .32s;transform:translateY(8px)}
+.pco-b{background:var(--BG);color:var(--B);border:none;padding:11px 28px;font-family:'Space Grotesk',sans-serif;font-size:8.5px;letter-spacing:.28em;text-transform:uppercase;cursor:none;font-weight:500;transition:background .2s}
+.pco-b:hover{background:var(--GD)}
+.pcbody{padding:1.6rem 1.8rem 2rem}
+.pc-cat{font-size:7.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--OL3);margin-bottom:5px}
+.pc-name{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.08em;color:var(--BG);line-height:.95;margin-bottom:3px}
+.pc-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--GD);margin-bottom:12px}
+.pc-bot{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid rgba(228,216,192,.05)}
+.pc-price{font-size:12.5px;color:rgba(228,216,192,.38);letter-spacing:.04em}
+.badge{position:absolute;top:1.2rem;left:1.2rem;font-size:7.5px;letter-spacing:.32em;text-transform:uppercase;padding:5px 11px;font-family:'Space Grotesk',sans-serif;font-weight:500;z-index:2}
+.b-new{background:var(--OL);color:var(--BG2)}
+.b-vtg{background:rgba(196,164,100,.12);color:var(--GD);border:1px solid rgba(196,164,100,.25)}
+
+/* STYLING SECTION */
+.styling-grid{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:auto auto;gap:2px}
+.sg-item{position:relative;overflow:hidden;cursor:none}
+.sg-item:nth-child(1){grid-row:1/3}
+.sg-item-ph{width:100%;background:var(--B2);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.sg-item:nth-child(1) .sg-item-ph{aspect-ratio:2/3}
+.sg-item:not(:nth-child(1)) .sg-item-ph{aspect-ratio:4/5}
+.sg-item-ph img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.23,1,.32,1)}
+.sg-item:hover .sg-item-ph img{transform:scale(1.04)}
+.sg-item-ph::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(58,8,20,.88) 100%)}
+.sg-info{position:absolute;bottom:0;left:0;right:0;padding:1.5rem;z-index:2}
+.sg-outfit{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--GD);margin-bottom:3px}
+.sg-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--BG)}
+.sg-ph-icon{display:flex;flex-direction:column;align-items:center;gap:.8rem;z-index:1;position:relative}
+.sg-ph-icon span{font-size:7.5px;letter-spacing:.38em;text-transform:uppercase;color:rgba(228,216,192,.16)}
+
+/* MODAL */
+.mw{position:fixed;inset:0;background:rgba(4,2,4,.93);z-index:900;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s;padding:1rem}
+.mw.on{opacity:1;pointer-events:all}
+.modal{background:var(--B);width:100%;max-width:980px;max-height:92vh;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(228,216,192,.07)}
+.m-vis{min-height:520px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:var(--NV2)}
+.m-vis img{width:100%;height:100%;object-fit:cover}
+.m-vis-svg{display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:520px}
+.m-bod{padding:3.5rem 3rem;display:flex;flex-direction:column;border-left:1px solid rgba(228,216,192,.06);overflow-y:auto}
+.mx{position:absolute;top:1rem;right:1rem;background:none;border:1px solid rgba(228,216,192,.18);width:36px;height:36px;color:var(--BG);font-size:18px;cursor:none;display:flex;align-items:center;justify-content:center;z-index:10;transition:background .2s}
+.mx:hover{background:var(--B3)}
+.m-cat{font-size:7.5px;letter-spacing:.44em;text-transform:uppercase;color:var(--OL3);margin-bottom:.6rem}
+.m-name{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:.08em;color:var(--BG);line-height:.9;margin-bottom:.3rem}
+.m-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:var(--GD);margin-bottom:.8rem}
+.m-price{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.06em;color:var(--BG);margin-bottom:1.5rem}
+.m-desc{font-family:'Cormorant Garamond',serif;font-size:15px;color:rgba(228,216,192,.42);line-height:1.9;margin-bottom:1.5rem;font-weight:300}
+.m-lbl{font-size:8px;letter-spacing:.38em;text-transform:uppercase;color:rgba(228,216,192,.28);margin-bottom:.6rem}
+.szr{display:flex;gap:3px;margin-bottom:1.5rem;flex-wrap:wrap}
+.sz{background:none;border:1px solid rgba(228,216,192,.1);padding:9px 17px;font-family:inherit;font-size:12px;cursor:none;color:rgba(228,216,192,.42);transition:all .2s}
+.sz.sel,.sz:hover{background:var(--OL);color:var(--BG);border-color:var(--OL)}
+.qrow{display:flex;align-items:center;gap:1rem;margin-bottom:1.8rem}
+.qb{background:none;border:1px solid rgba(228,216,192,.1);width:40px;height:40px;font-size:20px;cursor:none;color:var(--BG);font-family:inherit;transition:background .2s}
+.qb:hover{background:rgba(228,216,192,.06)}
+.qn{font-family:'Bebas Neue',sans-serif;font-size:22px;min-width:28px;text-align:center;color:var(--BG)}
+.abtn{background:var(--BG);color:var(--B);border:none;padding:16px;font-family:'Space Grotesk',sans-serif;font-size:9.5px;letter-spacing:.25em;text-transform:uppercase;cursor:none;width:100%;font-weight:500;transition:all .25s;margin-bottom:.7rem}
+.abtn:hover{background:var(--GD);color:var(--NV)}
+.wbtn{background:none;color:rgba(228,216,192,.28);border:1px solid rgba(228,216,192,.1);padding:13px;font-family:inherit;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;cursor:none;width:100%;transition:all .2s}
+.wbtn:hover{border-color:rgba(228,216,192,.3);color:var(--BG)}
+.detl{list-style:none;margin-top:1.8rem;border-top:1px solid rgba(228,216,192,.06);padding-top:1.4rem}
+.detl li{font-size:11.5px;color:rgba(228,216,192,.26);padding:4px 0;display:flex;gap:.8rem;font-weight:300}
+.detl li::before{content:'⊹';color:var(--OL3);font-size:10px}
+
+/* CART DRAWER */
+.cdrw{position:fixed;top:0;right:0;bottom:0;width:420px;background:var(--NV2);z-index:1000;transform:translateX(100%);transition:transform .42s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-left:1px solid var(--line)}
+.cdrw.on{transform:translateX(0)}
+.chd{padding:1.8rem 2.2rem;border-bottom:1px solid rgba(228,216,192,.06);display:flex;justify-content:space-between;align-items:center}
+.chd h3{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.28em;color:var(--BG)}
+.ccx{background:none;border:1px solid rgba(228,216,192,.14);width:34px;height:34px;color:var(--BG);font-size:16px;cursor:none;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.ccx:hover{background:var(--B3)}
+.cbod{flex:1;overflow-y:auto;padding:1.8rem 2.2rem}
+.empty-cart{color:rgba(228,216,192,.18);text-align:center;margin-top:3rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px}
+.ci{display:grid;grid-template-columns:68px 1fr auto;gap:12px;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(228,216,192,.05);align-items:start}
+.ci-img{height:68px;background:var(--B);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ci-img img{width:100%;height:100%;object-fit:cover}
+.ci-nm{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.06em;color:var(--BG);margin-bottom:2px}
+.ci-mt{font-size:10px;color:rgba(228,216,192,.28);letter-spacing:.04em}
+.ci-pr{font-size:12.5px;color:var(--GD)}
+.cirm{background:none;border:none;font-size:16px;cursor:none;color:rgba(228,216,192,.2);transition:color .2s}
+.cirm:hover{color:var(--GD)}
+.cft{padding:1.8rem 2.2rem;border-top:1px solid rgba(228,216,192,.06)}
+.ctr{display:flex;justify-content:space-between;margin-bottom:1.5rem}
+.ctl{font-size:8.5px;letter-spacing:.38em;text-transform:uppercase;color:rgba(228,216,192,.28)}
+.ctp{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;color:var(--BG)}
+.cchk{width:100%;background:var(--BG);color:var(--B);border:none;padding:17px;font-family:'Space Grotesk',sans-serif;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;cursor:none;font-weight:500;transition:all .25s}
+.cchk:hover{background:var(--GD);color:var(--NV)}
+
+/* TOAST */
+.toast{position:fixed;bottom:2.5rem;left:50%;transform:translateX(-50%) translateY(70px);background:var(--NV);color:var(--BG);padding:12px 26px;font-size:9.5px;letter-spacing:.15em;z-index:1200;transition:transform .3s;pointer-events:none;border:1px solid var(--OL)}
+.toast.on{transform:translateX(-50%) translateY(0)}
+
+/* PILLARS */
+.pillars-g{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:4rem;background:rgba(228,216,192,.04)}
+.pil{padding:2.8rem;background:var(--B2);transition:background .3s}
+.pil:hover{background:var(--B3)}
+.pil-ic{font-family:'Noto Serif JP',serif;font-size:36px;color:var(--GD);margin-bottom:1.2rem}
+.pil-t{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.1em;color:var(--BG);margin-bottom:.6rem}
+.pil-d{font-size:12.5px;color:rgba(228,216,192,.32);line-height:1.82;font-weight:300}
+
+/* FOOTER */
+footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7rem 2.8rem 4rem;display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr;gap:3rem}
+.fl-m{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.34em;color:var(--BG)}
+.fl-s{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:10.5px;letter-spacing:.26em;color:var(--GD)}
+.ft{font-family:'Cormorant Garamond',serif;font-size:14px;color:rgba(228,216,192,.2);line-height:1.85;max-width:270px;margin-top:1.2rem}
+.fc h4{font-size:8px;letter-spacing:.44em;text-transform:uppercase;color:var(--OL3);margin-bottom:1.3rem}
+.fc ul{list-style:none}
+.fc li{margin-bottom:.5rem}
+.fc a{font-size:13px;color:rgba(228,216,192,.2);transition:color .2s;font-weight:300;text-decoration:none}
+.fc a:hover{color:var(--GD)}
+.fbot{background:var(--NV);border-top:1px solid rgba(228,216,192,.04);text-align:center;padding:1.5rem;font-size:8.5px;color:rgba(228,216,192,.12);letter-spacing:.14em;text-transform:uppercase}
+
+@media(max-width:900px){
+  .haori-split,.modal{grid-template-columns:1fr}
+  .m-vis{min-height:280px}
+  .styling-grid{grid-template-columns:1fr 1fr}
+  .sg-item:nth-child(1){grid-row:auto}
+  .pillars-g{grid-template-columns:1fr}
+  footer{grid-template-columns:1fr 1fr}
+  .cdrw{width:100%}
+  .fm-right{display:none}
+  .fm-link{font-size:clamp(44px,12vw,78px)}
+  .sec{padding:5rem 1.6rem}
+}
+</style>
+</head>
+<body>
+
+<div id="CUR"></div><div id="CUR2"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <span class="nav-logo-m">KINORA</span>
+    <span class="nav-logo-s">haori &amp; kimono</span>
+  </a>
+  <div class="nav-right">
+    <button class="nav-cart-btn" onclick="toggleCart()">
+      Количка <span class="bct" id="bct">0</span>
+    </button>
+    <button class="burger" id="burger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- FULLSCREEN MENU -->
+<div class="full-menu" id="fmenu">
+  <div class="fm-left">
+    <ul class="fm-links">
+      <li><a class="fm-link" data-en="Haori Jackets" href="#" onclick="goTo('haori-sec')">ХАОРИ</a></li>
+      <li><a class="fm-link" data-en="Kimono" href="#" onclick="goTo('kimono-sec')">КИМОНО</a></li>
+      <li><a class="fm-link" data-en="Cart" href="#" onclick="openCartFromMenu()">КОЛИЧКА</a></li>
+      <li><a class="fm-link" data-en="Styling / Outfit Ideas" href="#" onclick="goTo('styling-sec')">СТАЙЛИНГ</a></li>
+    </ul>
+  </div>
+  <div class="fm-right">
+    <div class="fm-meta">
+      <p class="fm-meta-label">Информация</p>
+      <a href="#">Нашата история</a>
+      <a href="#">Размерна таблица</a>
+      <a href="#">Инструкции за грижа</a>
+      <a href="#">Връщане &amp; обмен</a>
+      <a href="mailto:hello@kinorabg.com">Контакт</a>
+    </div>
+    <div class="fm-meta">
+      <p class="fm-meta-label">Местоположение</p>
+      <p class="fm-meta-tag">Достъпни само в България.<br/>Безплатна доставка над 200 лв.</p>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-vid">
+    <!-- ЗАМЕНИ ТОВА С: <video autoplay muted loop playsinline src="assets/hero.mp4"></video> -->
+    <div class="hero-vid-ph">
+      <div class="hero-ph-inner">
+        <div class="hero-ph-icon">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <span class="hero-ph-label">Замени с видео от фотосесията</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-grain"></div>
+  <div class="hero-grad"></div>
+  <div class="hero-vign"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Японски текстилен дом · Sofia, Bulgaria</p>
+    <h1 class="hero-h1">KINORA</h1>
+    <span class="hero-h1-sub">haori &amp; kimono</span>
+    <div class="hero-bottom">
+      <p class="hero-desc">Кимона и хаори, изтъкани от майстори в Киото — преосмислени за следващото поколение. Всяко парче е жив артефакт.</p>
+      <div class="hero-actions">
+        <button class="btn-A" onclick="ss('haori-sec')">Разгледай колекцията</button>
+        <button class="btn-B" onclick="ss('styling-sec')">Идеи за стайлинг</button>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    <span>Скрол</span>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-i">
+    Безплатна доставка над 200 лв <b>✦</b> Изработено в Киото <b>✦</b> Оригинален Ниши-джин <b>✦</b> Само в България <b>✦</b> Връщане до 30 дни <b>✦</b> Ръчна изработка <b>✦</b> Безплатна доставка над 200 лв <b>✦</b> Изработено в Киото <b>✦</b> Оригинален Ниши-джин <b>✦</b> Само в България <b>✦</b> Връщане до 30 дни <b>✦</b> Ръчна изработка <b>✦</b>
+  </div>
+</div>
+
+<!-- ХАОРИ -->
+<section class="sec" id="haori-sec" style="background:var(--B4)">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:2rem">
+    <div>
+      <p class="sec-n">01 /</p>
+      <p class="sec-lbl">Колекцията</p>
+      <h2 class="sec-h">ХАОРИ</h2>
+    </div>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(228,216,192,.3);max-width:320px;line-height:1.9">Японско яке, носено открито — авангардно и безвременно. Всяко парче е ръчно изтъкано в Ниши-джин, Киото.</p>
+  </div>
+  <div class="haori-split">
+    <!-- ЗАМЕНИ src с реална снимка -->
+    <div class="haori-split-ph">
+      <div class="ph-placeholder">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(228,216,192,0.18)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+        <span>Снимка от фотосесия</span>
+      </div>
+    </div>
+    <div style="background:var(--B2);padding:4rem 3.5rem;display:flex;flex-direction:column;justify-content:center">
+      <p style="font-size:8.5px;letter-spacing:.4em;text-transform:uppercase;color:var(--OL3);margin-bottom:1rem">Какво е хаори?</p>
+      <h3 style="font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:.06em;color:var(--BG);line-height:.9;margin-bottom:1.5rem">ЯПОНСКО<br/>ЯКЕ БЕЗ<br/>ГРАНИЦИ</h3>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(228,216,192,.42);line-height:1.95;margin-bottom:2.5rem">Хаори се носи открито върху кимоно или съвременно облекло. Подходящ за всеки сезон и всеки стил.</p>
+      <button class="btn-A" style="align-self:flex-start" onclick="ss('haori-sec')">Виж всички хаори</button>
+    </div>
+  </div>
+  <div class="collection-grid" id="haori-grid"></div>
+</section>
+
+<!-- КИМОНО -->
+<section class="sec" id="kimono-sec" style="background:var(--NV2)">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:2rem">
+    <div>
+      <p class="sec-n">02 /</p>
+      <p class="sec-lbl">Колекцията</p>
+      <h2 class="sec-h">КИМОНО</h2>
+    </div>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(228,216,192,.3);max-width:320px;line-height:1.9">Изтъкани по традиционни методи, преосмислени за съвременния живот.</p>
+  </div>
+  <div class="collection-grid" id="kimono-grid"></div>
+</section>
+
+<!-- СТАЙЛИНГ -->
+<section class="sec" id="styling-sec" style="background:var(--B4);position:relative;overflow:hidden">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:end;margin-bottom:5rem;flex-wrap:wrap">
+    <div>
+      <p class="sec-n">03 /</p>
+      <p class="sec-lbl">Визии &amp; идеи</p>
+      <h2 class="sec-h">СТАЙЛИНГ &amp; <em>Аутфит Идеи</em></h2>
+    </div>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:rgba(228,216,192,.3);line-height:1.95;align-self:flex-end">Как да носиш KINORA — от улицата до специалния повод.</p>
+  </div>
+  <div class="styling-grid">
+    <div class="sg-item">
+      <div class="sg-item-ph" style="background:var(--B2)">
+        <!-- ЗАМЕНИ с: <img src="assets/styling-1.jpg" alt="Улична визия"> -->
+        <div class="sg-ph-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(228,216,192,0.15)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Снимка 01</span></div>
+        <div class="sg-info"><p class="sg-outfit">аутфит идея</p><p class="sg-title">УЛИЧНА ВИЗИЯ</p></div>
+      </div>
+    </div>
+    <div class="sg-item"><div class="sg-item-ph" style="background:var(--OL)"><div class="sg-ph-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(228,216,192,0.15)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Снимка 02</span></div><div class="sg-info"><p class="sg-outfit">аутфит идея</p><p class="sg-title">ВЕЧЕРНА ВИЗИЯ</p></div></div></div>
+    <div class="sg-item"><div class="sg-item-ph" style="background:var(--B3)"><div class="sg-ph-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(228,216,192,0.15)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Снимка 03</span></div><div class="sg-info"><p class="sg-outfit">аутфит идея</p><p class="sg-title">БОХО СЛОИ</p></div></div></div>
+    <div class="sg-item"><div class="sg-item-ph" style="background:var(--NV)"><div class="sg-ph-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(228,216,192,0.15)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Снимка 04</span></div><div class="sg-info"><p class="sg-outfit">аутфит идея</p><p class="sg-title">МИНИМАЛИСТ</p></div></div></div>
+    <div class="sg-item"><div class="sg-item-ph" style="background:#1a1005"><div class="sg-ph-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(228,216,192,0.15)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Снимка 05</span></div><div class="sg-info"><p class="sg-outfit">аутфит идея</p><p class="sg-title">АВАНГАРД</p></div></div></div>
+  </div>
+</section>
+
+<!-- PILLARS -->
+<section class="sec" style="background:var(--B2);position:relative;overflow:hidden">
+  <p class="sec-n">04 /</p>
+  <p class="sec-lbl">Защо KINORA</p>
+  <h2 class="sec-h">НАПРАВЕНО ЗА <em>Вечността</em></h2>
+  <div class="pillars-g">
+    <div class="pil" style="border-right:1px solid rgba(228,216,192,.04);border-bottom:1px solid rgba(228,216,192,.04)"><div class="pil-ic">織</div><h3 class="pil-t">НИШИ-ДЖИН</h3><p class="pil-d">Техника на 1200 години — сложен брокат, тъкан на ръчни жакарови станове. Никога не може да се репродуцира машинно.</p></div>
+    <div class="pil" style="border-right:1px solid rgba(228,216,192,.04);border-bottom:1px solid rgba(228,216,192,.04)"><div class="pil-ic">絹</div><h3 class="pil-t">ЧИСТА КОПРИНА</h3><p class="pil-d">Само черничева коприна от сертифицирани ферми. Естествено температурно-регулираща и издръжлива.</p></div>
+    <div class="pil" style="border-bottom:1px solid rgba(228,216,192,.04)"><div class="pil-ic">証</div><h3 class="pil-t">СЕРТИФИКАТ</h3><p class="pil-d">Всяко парче включва ръчно написана карта, подписана от тъкача — с името на семейството и датата.</p></div>
+    <div class="pil" style="border-right:1px solid rgba(228,216,192,.04)"><div class="pil-ic">染</div><h3 class="pil-t">ЕСТЕСТВЕНИ БОИ</h3><p class="pil-d">Цветове от индиго, шафран и железен минерал — процеси непроменени от периода Едо.</p></div>
+    <div class="pil" style="border-right:1px solid rgba(228,216,192,.04)"><div class="pil-ic">♻</div><h3 class="pil-t">ПРОГРАМА ГРИЖА</h3><p class="pil-d">Върни всяко KINORA парче за професионално почистване. Вярваме в дрехи, надживяващи собственика си.</p></div>
+    <div class="pil"><div class="pil-ic">✈</div><h3 class="pil-t">ЦЯЛА БЪЛГАРИЯ</h3><p class="pil-d">Безплатна доставка над 200 лв. Всички парчета са опаковани в ръчно изработени кутии от васи хартия.</p></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div><div class="fl-m">KINORA</div><div class="fl-s">haori &amp; kimono</div><p class="ft">Японски текстилен дом — пазим изкуството на Ниши-джин тъкачеството. София · Киото · Токио</p></div>
+  <div class="fc"><h4>Магазин</h4><ul><li><a href="#haori-sec">Хаори</a></li><li><a href="#kimono-sec">Кимона</a></li><li><a href="#">Аксесоари</a></li><li><a href="#">Подаръчни комплекти</a></li></ul></div>
+  <div class="fc"><h4>За нас</h4><ul><li><a href="#">Нашата история</a></li><li><a href="#">Занаятчии</a></li><li><a href="#">Устойчивост</a></li><li><a href="#">Преса</a></li></ul></div>
+  <div class="fc"><h4>Услуги</h4><ul><li><a href="#">Размерна таблица</a></li><li><a href="#">Инструкции за грижа</a></li><li><a href="#">Връщане</a></li><li><a href="mailto:hello@kinorabg.com">Контакт</a></li></ul></div>
+</footer>
+<div class="fbot">© 2026 KINORA — Всички права запазени · kinorabg.com</div>
+
+<!-- MODAL -->
+<div class="mw" id="mw" onclick="cMW(event)">
+  <div class="modal">
+    <div class="m-vis" id="mvis"></div>
+    <div class="m-bod" id="mbod"></div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="cdrw" id="cdrw">
+  <div class="chd"><h3>КОЛИЧКА</h3><button class="ccx" onclick="toggleCart()">×</button></div>
+  <div class="cbod" id="cbod"><p class="empty-cart">Количката ви е празна</p></div>
+  <div class="cft" id="cft" style="display:none">
+    <div class="ctr"><span class="ctl">Общо</span><span class="ctp" id="ctot">0 лв</span></div>
+    <button class="cchk" onclick="goCheckout()">КЪМ ПЛАЩАНЕ</button>
+    <p style="font-size:8.5px;color:rgba(228,216,192,.14);text-align:center;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Безплатна доставка над 200 лв · Сигурно плащане</p>
+  </div>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script>
+const PRODUCTS = [
+  {id:1,type:'haori',lbl:'Ново',cat:'Хаори яке',name:'ПОЛУНОЩЕН ЖЕРАВ',sub:'Хаори',price:1750,colors:['#0c0608','#2e3018','#4a0c1a'],desc:'Смел хаори от Ниши-джин нощна коприна, ръчно рисуван с мотив на жерав в сребърен лист. Носете открито или с подходящ nagajuban.',sizes:['S','M','L','XL'],details:['100% цумуги коприна','Детайл от сребърен лист','Подплатен с Киото юзен','Ръчно вързани химо завръзки','Само химическо чистене'],bg:'#0c0608',acc:'#7c8240',img:''},
+  {id:2,type:'haori',lbl:'',cat:'Хаори яке',name:'ГОРСКИ ДУХ',sub:'Хаори',price:1490,colors:['#2e3018','#4a0c1a','#0c0608'],desc:'Вдъхновен от шинтоистките горски светилища — маслиненозелен хаори с фини ирисови мотиви, вплетени директно в коприната.',sizes:['S','M','L','XL'],details:['Ниши-джин тъкан ирисов мотив','Подплата бени-иро','Конопена смес','Естествена дъбова боя'],bg:'#1e2010',acc:'#e4d8c0',img:''},
+  {id:3,type:'haori',lbl:'',cat:'Хаори яке',name:'ЗЛАТЕН ФЕНИКС',sub:'Хаори',price:1920,colors:['#2e3018','#4a0c1a','#0c0608'],desc:'Злато върху тъмно — най-впечатляващото хаори в колекцията. Мотивът на феникса покрива целия гръб.',sizes:['S','M','L','XL','XXL'],details:['Метална злато нишка','Феникс бродерия на гърба','Черна ро-копринена крепа','Само специалист чистач'],bg:'#0c0608',acc:'#c4a464',img:''},
+  {id:4,type:'haori',lbl:'Ново',cat:'Хаори яке',name:'ПУРПУРЕН ИРИС',sub:'Хаори',price:1640,colors:['#4a0c1a','#0c0608','#2e3018'],desc:'Дълбок бордо хаори с деликатни ирисови мотиви — вплетени с ипsilon техника от семейство Мацуда.',sizes:['S','M','L','XL'],details:['100% муга коприна','Ипsilon ирисова техника','Подплата от юзен','Сертификат за произход'],bg:'#3a0814',acc:'#e4d8c0',img:''},
+  {id:5,type:'kimono',lbl:'Ново',cat:'Официално кимоно',name:'ПУРПУРНА ХРИЗАНТЕМА',sub:'Фурисоде',price:2500,colors:['#4a0c1a','#2e3018','#0c0608'],desc:'Шедьовър на Ниши-джин брокат — с ръчно бродирани хризантемени клъстери върху дълбоко бордо основа.',sizes:['XS','S','M','L','XL'],details:['100% Ниши-джин копринен брокат','Ръчно бродирани детайли','Придружен с подходящ оби','Сертификат за произход','Само химическо чистене'],bg:'#3a0814',acc:'#e4d8c0',img:''},
+  {id:6,type:'kimono',lbl:'',cat:'Ежедневно кимоно',name:'ВЪЛНА ИНДИГО',sub:'Комон',price:1450,colors:['#0c1428','#4a0c1a','#2e3018'],desc:'Боядисано с натурално индиго по 400-годишния метод „катазоме". Повтарящият се вълнов мотив е традиционен „seigaiha".',sizes:['XS','S','M','L','XL','XXL'],details:['100% Хаката коприна','Естествено индиго','Техника катазоме','Ръчно пране при студено'],bg:'#0a1020',acc:'#e4d8c0',img:''},
+  {id:7,type:'kimono',lbl:'Ново',cat:'Ново пристигане',name:'САКУРА ЗДРАЧ',sub:'Томесоде',price:3200,colors:['#5c1222','#2e3018','#0c0608'],desc:'Новото произведение на семейство Мори — официален томесоде с ръчно бродирани черешови цветове. Само 12 парчета в света.',sizes:['XS','S','M','L'],details:['Лимитирано — 12 парчета в света','Ръчно бродирани черешови цветя','5 фамилни герба'],bg:'#2e0810',acc:'#e4d8c0',img:''},
+  {id:8,type:'kimono',lbl:'Винтидж',cat:'Винтидж кимоно',name:'ПЕОНИЯ ОТ МЕЙДЖИ',sub:'Учикаке',price:4700,colors:['#2e3018','#4a0c1a','#0c0608'],desc:'Автентично церемониално учикаке от периода Мейджи, около 1895 г. Бродерия от злато с пиони и феникси.',sizes:['Един размер'],details:['Автентично от периода Мейджи (ок.1895)','Бродерия от злато и сребро','Сертификат за автентичност'],bg:'#140a04',acc:'#c4a464',img:''},
+];
+
+let cart = JSON.parse(localStorage.getItem('kinora_cart') || '[]');
+let selSz = {}, selQty = {};
+
+function hSVG(bg, ac, w=155) {
+  const h = Math.round(w*1.45);
+  return `<svg width="${w}" height="${h}" viewBox="0 0 200 290" xmlns="http://www.w3.org/2000/svg"><path d="M76,32 L44,56 L26,130 L24,238 L100,245 L176,238 L174,130 L156,56 L124,32 Z" fill="${bg}"/><path d="M100,32 L88,68 L100,90 L112,68 Z" fill="${ac}" opacity=".76"/><path d="M100,32 L76,32 L44,56 L62,78 L88,68 Z" fill="${ac}" opacity=".45"/><path d="M100,32 L124,32 L156,56 L138,78 L112,68 Z" fill="${ac}" opacity=".45"/><path d="M24,130 L44,56 L4,68 L2,162 L24,168 Z" fill="${bg}" opacity=".78"/><path d="M176,130 L156,56 L196,68 L198,162 L176,168 Z" fill="${bg}" opacity=".78"/><path d="M88,90 Q85,108 83,124" stroke="${ac}" stroke-width="1.5" fill="none" opacity=".6"/><path d="M112,90 Q115,108 117,124" stroke="${ac}" stroke-width="1.5" fill="none" opacity=".6"/><circle cx="100" cy="193" r="18" fill="none" stroke="${ac}" stroke-width=".7" opacity=".46"/><path d="M100,177 L103,188 L114,188 L106,195 L109,206 L100,200 L91,206 L94,195 L86,188 L97,188 Z" fill="${ac}" opacity=".3"/><path d="M24,228 Q62,218 100,224 Q138,230 176,220 L176,245 L24,245 Z" fill="${bg}" opacity=".48"/></svg>`;
+}
+function kSVG(bg, ac, w=155) {
+  const h = Math.round(w*1.5);
+  return `<svg width="${w}" height="${h}" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg"><path d="M68,36 L34,62 L16,140 L14,258 L100,265 L186,258 L184,140 L166,62 L132,36 Z" fill="${bg}"/><path d="M100,36 L88,76 L100,100 L112,76 Z" fill="${ac}" opacity=".8"/><path d="M100,36 L68,36 L34,62 L52,86 L88,76 Z" fill="${bg}" stroke="${ac}" stroke-width=".4" opacity=".62"/><path d="M100,36 L132,36 L166,62 L148,86 L112,76 Z" fill="${bg}" stroke="${ac}" stroke-width=".4" opacity=".62"/><path d="M14,140 L34,62 L-4,74 L-6,165 L14,172 Z" fill="${bg}" opacity=".76"/><path d="M186,140 L166,62 L204,74 L206,165 L186,172 Z" fill="${bg}" opacity=".76"/><rect x="32" y="150" width="136" height="32" fill="#2e3018" opacity=".82"/><ellipse cx="100" cy="166" rx="16" ry="11" fill="#4a4e28"/><path d="M14,245 Q57,234 100,240 Q143,246 186,236 L186,265 L14,265 Z" fill="${bg}" opacity=".5"/></svg>`;
+}
+
+function getVisual(p, w) {
+  if (p.img) return `<img src="${p.img}" alt="${p.name}" loading="lazy"/>`;
+  return p.type === 'haori' ? hSVG(p.bg, p.acc, w) : kSVG(p.bg, p.acc, w);
+}
+
+function mkCard(p) {
+  return `<div class="pc" onclick="openM(${p.id})">
+    <div class="pcv" style="background:${p.bg}">
+      ${getVisual(p, 155)}
+      ${p.lbl ? `<div class="badge ${p.lbl==='Винтидж'?'b-vtg':'b-new'}">${p.lbl}</div>` : ''}
+      <div class="pco"><button class="pco-b">Бърз преглед</button></div>
+    </div>
+    <div class="pcbody">
+      <p class="pc-cat">${p.cat}</p>
+      <p class="pc-name">${p.name}</p>
+      <p class="pc-sub">${p.sub}</p>
+      <div class="pc-bot">
+        <span class="pc-price">${p.price.toLocaleString('bg-BG')} лв</span>
+        <div style="display:flex;gap:4px">${p.colors.map(c=>`<div style="width:9px;height:9px;background:${c};border:1px solid rgba(228,216,192,.16)"></div>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+document.getElementById('haori-grid').innerHTML = PRODUCTS.filter(p=>p.type==='haori').map(mkCard).join('');
+document.getElementById('kimono-grid').innerHTML = PRODUCTS.filter(p=>p.type==='kimono').map(mkCard).join('');
+
+/* MENU */
+let menuOpen = false;
+function toggleMenu() {
+  menuOpen = !menuOpen;
+  document.getElementById('burger').classList.toggle('open', menuOpen);
+  document.getElementById('fmenu').classList.toggle('open', menuOpen);
+  document.body.classList.toggle('no-scroll', menuOpen);
+}
+function goTo(id) {
+  toggleMenu();
+  setTimeout(() => { const el = document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth'}); }, 500);
+}
+function openCartFromMenu() { toggleMenu(); setTimeout(() => toggleCart(), 500); }
+
+/* MODAL */
+function openM(id) {
+  const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
+  selSz[id] = selSz[id] || p.sizes[0];
+  selQty[id] = selQty[id] || 1;
+  const vis = p.img
+    ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;min-height:520px"/>`
+    : `<div class="m-vis-svg" style="background:${p.bg}">${p.type==='haori'?hSVG(p.bg,p.acc,200):kSVG(p.bg,p.acc,200)}</div>`;
+  document.getElementById('mvis').innerHTML = `<button class="mx" onclick="cMD()">×</button>${vis}`;
+  document.getElementById('mbod').innerHTML = `
+    <p class="m-cat">${p.cat}</p>
+    <h2 class="m-name">${p.name}</h2>
+    <p class="m-sub">${p.sub}</p>
+    <p class="m-price">${p.price.toLocaleString('bg-BG')} лв</p>
+    <p class="m-desc">${p.desc}</p>
+    <p class="m-lbl">Размер</p>
+    <div class="szr">${p.sizes.map(s=>`<button class="sz ${selSz[id]===s?'sel':''}" onclick="setSz(${id},'${s}',this)">${s}</button>`).join('')}</div>
+    <p class="m-lbl">Количество</p>
+    <div class="qrow">
+      <button class="qb" onclick="chQ(${id},-1)">−</button>
+      <span class="qn" id="qd${id}">${selQty[id]}</span>
+      <button class="qb" onclick="chQ(${id},1)">+</button>
+    </div>
+    <button class="abtn" onclick="addC(${id})">ДОБАВИ — ${p.price.toLocaleString('bg-BG')} лв</button>
+    <button class="wbtn">Запази в любими</button>
+    <ul class="detl">${p.details.map(d=>`<li>${d}</li>`).join('')}</ul>`;
+  document.getElementById('mw').classList.add('on');
+  document.body.classList.add('no-scroll');
+}
+function setSz(id,s,btn){selSz[id]=s;btn.closest('.szr').querySelectorAll('.sz').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel')}
+function chQ(id,d){selQty[id]=Math.max(1,(selQty[id]||1)+d);const e=document.getElementById(`qd${id}`);if(e)e.textContent=selQty[id]}
+function cMW(e){if(e.target===document.getElementById('mw'))cMD()}
+function cMD(){document.getElementById('mw').classList.remove('on');document.body.classList.remove('no-scroll')}
+
+/* CART */
+function addC(id) {
+  const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
+  const sz = selSz[id]||p.sizes[0], qty = selQty[id]||1;
+  const ex = cart.find(c=>c.id===id&&c.sz===sz);
+  if(ex) ex.qty += qty;
+  else cart.push({id,name:p.name,sub:p.sub,sz,qty,price:p.price,bg:p.bg,acc:p.acc,type:p.type,img:p.img||''});
+  saveCart(); upC(); cMD(); showToast(`Добавено — ${p.name}`);
+}
+function rmC(i){cart.splice(i,1);saveCart();upC()}
+function saveCart(){localStorage.setItem('kinora_cart',JSON.stringify(cart))}
+function upC(){
+  const ct = cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('bct').textContent = ct;
+  const cb = document.getElementById('cbod'), cf = document.getElementById('cft');
+  if(!cart.length){cb.innerHTML='<p class="empty-cart">Количката ви е празна</p>';cf.style.display='none';return}
+  cf.style.display='block';
+  cb.innerHTML = cart.map((it,i) => {
+    const thumb = it.img ? `<img src="${it.img}" alt="${it.name}"/>` : (it.type==='haori'?hSVG(it.bg,it.acc,44):kSVG(it.bg,it.acc,44));
+    return `<div class="ci">
+      <div class="ci-img" style="background:${it.bg}">${thumb}</div>
+      <div><p class="ci-nm">${it.name}</p><p class="ci-mt">Размер: ${it.sz} · Бр: ${it.qty}</p></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+        <span class="ci-pr">${(it.price*it.qty).toLocaleString('bg-BG')} лв</span>
+        <button class="cirm" onclick="rmC(${i})">×</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('ctot').textContent = cart.reduce((s,i)=>s+i.price*i.qty,0).toLocaleString('bg-BG')+' лв';
+}
+function toggleCart(){document.getElementById('cdrw').classList.toggle('on')}
+function goCheckout(){
+  localStorage.setItem('kinora_cart',JSON.stringify(cart));
+  window.location.href='checkout.html';
+}
+
+let tT;
+function showToast(msg){const t=document.getElementById('tst');t.textContent=msg;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),2800)}
+function ss(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})}
+
+/* CURSOR */
+const CUR=document.getElementById('CUR'),CUR2=document.getElementById('CUR2');
+document.addEventListener('mousemove',e=>{
+  CUR.style.left=e.clientX+'px';CUR.style.top=e.clientY+'px';
+  setTimeout(()=>{CUR2.style.left=e.clientX+'px';CUR2.style.top=e.clientY+'px'},55);
+});
+document.addEventListener('mousedown',()=>{CUR.style.transform='translate(-50%,-50%) scale(2)';CUR2.style.transform='translate(-50%,-50%) scale(.5)'});
+document.addEventListener('mouseup',()=>{CUR.style.transform='translate(-50%,-50%)';CUR2.style.transform='translate(-50%,-50%)'});
+document.querySelectorAll('button,a').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{CUR.classList.add('big');CUR2.classList.add('big')});
+  el.addEventListener('mouseleave',()=>{CUR.classList.remove('big');CUR2.classList.remove('big')});
+});
+
+upC();
+</script>
+</body>
+</html>

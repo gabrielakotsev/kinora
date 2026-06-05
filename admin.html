@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>KINORA Admin — Поръчки</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--B:#4a0c1a;--B2:#5c1222;--B4:#3a0814;--OL:#2e3018;--OL3:#7c8240;--BG:#e4d8c0;--BG2:#f0e8d4;--NV:#0c0608;--NV2:#180c10;--GD:#c4a464;--line:rgba(228,216,192,.08)}
+body{font-family:'Space Grotesk',sans-serif;background:var(--NV);color:var(--BG);min-height:100vh}
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--NV)}
+.login-box{background:var(--NV2);border:1px solid var(--line);padding:3rem;width:100%;max-width:380px}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.3em;color:var(--BG);margin-bottom:.3rem}
+.login-sub{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(228,216,192,.3);margin-bottom:2.5rem}
+.form-group{margin-bottom:1.2rem}
+.form-group label{font-size:8.5px;letter-spacing:.35em;text-transform:uppercase;color:rgba(228,216,192,.35);display:block;margin-bottom:.5rem}
+.form-group input{width:100%;background:rgba(228,216,192,.04);border:1px solid rgba(228,216,192,.12);color:var(--BG);padding:12px 14px;font-family:inherit;font-size:13px;outline:none;transition:border .2s}
+.form-group input:focus{border-color:rgba(228,216,192,.35)}
+.login-btn{width:100%;background:var(--BG);color:var(--B);border:none;padding:14px;font-family:inherit;font-size:10px;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;font-weight:500;transition:all .25s;margin-top:.5rem}
+.login-btn:hover{background:var(--GD);color:var(--NV)}
+.login-err{font-size:11px;color:#e07070;margin-top:.8rem;text-align:center;min-height:18px}
+/* ADMIN */
+.admin-wrap{display:none;flex-direction:column;min-height:100vh}
+.admin-nav{height:60px;background:var(--NV2);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:10}
+.admin-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.28em;color:var(--BG)}
+.admin-logo span{font-size:10px;letter-spacing:.3em;color:var(--OL3);margin-left:1rem;font-family:'Space Grotesk',sans-serif;font-weight:400}
+.logout-btn{background:none;border:1px solid rgba(228,216,192,.15);color:rgba(228,216,192,.4);padding:7px 16px;font-family:inherit;font-size:9px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.logout-btn:hover{border-color:rgba(228,216,192,.35);color:var(--BG)}
+.admin-body{padding:2.5rem 2rem;flex:1}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2.5rem}
+.stat-card{background:var(--NV2);border:1px solid var(--line);padding:1.4rem;transition:border .2s}
+.stat-card:hover{border-color:rgba(228,216,192,.18)}
+.stat-label{font-size:8px;letter-spacing:.38em;text-transform:uppercase;color:rgba(228,216,192,.3);margin-bottom:.6rem}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:.06em;color:var(--BG);line-height:1}
+.stat-sub{font-size:10px;color:rgba(228,216,192,.25);margin-top:.3rem;letter-spacing:.04em}
+/* FILTERS */
+.filters{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
+.filter-btn{background:none;border:1px solid rgba(228,216,192,.1);padding:7px 18px;font-family:inherit;font-size:9px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;color:rgba(228,216,192,.35);transition:all .2s}
+.filter-btn.on,.filter-btn:hover{background:var(--OL);color:var(--BG);border-color:var(--OL)}
+.search-input{background:rgba(228,216,192,.04);border:1px solid rgba(228,216,192,.1);color:var(--BG);padding:7px 14px;font-family:inherit;font-size:12px;outline:none;margin-left:auto;width:220px;transition:border .2s}
+.search-input:focus{border-color:rgba(228,216,192,.3)}
+.search-input::placeholder{color:rgba(228,216,192,.2)}
+/* TABLE */
+.orders-table{width:100%;border-collapse:collapse}
+.orders-table th{font-size:8px;letter-spacing:.35em;text-transform:uppercase;color:rgba(228,216,192,.28);padding:.8rem 1rem;text-align:left;border-bottom:1px solid var(--line)}
+.orders-table td{padding:1rem;border-bottom:1px solid rgba(228,216,192,.04);font-size:13px;vertical-align:middle}
+.orders-table tr{transition:background .2s;cursor:pointer}
+.orders-table tr:hover td{background:rgba(228,216,192,.03)}
+.order-id{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.08em;color:var(--GD)}
+.status-badge{font-size:8px;letter-spacing:.25em;text-transform:uppercase;padding:4px 10px;border:1px solid}
+.s-pending{color:#c4a464;border-color:rgba(196,164,100,.3);background:rgba(196,164,100,.08)}
+.s-paid{color:#7c8240;border-color:rgba(124,130,64,.3);background:rgba(124,130,64,.08)}
+.s-shipped{color:#4a8c9a;border-color:rgba(74,140,154,.3);background:rgba(74,140,154,.08)}
+.s-completed{color:rgba(228,216,192,.5);border-color:rgba(228,216,192,.15);background:rgba(228,216,192,.04)}
+.s-awaiting_payment{color:#d4906a;border-color:rgba(212,144,106,.3);background:rgba(212,144,106,.08)}
+/* ORDER DRAWER */
+.order-drawer{position:fixed;top:0;right:0;bottom:0;width:480px;background:var(--NV2);border-left:1px solid var(--line);z-index:50;transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);overflow-y:auto}
+.order-drawer.on{transform:translateX(0)}
+.od-header{padding:1.8rem 2rem;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--NV2);z-index:1}
+.od-header h3{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.15em;color:var(--BG)}
+.od-close{background:none;border:1px solid rgba(228,216,192,.15);width:34px;height:34px;color:var(--BG);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.od-body{padding:2rem}
+.od-section{margin-bottom:2rem}
+.od-section-title{font-size:8.5px;letter-spacing:.38em;text-transform:uppercase;color:var(--OL3);margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid rgba(228,216,192,.06)}
+.od-field{display:flex;justify-content:space-between;padding:.55rem 0;font-size:13px;border-bottom:1px solid rgba(228,216,192,.04)}
+.od-field-label{color:rgba(228,216,192,.32)}
+.od-field-val{color:var(--BG);font-weight:400;text-align:right;max-width:60%}
+.od-items{}
+.od-item{display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;border-bottom:1px solid rgba(228,216,192,.04);font-size:13px}
+.od-item-name{color:var(--BG)}
+.od-item-meta{font-size:10px;color:rgba(228,216,192,.3);margin-top:2px}
+.od-item-price{color:var(--GD)}
+.status-select{background:rgba(228,216,192,.04);border:1px solid rgba(228,216,192,.15);color:var(--BG);padding:8px 12px;font-family:inherit;font-size:12px;cursor:pointer;width:100%;margin-top:.5rem;outline:none}
+.status-select option{background:var(--NV2)}
+.save-status-btn{width:100%;background:var(--OL);color:var(--BG);border:none;padding:12px;font-family:inherit;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;margin-top:.5rem;transition:background .2s}
+.save-status-btn:hover{background:var(--OL2)}
+.empty-state{text-align:center;padding:5rem 2rem;color:rgba(228,216,192,.2)}
+.empty-state h3{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.1em;margin-bottom:.5rem}
+.loading{text-align:center;padding:4rem;color:rgba(228,216,192,.25);font-size:13px;letter-spacing:.1em}
+@media(max-width:800px){.stats-row{grid-template-columns:repeat(2,1fr)}.order-drawer{width:100%}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">KINORA</div>
+    <div class="login-sub">Административен панел</div>
+    <div class="form-group">
+      <label>Парола</label>
+      <input type="password" id="pwd-input" placeholder="Въведи паролата" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="login-btn" onclick="doLogin()">ВЛЕЗ</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-wrap" id="admin-wrap">
+  <div class="admin-nav">
+    <div>
+      <span class="admin-logo">KINORA</span>
+      <span class="admin-logo" style="font-size:12px;letter-spacing:.15em;opacity:.4">ADMIN</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <span style="font-size:10px;letter-spacing:.15em;color:rgba(228,216,192,.25)" id="last-refresh"></span>
+      <button class="logout-btn" onclick="loadOrders()">↻ Опресни</button>
+      <button class="logout-btn" onclick="doLogout()">Излез</button>
+    </div>
+  </div>
+  <div class="admin-body">
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Общо поръчки</div><div class="stat-val" id="st-total">—</div></div>
+      <div class="stat-card"><div class="stat-label">Нови (pending)</div><div class="stat-val" id="st-pending">—</div></div>
+      <div class="stat-card"><div class="stat-label">Оборот (лв)</div><div class="stat-val" id="st-revenue">—</div></div>
+      <div class="stat-card"><div class="stat-label">Изпратени</div><div class="stat-val" id="st-shipped">—</div></div>
+    </div>
+    <!-- FILTERS -->
+    <div class="filters">
+      <button class="filter-btn on" onclick="filterOrders('all',this)">Всички</button>
+      <button class="filter-btn" onclick="filterOrders('pending',this)">Нови</button>
+      <button class="filter-btn" onclick="filterOrders('paid',this)">Платени</button>
+      <button class="filter-btn" onclick="filterOrders('shipped',this)">Изпратени</button>
+      <button class="filter-btn" onclick="filterOrders('completed',this)">Завършени</button>
+      <input class="search-input" id="search-input" placeholder="Търси по клиент, имейл..." oninput="renderTable()"/>
+    </div>
+    <!-- TABLE -->
+    <div id="table-wrap">
+      <div class="loading">Зарежда поръчки...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER DETAIL DRAWER -->
+<div class="order-drawer" id="order-drawer">
+  <div class="od-header">
+    <h3 id="drawer-title">ПОРЪЧКА</h3>
+    <button class="od-close" onclick="closeDrawer()">×</button>
+  </div>
+  <div class="od-body" id="drawer-body"></div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://owkoprksrvjlebonаehj.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93a29wcmtzcnZqbGVib25hZWhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NTIxNzgsImV4cCI6MjA5NjIyODE3OH0.UZdyvXOmEJTZ6r54fSlVgNNBja98qx-dpJqu9yGNlFA';
+
+// CHANGE THIS PASSWORD
+const ADMIN_PASSWORD = 'kinora2026';
+
+let allOrders = [];
+let currentFilter = 'all';
+let currentOrder = null;
+
+function doLogin() {
+  const pwd = document.getElementById('pwd-input').value;
+  if (pwd === ADMIN_PASSWORD) {
+    sessionStorage.setItem('kinora_admin', '1');
+    document.getElementById('login-wrap').style.display = 'none';
+    document.getElementById('admin-wrap').style.display = 'flex';
+    loadOrders();
+  } else {
+    document.getElementById('login-err').textContent = 'Грешна парола. Опитай отново.';
+    setTimeout(() => document.getElementById('login-err').textContent = '', 3000);
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('kinora_admin');
+  location.reload();
+}
+
+if (sessionStorage.getItem('kinora_admin')) {
+  document.getElementById('login-wrap').style.display = 'none';
+  document.getElementById('admin-wrap').style.display = 'flex';
+  loadOrders();
+}
+
+async function loadOrders() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=*&order=created_at.desc`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    allOrders = await res.json();
+    updateStats();
+    renderTable();
+    document.getElementById('last-refresh').textContent = 'Обновено: ' + new Date().toLocaleTimeString('bg-BG');
+  } catch(e) {
+    document.getElementById('table-wrap').innerHTML = '<div class="loading" style="color:#e07070">Грешка при зареждане. Провери интернет връзката.</div>';
+  }
+}
+
+function updateStats() {
+  document.getElementById('st-total').textContent = allOrders.length;
+  document.getElementById('st-pending').textContent = allOrders.filter(o=>o.status==='pending').length;
+  document.getElementById('st-revenue').textContent = Math.round(allOrders.reduce((s,o)=>s+(o.total||0),0)).toLocaleString('bg-BG');
+  document.getElementById('st-shipped').textContent = allOrders.filter(o=>o.status==='shipped').length;
+}
+
+function filterOrders(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderTable();
+}
+
+const STATUS_LABELS = {
+  pending: 'Нова',
+  awaiting_payment: 'Чака плащане',
+  paid: 'Платена',
+  shipped: 'Изпратена',
+  completed: 'Завършена',
+  cancelled: 'Отказана'
+};
+const DELIVERY_LABELS = {
+  econt_office:'Еконт офис',econt_address:'Еконт адрес',
+  speedy_office:'Спиди офис',speedy_address:'Спиди адрес'
+};
+
+function renderTable() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  let orders = allOrders;
+  if (currentFilter !== 'all') orders = orders.filter(o=>o.status===currentFilter);
+  if (search) orders = orders.filter(o =>
+    (o.customer_name||'').toLowerCase().includes(search) ||
+    (o.customer_email||'').toLowerCase().includes(search) ||
+    (o.id||'').toLowerCase().includes(search)
+  );
+
+  if (!orders.length) {
+    document.getElementById('table-wrap').innerHTML = `<div class="empty-state"><h3>НЯМА ПОРЪЧКИ</h3><p>Не са намерени поръчки с тези критерии.</p></div>`;
+    return;
+  }
+
+  document.getElementById('table-wrap').innerHTML = `<table class="orders-table">
+    <thead><tr>
+      <th>Поръчка</th><th>Клиент</th><th>Дата</th><th>Доставка</th><th>Плащане</th><th>Статус</th><th>Сума</th>
+    </tr></thead>
+    <tbody>${orders.map(o => {
+      const date = new Date(o.created_at).toLocaleDateString('bg-BG',{day:'2-digit',month:'2-digit',year:'numeric'});
+      const sClass = `s-${o.status||'pending'}`;
+      return `<tr onclick="openDrawer('${o.id}')">
+        <td><span class="order-id">#${(o.id||'').substring(0,8).toUpperCase()}</span></td>
+        <td><div style="font-weight:500">${o.customer_name||'—'}</div><div style="font-size:11px;color:rgba(228,216,192,.3)">${o.customer_email||''}</div></td>
+        <td style="color:rgba(228,216,192,.4);font-size:12px">${date}</td>
+        <td style="font-size:12px;color:rgba(228,216,192,.4)">${DELIVERY_LABELS[o.delivery_method]||o.delivery_method||'—'}</td>
+        <td style="font-size:12px;color:rgba(228,216,192,.4)">${o.payment_method==='cod'?'💵 Наложен':'💳 Карта'}</td>
+        <td><span class="status-badge ${sClass}">${STATUS_LABELS[o.status]||o.status}</span></td>
+        <td style="color:var(--GD);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.04em">${(o.total||0).toFixed(2)} лв</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function openDrawer(id) {
+  const o = allOrders.find(x=>x.id===id);
+  if (!o) return;
+  currentOrder = o;
+  document.getElementById('drawer-title').textContent = '#' + (o.id||'').substring(0,8).toUpperCase();
+
+  let items = [];
+  try { items = typeof o.items === 'string' ? JSON.parse(o.items) : (o.items || []); } catch(e) {}
+
+  const date = new Date(o.created_at).toLocaleString('bg-BG');
+
+  document.getElementById('drawer-body').innerHTML = `
+    <div class="od-section">
+      <div class="od-section-title">Клиент</div>
+      <div class="od-field"><span class="od-field-label">Име</span><span class="od-field-val">${o.customer_name||'—'}</span></div>
+      <div class="od-field"><span class="od-field-label">Имейл</span><span class="od-field-val">${o.customer_email||'—'}</span></div>
+      <div class="od-field"><span class="od-field-label">Телефон</span><span class="od-field-val">${o.customer_phone||'—'}</span></div>
+    </div>
+    <div class="od-section">
+      <div class="od-section-title">Доставка</div>
+      <div class="od-field"><span class="od-field-label">Начин</span><span class="od-field-val">${DELIVERY_LABELS[o.delivery_method]||o.delivery_method||'—'}</span></div>
+      <div class="od-field"><span class="od-field-label">Град</span><span class="od-field-val">${o.customer_city||'—'}</span></div>
+      <div class="od-field"><span class="od-field-label">Адрес</span><span class="od-field-val">${o.customer_address||'—'}</span></div>
+    </div>
+    <div class="od-section">
+      <div class="od-section-title">Поръчани продукти</div>
+      <div class="od-items">${items.map(it=>`
+        <div class="od-item">
+          <div>
+            <div class="od-item-name">${it.name||'—'}</div>
+            <div class="od-item-meta">Размер: ${it.sz||'—'} · Бр: ${it.qty||1}</div>
+          </div>
+          <div class="od-item-price">${((it.price||0)*(it.qty||1)).toLocaleString('bg-BG')} лв</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="od-section">
+      <div class="od-section-title">Плащане</div>
+      <div class="od-field"><span class="od-field-label">Начин</span><span class="od-field-val">${o.payment_method==='cod'?'💵 Наложен платеж':'💳 Карта'}</span></div>
+      <div class="od-field"><span class="od-field-label">Сума</span><span class="od-field-val" style="color:var(--GD);font-size:16px;font-family:'Bebas Neue',sans-serif">${(o.total||0).toFixed(2)} лв</span></div>
+      <div class="od-field"><span class="od-field-label">Дата</span><span class="od-field-val" style="font-size:11px">${date}</span></div>
+    </div>
+    <div class="od-section">
+      <div class="od-section-title">Статус на поръчката</div>
+      <select class="status-select" id="status-select">
+        ${Object.entries(STATUS_LABELS).map(([v,l])=>`<option value="${v}" ${o.status===v?'selected':''}>${l}</option>`).join('')}
+      </select>
+      <button class="save-status-btn" onclick="saveStatus('${o.id}')">ЗАПАЗИ СТАТУСА</button>
+    </div>
+    <div class="od-section" style="border-top:1px solid var(--line);padding-top:1.5rem">
+      <a href="mailto:${o.customer_email}?subject=Вашата поръчка KINORA #${(o.id||'').substring(0,8).toUpperCase()}" style="display:block;text-align:center;padding:12px;border:1px solid rgba(228,216,192,.12);color:rgba(228,216,192,.4);text-decoration:none;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;transition:all .2s" onmouseover="this.style.borderColor='rgba(228,216,192,.35)';this.style.color='var(--BG)'" onmouseout="this.style.borderColor='rgba(228,216,192,.12)';this.style.color='rgba(228,216,192,.4)'">
+        ✉ Пиши на клиента
+      </a>
+    </div>
+  `;
+  document.getElementById('order-drawer').classList.add('on');
+}
+
+function closeDrawer() {
+  document.getElementById('order-drawer').classList.remove('on');
+}
+
+async function saveStatus(id) {
+  const newStatus = document.getElementById('status-select').value;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      },
+      body: JSON.stringify({ status: newStatus })
+    });
+    if (res.ok) {
+      const o = allOrders.find(x=>x.id===id);
+      if (o) o.status = newStatus;
+      renderTable();
+      updateStats();
+      alert('✓ Статусът е обновен: ' + STATUS_LABELS[newStatus]);
+    }
+  } catch(e) {
+    alert('Грешка при обновяване. Опитай отново.');
+  }
+}
+
+// Auto-refresh every 60 seconds
+setInterval(() => { if(sessionStorage.getItem('kinora_admin')) loadOrders(); }, 60000);
+</script>
+</body>
+</html>

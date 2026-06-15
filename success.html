@@ -4,15 +4,15 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>KINORA — Поръчката е приета</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Golos+Text:wght@400;500;600;700&family=Yeseva+One&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--B:#4a0c1a;--B2:#5c1222;--B4:#3a0814;--OL:#2e3018;--OL3:#7c8240;--BG:#e4d8c0;--NV:#0c0608;--NV2:#180c10;--GD:#c4a464;--line:rgba(228,216,192,.08)}
-body{font-family:'Space Grotesk',sans-serif;background:var(--B4);color:var(--BG);min-height:100vh;display:flex;flex-direction:column}
+body{font-family:'Golos Text',sans-serif;background:var(--B4);color:var(--BG);min-height:100vh;display:flex;flex-direction:column}
 nav{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2.4rem;background:rgba(58,8,20,.9);backdrop-filter:blur(28px);border-bottom:1px solid var(--line)}
 .nav-logo{display:flex;flex-direction:column;gap:1px;text-decoration:none}
-.nav-logo-m{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:.34em;color:var(--BG)}
-.nav-logo-s{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:9.5px;letter-spacing:.26em;color:var(--GD)}
+.nav-logo-m{font-family:'Tenor Sans',sans-serif;font-size:21px;letter-spacing:.34em;color:var(--BG)}
+.nav-logo-s{font-family:'Yeseva One',serif;font-size:9.5px;letter-spacing:.26em;color:var(--GD)}
 .success-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:4rem 2rem}
 .success-box{max-width:620px;width:100%;text-align:center}
 .success-icon{width:80px;height:80px;border:1px solid rgba(124,130,64,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 2.5rem;animation:pulse 2s ease infinite}
@@ -20,18 +20,18 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
 .success-icon svg{width:32px;height:32px;stroke:var(--OL3);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .success-tag{font-size:8.5px;letter-spacing:.5em;text-transform:uppercase;color:var(--OL3);margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:12px}
 .success-tag::before,.success-tag::after{content:'';width:24px;height:1px;background:var(--OL3);opacity:.5}
-.success-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,10vw,96px);letter-spacing:.08em;line-height:.9;color:var(--BG);margin-bottom:1rem}
-.success-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:rgba(228,216,192,.45);line-height:1.8;margin-bottom:3rem}
+.success-h1{font-family:'Tenor Sans',sans-serif;font-size:clamp(52px,10vw,96px);letter-spacing:.08em;line-height:.9;color:var(--BG);margin-bottom:1rem}
+.success-sub{font-family:'Yeseva One',serif;font-size:18px;color:rgba(228,216,192,.45);line-height:1.8;margin-bottom:3rem}
 .order-details{background:var(--NV2);border:1px solid var(--line);padding:2rem;text-align:left;margin-bottom:2.5rem}
 .od-row{display:flex;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid rgba(228,216,192,.05);font-size:13px}
 .od-row:last-child{border-bottom:none}
 .od-label{color:rgba(228,216,192,.35);letter-spacing:.06em}
 .od-val{color:var(--BG);font-weight:500}
-.od-id{color:var(--GD);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.1em}
+.od-id{color:var(--GD);font-family:'Tenor Sans',sans-serif;font-size:16px;letter-spacing:.1em}
 .actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
-.btn-A{background:var(--BG);color:var(--B);border:none;padding:14px 36px;font-family:'Space Grotesk',sans-serif;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;font-weight:500;transition:all .25s;text-decoration:none;display:inline-block}
+.btn-A{background:var(--BG);color:var(--B);border:none;padding:14px 36px;font-family:'Golos Text',sans-serif;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;font-weight:500;transition:all .25s;text-decoration:none;display:inline-block}
 .btn-A:hover{background:var(--GD);color:var(--NV)}
-.btn-B{background:none;color:var(--BG);border:1px solid rgba(228,216,192,.22);padding:13px 34px;font-family:'Space Grotesk',sans-serif;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;transition:all .25s;text-decoration:none;display:inline-block}
+.btn-B{background:none;color:var(--BG);border:1px solid rgba(228,216,192,.22);padding:13px 34px;font-family:'Golos Text',sans-serif;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;transition:all .25s;text-decoration:none;display:inline-block}
 .btn-B:hover{border-color:var(--BG)}
 .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
 .cf{position:absolute;width:6px;height:6px;animation:fall linear infinite}
@@ -66,7 +66,7 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
       <div class="od-row"><span class="od-label">Плащане</span><span class="od-val" id="od-payment">—</span></div>
       <div class="od-row" style="padding-top:1rem;margin-top:.4rem;border-top:1px solid rgba(228,216,192,.08)">
         <span class="od-label" style="font-weight:500">Общо</span>
-        <span class="od-val" style="color:var(--GD);font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em" id="od-total">—</span>
+        <span class="od-val" style="color:var(--GD);font-family:'Tenor Sans',sans-serif;font-size:20px;letter-spacing:.06em" id="od-total">—</span>
       </div>
     </div>
 

@@ -4,28 +4,28 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>KINORA — Плащане</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Golos+Text:wght@400;500;600;700&family=Yeseva+One&display=swap" rel="stylesheet"/>
 <script src="https://js.stripe.com/v3/"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--B:#4a0c1a;--B2:#5c1222;--B3:#7a1a30;--B4:#3a0814;--OL:#2e3018;--OL3:#7c8240;--BG:#e4d8c0;--BG2:#f0e8d4;--NV:#0c0608;--NV2:#180c10;--GD:#c4a464;--line:rgba(228,216,192,.08)}
 html{scroll-behavior:smooth}
-body{font-family:'Space Grotesk',sans-serif;background:var(--B4);color:var(--BG);min-height:100vh;cursor:default}
+body{font-family:'Golos Text',sans-serif;background:var(--B4);color:var(--BG);min-height:100vh;cursor:default}
 nav{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2.4rem;background:rgba(58,8,20,.9);backdrop-filter:blur(28px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:100}
 .nav-logo{display:flex;flex-direction:column;gap:1px;text-decoration:none}
-.nav-logo-m{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:.34em;color:var(--BG)}
-.nav-logo-s{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:9.5px;letter-spacing:.26em;color:var(--GD)}
+.nav-logo-m{font-family:'Tenor Sans',sans-serif;font-size:21px;letter-spacing:.34em;color:var(--BG)}
+.nav-logo-s{font-family:'Yeseva One',serif;font-size:9.5px;letter-spacing:.26em;color:var(--GD)}
 .back-link{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(228,216,192,.4);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s}
 .back-link:hover{color:var(--BG)}
 .back-link::before{content:'←'}
 .checkout-wrap{max-width:1100px;margin:0 auto;padding:4rem 2rem;display:grid;grid-template-columns:1.1fr .9fr;gap:4rem;align-items:start}
 .checkout-left{display:flex;flex-direction:column;gap:2.5rem}
 .checkout-right{background:var(--NV2);padding:2.5rem;border:1px solid var(--line);position:sticky;top:80px}
-.block-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:var(--BG);margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--line)}
+.block-title{font-family:'Tenor Sans',sans-serif;font-size:22px;letter-spacing:.12em;color:var(--BG);margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--line)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .form-group{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem}
 .form-group label{font-size:8.5px;letter-spacing:.35em;text-transform:uppercase;color:rgba(228,216,192,.38)}
-.form-group input,.form-group select{background:rgba(228,216,192,.04);border:1px solid rgba(228,216,192,.12);color:var(--BG);padding:12px 14px;font-family:'Space Grotesk',sans-serif;font-size:13px;transition:border .2s;width:100%;outline:none}
+.form-group input,.form-group select{background:rgba(228,216,192,.04);border:1px solid rgba(228,216,192,.12);color:var(--BG);padding:12px 14px;font-family:'Golos Text',sans-serif;font-size:13px;transition:border .2s;width:100%;outline:none}
 .form-group input:focus,.form-group select:focus{border-color:rgba(228,216,192,.35)}
 .form-group input::placeholder{color:rgba(228,216,192,.22)}
 .form-group select option{background:var(--NV2);color:var(--BG)}
@@ -41,13 +41,13 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
 .summary-item{display:flex;gap:1rem;margin-bottom:1.2rem;padding-bottom:1.2rem;border-bottom:1px solid var(--line);align-items:start}
 .si-img{width:62px;height:62px;background:var(--B);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .si-img img{width:100%;height:100%;object-fit:cover}
-.si-name{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.06em;color:var(--BG);line-height:1}
+.si-name{font-family:'Tenor Sans',sans-serif;font-size:15px;letter-spacing:.06em;color:var(--BG);line-height:1}
 .si-meta{font-size:10px;color:rgba(228,216,192,.3);margin-top:3px}
 .si-price{font-size:13px;color:var(--GD);margin-left:auto;flex-shrink:0}
 .summary-totals{margin-top:1.5rem}
 .tot-row{display:flex;justify-content:space-between;margin-bottom:.6rem;font-size:12px;color:rgba(228,216,192,.4)}
-.tot-row.total{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;color:var(--BG);margin-top:1rem;padding-top:1rem;border-top:1px solid var(--line)}
-.submit-btn{width:100%;background:var(--BG);color:var(--B);border:none;padding:17px;font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;font-weight:500;transition:all .25s;margin-top:1.5rem;display:flex;align-items:center;justify-content:center;gap:10px}
+.tot-row.total{font-family:'Tenor Sans',sans-serif;font-size:22px;letter-spacing:.08em;color:var(--BG);margin-top:1rem;padding-top:1rem;border-top:1px solid var(--line)}
+.submit-btn{width:100%;background:var(--BG);color:var(--B);border:none;padding:17px;font-family:'Golos Text',sans-serif;font-size:10px;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;font-weight:500;transition:all .25s;margin-top:1.5rem;display:flex;align-items:center;justify-content:center;gap:10px}
 .submit-btn:hover{background:var(--GD);color:var(--NV)}
 .submit-btn:disabled{opacity:.4;cursor:not-allowed}
 .loader{width:16px;height:16px;border:2px solid rgba(74,12,26,.3);border-top-color:var(--B);border-radius:50%;animation:spin .6s linear infinite;display:none}
@@ -185,7 +185,7 @@ const stripe = Stripe(STRIPE_PK);
 const elements = stripe.elements({ locale: 'bg' });
 const cardElement = elements.create('card', {
   style: {
-    base: { color: '#e4d8c0', fontFamily: "'Space Grotesk', sans-serif", fontSize: '14px', '::placeholder': { color: 'rgba(228,216,192,0.25)' }, iconColor: '#c4a464' },
+    base: { color: '#e4d8c0', fontFamily: "'Golos Text', sans-serif", fontSize: '14px', '::placeholder': { color: 'rgba(228,216,192,0.25)' }, iconColor: '#c4a464' },
     invalid: { color: '#e07070' }
   }
 });

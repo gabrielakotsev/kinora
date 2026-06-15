@@ -247,6 +247,31 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
   .fm-link{font-size:clamp(44px,12vw,78px)}
   .sec{padding:5rem 1.6rem}
 }
+@media(max-width:600px){
+  nav{padding:0 1.4rem;height:56px}
+  .hero{padding-top:56px}
+  .hero-content{padding:0 1.5rem 2.6rem}
+  .hero-eyebrow{letter-spacing:.3em;font-size:8px;margin-bottom:1rem}
+  .hero-h1{font-size:clamp(48px,14vw,84px);line-height:.9;letter-spacing:.02em}
+  .hero-h1-sub{font-size:clamp(13px,3.4vw,18px);letter-spacing:.28em;margin-bottom:1.8rem}
+  .hero-bottom{gap:1.6rem}
+  .hero-desc{max-width:none}
+  .hero-actions{width:100%;align-items:stretch;gap:.7rem}
+  .hero-scroll{display:none}
+  .sec{padding:4rem 1.3rem}
+  .m-bod{padding:2.2rem 1.5rem}
+  .m-name{font-size:32px}
+  .m-price{font-size:26px}
+  footer{grid-template-columns:1fr;padding:4.5rem 1.4rem 3rem;gap:2.4rem}
+  /* overflow fixes for inline-styled sections */
+  .haori-split>div{min-width:0}
+  .haori-split>div:last-child{padding:2.4rem 1.4rem!important}
+  .haori-split h3{font-size:clamp(30px,8vw,46px)!important}
+  #styling-sec>div:first-child{grid-template-columns:1fr!important;gap:1.4rem!important;margin-bottom:2.4rem!important}
+}
+@media(hover:none){
+  #CUR,#CUR2{display:none!important}
+}
 </style>
 </head>
 <body>

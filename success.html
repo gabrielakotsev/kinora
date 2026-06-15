@@ -36,6 +36,16 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
 .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
 .cf{position:absolute;width:6px;height:6px;animation:fall linear infinite}
 @keyframes fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+@media(max-width:600px){
+  nav{padding:0 1.4rem}
+  .success-wrap{padding:3rem 1.3rem}
+  .success-h1{font-size:clamp(34px,9vw,72px)}
+  .success-sub{font-size:16px}
+  .success-sub br{display:none}
+  .order-details{padding:1.5rem}
+  .actions{flex-direction:column}
+  .btn-A,.btn-B{width:100%;text-align:center}
+}
 </style>
 </head>
 <body>
@@ -56,7 +66,7 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
     </div>
     <p class="success-tag">Поръчката е приета</p>
     <h1 class="success-h1">БЛАГОДАРИМ<br/>ВИ</h1>
-    <p class="success-sub">Получихме вашата поръчка и ще се свържем<br/>с вас скоро с информация за доставката.</p>
+    <p class="success-sub">Получихме вашата поръчка и ще се свържем <br/>с вас скоро с информация за доставката.</p>
 
     <div class="order-details" id="order-details">
       <div class="od-row"><span class="od-label">Номер на поръчка</span><span class="od-val od-id" id="od-id">—</span></div>

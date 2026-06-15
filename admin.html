@@ -91,8 +91,12 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--NV);color:var(--BG)
     <div class="login-logo">KINORA</div>
     <div class="login-sub">Административен панел</div>
     <div class="form-group">
+      <label>Имейл</label>
+      <input type="email" id="email-input" placeholder="admin@kinorabg.com" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <div class="form-group">
       <label>Парола</label>
-      <input type="password" id="pwd-input" placeholder="Въведи паролата" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <input type="password" id="pwd-input" placeholder="Въведи паролата" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
     </div>
     <button class="login-btn" onclick="doLogin()">ВЛЕЗ</button>
     <div class="login-err" id="login-err"></div>
@@ -149,42 +153,88 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--NV);color:var(--BG)
 const SUPABASE_URL = 'https://owkoprksrvjlebonaehj.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93a29wcmtzcnZqbGVib25hZWhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NTIxNzgsImV4cCI6MjA5NjIyODE3OH0.UZdyvXOmEJTZ6r54fSlVgNNBja98qx-dpJqu9yGNlFA';
 
-// CHANGE THIS PASSWORD
-const ADMIN_PASSWORD = 'kinora2026';
-
 let allOrders = [];
 let currentFilter = 'all';
 let currentOrder = null;
 
-function doLogin() {
+// --- Supabase Auth (real email/password login) ---
+function getToken() { return sessionStorage.getItem('kinora_admin_token'); }
+function setSession(d) {
+  sessionStorage.setItem('kinora_admin_token', d.access_token);
+  if (d.refresh_token) sessionStorage.setItem('kinora_admin_refresh', d.refresh_token);
+}
+function clearSession() {
+  sessionStorage.removeItem('kinora_admin_token');
+  sessionStorage.removeItem('kinora_admin_refresh');
+}
+function showAdmin() {
+  document.getElementById('login-wrap').style.display = 'none';
+  document.getElementById('admin-wrap').style.display = 'flex';
+}
+
+async function doLogin() {
+  const email = document.getElementById('email-input').value.trim();
   const pwd = document.getElementById('pwd-input').value;
-  if (pwd === ADMIN_PASSWORD) {
-    sessionStorage.setItem('kinora_admin', '1');
-    document.getElementById('login-wrap').style.display = 'none';
-    document.getElementById('admin-wrap').style.display = 'flex';
+  const errEl = document.getElementById('login-err');
+  errEl.textContent = '';
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+      body: JSON.stringify({ email, password: pwd })
+    });
+    if (!res.ok) {
+      errEl.textContent = 'Грешен имейл или парола.';
+      setTimeout(() => errEl.textContent = '', 3000);
+      return;
+    }
+    setSession(await res.json());
+    showAdmin();
     loadOrders();
-  } else {
-    document.getElementById('login-err').textContent = 'Грешна парола. Опитай отново.';
-    setTimeout(() => document.getElementById('login-err').textContent = '', 3000);
+  } catch(e) {
+    errEl.textContent = 'Грешка при вход. Провери връзката.';
+    setTimeout(() => errEl.textContent = '', 3000);
   }
 }
 
 function doLogout() {
-  sessionStorage.removeItem('kinora_admin');
+  clearSession();
   location.reload();
 }
 
-if (sessionStorage.getItem('kinora_admin')) {
-  document.getElementById('login-wrap').style.display = 'none';
-  document.getElementById('admin-wrap').style.display = 'flex';
-  loadOrders();
+// Exchange the refresh token for a fresh access token when the old one expires.
+async function refreshSession() {
+  const rt = sessionStorage.getItem('kinora_admin_refresh');
+  if (!rt) return false;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+      body: JSON.stringify({ refresh_token: rt })
+    });
+    if (!res.ok) return false;
+    setSession(await res.json());
+    return true;
+  } catch(e) { return false; }
 }
+
+// fetch with the admin's session; retries once after refreshing an expired token.
+async function authFetch(url, opts = {}) {
+  const build = () => ({
+    ...opts,
+    headers: { ...(opts.headers || {}), 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${getToken()}` }
+  });
+  let res = await fetch(url, build());
+  if (res.status === 401 && await refreshSession()) res = await fetch(url, build());
+  return res;
+}
+
+if (getToken()) { showAdmin(); loadOrders(); }
 
 async function loadOrders() {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=*&order=created_at.desc`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-    });
+    const res = await authFetch(`${SUPABASE_URL}/rest/v1/orders?select=*&order=created_at.desc`);
+    if (res.status === 401) { clearSession(); location.reload(); return; }
     allOrders = await res.json();
     updateStats();
     renderTable();
@@ -321,13 +371,9 @@ function closeDrawer() {
 async function saveStatus(id) {
   const newStatus = document.getElementById('status-select').value;
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${id}`, {
+    const res = await authFetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${id}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus })
     });
     if (res.ok) {
@@ -343,7 +389,7 @@ async function saveStatus(id) {
 }
 
 // Auto-refresh every 60 seconds
-setInterval(() => { if(sessionStorage.getItem('kinora_admin')) loadOrders(); }, 60000);
+setInterval(() => { if(getToken()) loadOrders(); }, 60000);
 </script>
 </body>
 </html>

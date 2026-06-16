@@ -55,6 +55,7 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .full-menu.open .fm-links li:nth-child(2) .fm-link{transition-delay:.16s}
 .full-menu.open .fm-links li:nth-child(3) .fm-link{transition-delay:.24s}
 .full-menu.open .fm-links li:nth-child(4) .fm-link{transition-delay:.32s}
+.full-menu.open .fm-links li:nth-child(5) .fm-link{transition-delay:.4s}
 .fm-right{width:320px;background:var(--B4);display:flex;flex-direction:column;justify-content:flex-end;padding:3rem 2.5rem;border-left:1px solid var(--line);gap:1.8rem}
 .fm-meta{opacity:0;transform:translateX(20px);transition:all .5s .5s}
 .full-menu.open .fm-meta{opacity:1;transform:translateX(0)}
@@ -183,6 +184,18 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .abtn:hover{background:var(--GD);color:var(--NV)}
 .wbtn{background:none;color:rgba(228,216,192,.28);border:1px solid rgba(228,216,192,.1);padding:13px;font-family:inherit;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;cursor:none;width:100%;transition:all .2s}
 .wbtn:hover{border-color:rgba(228,216,192,.3);color:var(--BG)}
+.tryon-btn{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:.5rem}
+.soon{font-size:7px;letter-spacing:.16em;background:var(--OL);color:var(--BG2);padding:3px 7px}
+.ci-gift{display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:24px}
+/* VOUCHER MODAL */
+.vmodal{display:block;width:100%;max-width:520px;padding:3rem 2.6rem 2.6rem;position:relative;max-height:92vh;overflow-y:auto}
+.vmodal .m-name{margin-bottom:1.1rem}
+.v-amts{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin:1.6rem 0}
+.v-amt{background:none;border:1px solid rgba(228,216,192,.14);color:rgba(228,216,192,.6);padding:18px;font-family:'Tenor Sans',sans-serif;font-size:20px;letter-spacing:.06em;cursor:none;transition:all .2s}
+.v-amt:hover{border-color:rgba(228,216,192,.35);color:var(--BG)}
+.v-amt.sel{background:var(--OL);border-color:var(--OL);color:var(--BG)}
+.v-custom{width:100%;background:none;border:1px solid rgba(228,216,192,.1);color:var(--BG);padding:13px 15px;font-family:'Golos Text',sans-serif;font-size:15px;margin-bottom:1.6rem;outline:none}
+.v-custom:focus{border-color:rgba(228,216,192,.3)}
 .detl{list-style:none;margin-top:1.8rem;border-top:1px solid rgba(228,216,192,.06);padding-top:1.4rem}
 .detl li{font-size:11.5px;color:rgba(228,216,192,.26);padding:4px 0;display:flex;gap:.8rem;font-weight:300}
 .detl li::before{content:'⊹';color:var(--OL3);font-size:10px}
@@ -216,7 +229,7 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .toast.on{transform:translateX(-50%) translateY(0)}
 
 /* PILLARS */
-.pillars-g{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:4rem;background:rgba(228,216,192,.04)}
+.pillars-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;margin-top:4rem;background:rgba(228,216,192,.04)}
 .pil{padding:2.8rem;background:var(--B2);transition:background .3s}
 .pil:hover{background:var(--B3)}
 .pil-ic{font-family:'Noto Serif JP',serif;font-size:36px;color:var(--GD);margin-bottom:1.2rem}
@@ -302,6 +315,7 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
       <li><a class="fm-link" data-en="Kimono" href="#" onclick="goTo('kimono-sec')">КИМОНО</a></li>
       <li><a class="fm-link" data-en="Cart" href="#" onclick="openCartFromMenu()">КОЛИЧКА</a></li>
       <li><a class="fm-link" data-en="Styling / Outfit Ideas" href="#" onclick="goTo('styling-sec')">СТАЙЛИНГ</a></li>
+      <li><a class="fm-link" data-en="Gift Voucher" href="#" onclick="openVoucher()">ВАУЧЕР</a></li>
     </ul>
   </div>
   <div class="fm-right">
@@ -315,7 +329,7 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
     </div>
     <div class="fm-meta">
       <p class="fm-meta-label">Местоположение</p>
-      <p class="fm-meta-tag">Достъпни само в България.<br/>Безплатна доставка над 200 лв.</p>
+      <p class="fm-meta-tag">Достъпни само в България.<br/>Безплатна доставка над 100 €.</p>
     </div>
   </div>
 </div>
@@ -357,7 +371,7 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
 <!-- TICKER -->
 <div class="ticker">
   <div class="ticker-i">
-    Безплатна доставка над 200 лв <b>✦</b> Изработено в Киото <b>✦</b> Оригинален Ниши-джин <b>✦</b> Само в България <b>✦</b> Връщане до 30 дни <b>✦</b> Ръчна изработка <b>✦</b> Безплатна доставка над 200 лв <b>✦</b> Изработено в Киото <b>✦</b> Оригинален Ниши-джин <b>✦</b> Само в България <b>✦</b> Връщане до 30 дни <b>✦</b> Ръчна изработка <b>✦</b>
+    Безплатна доставка над 100 € <b>✦</b> Изработено в Киото <b>✦</b> Оригинален Ниши-джин <b>✦</b> Само в България <b>✦</b> Връщане до 30 дни <b>✦</b> Ръчна изработка <b>✦</b> Безплатна доставка над 100 € <b>✦</b> Изработено в Киото <b>✦</b> Оригинален Ниши-джин <b>✦</b> Само в България <b>✦</b> Връщане до 30 дни <b>✦</b> Ръчна изработка <b>✦</b>
   </div>
 </div>
 
@@ -433,12 +447,11 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
   <p class="sec-lbl">Защо KINORA</p>
   <h2 class="sec-h">НАПРАВЕНО ЗА <em>Вечността</em></h2>
   <div class="pillars-g">
-    <div class="pil" style="border-right:1px solid rgba(228,216,192,.04);border-bottom:1px solid rgba(228,216,192,.04)"><div class="pil-ic">織</div><h3 class="pil-t">НИШИ-ДЖИН</h3><p class="pil-d">Техника на 1200 години — сложен брокат, тъкан на ръчни жакарови станове. Никога не може да се репродуцира машинно.</p></div>
-    <div class="pil" style="border-right:1px solid rgba(228,216,192,.04);border-bottom:1px solid rgba(228,216,192,.04)"><div class="pil-ic">絹</div><h3 class="pil-t">ЧИСТА КОПРИНА</h3><p class="pil-d">Само черничева коприна от сертифицирани ферми. Естествено температурно-регулираща и издръжлива.</p></div>
-    <div class="pil" style="border-bottom:1px solid rgba(228,216,192,.04)"><div class="pil-ic">証</div><h3 class="pil-t">СЕРТИФИКАТ</h3><p class="pil-d">Всяко парче включва ръчно написана карта, подписана от тъкача — с името на семейството и датата.</p></div>
-    <div class="pil" style="border-right:1px solid rgba(228,216,192,.04)"><div class="pil-ic">染</div><h3 class="pil-t">ЕСТЕСТВЕНИ БОИ</h3><p class="pil-d">Цветове от индиго, шафран и железен минерал — процеси непроменени от периода Едо.</p></div>
-    <div class="pil" style="border-right:1px solid rgba(228,216,192,.04)"><div class="pil-ic">♻</div><h3 class="pil-t">ПРОГРАМА ГРИЖА</h3><p class="pil-d">Върни всяко KINORA парче за професионално почистване. Вярваме в дрехи, надживяващи собственика си.</p></div>
-    <div class="pil"><div class="pil-ic">✈</div><h3 class="pil-t">ЦЯЛА БЪЛГАРИЯ</h3><p class="pil-d">Безплатна доставка над 200 лв. Всички парчета са опаковани в ръчно изработени кутии от васи хартия.</p></div>
+    <div class="pil"><div class="pil-ic">織</div><h3 class="pil-t">НИШИ-ДЖИН</h3><p class="pil-d">Техника на 1200 години — сложен брокат, тъкан на ръчни жакарови станове. Никога не може да се репродуцира машинно.</p></div>
+    <div class="pil"><div class="pil-ic">絹</div><h3 class="pil-t">ЧИСТА КОПРИНА</h3><p class="pil-d">Само черничева коприна от сертифицирани ферми. Естествено температурно-регулираща и издръжлива.</p></div>
+    <div class="pil"><div class="pil-ic">染</div><h3 class="pil-t">ЕСТЕСТВЕНИ БОИ</h3><p class="pil-d">Цветове от индиго, шафран и железен минерал — процеси непроменени от периода Едо.</p></div>
+    <div class="pil"><div class="pil-ic">♻</div><h3 class="pil-t">ПРОГРАМА ГРИЖА</h3><p class="pil-d">Върни всяко KINORA парче за професионално почистване. Вярваме в дрехи, надживяващи собственика си.</p></div>
+    <div class="pil"><div class="pil-ic">✈</div><h3 class="pil-t">ЦЯЛА БЪЛГАРИЯ</h3><p class="pil-d">Безплатна доставка над 100 €. Всички парчета са опаковани в ръчно изработени кутии от васи хартия.</p></div>
   </div>
 </section>
 
@@ -459,14 +472,33 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
   </div>
 </div>
 
+<!-- VOUCHER MODAL -->
+<div class="mw" id="vw" onclick="cVW(event)">
+  <div class="modal vmodal">
+    <button class="mx" onclick="closeVoucher()">×</button>
+    <p class="m-cat">Подарете KINORA</p>
+    <h2 class="m-name">ПОДАРЪЧЕН ВАУЧЕР</h2>
+    <p class="m-desc">Дигитален ваучер, изпратен по имейл. Получателят го използва при поръчка. Изберете стойност:</p>
+    <div class="v-amts">
+      <button class="v-amt sel" data-amt="50" onclick="selVoucher(50,this)">50 €</button>
+      <button class="v-amt" data-amt="100" onclick="selVoucher(100,this)">100 €</button>
+      <button class="v-amt" data-amt="200" onclick="selVoucher(200,this)">200 €</button>
+      <button class="v-amt" data-amt="300" onclick="selVoucher(300,this)">300 €</button>
+    </div>
+    <p class="m-lbl">Или въведете сума</p>
+    <input class="v-custom" id="v-custom" type="number" min="10" step="10" placeholder="напр. 150 €" oninput="customVoucher(this.value)"/>
+    <button class="abtn" onclick="addVoucher()">ДОБАВИ В КОЛИЧКАТА — <span id="v-total">50 €</span></button>
+  </div>
+</div>
+
 <!-- CART -->
 <div class="cdrw" id="cdrw">
   <div class="chd"><h3>КОЛИЧКА</h3><button class="ccx" onclick="toggleCart()">×</button></div>
   <div class="cbod" id="cbod"><p class="empty-cart">Количката ви е празна</p></div>
   <div class="cft" id="cft" style="display:none">
-    <div class="ctr"><span class="ctl">Общо</span><span class="ctp" id="ctot">0 лв</span></div>
+    <div class="ctr"><span class="ctl">Общо</span><span class="ctp" id="ctot">0 €</span></div>
     <button class="cchk" onclick="goCheckout()">КЪМ ПЛАЩАНЕ</button>
-    <p style="font-size:8.5px;color:rgba(228,216,192,.14);text-align:center;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Безплатна доставка над 200 лв · Сигурно плащане</p>
+    <p style="font-size:8.5px;color:rgba(228,216,192,.14);text-align:center;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Безплатна доставка над 100 € · Сигурно плащане</p>
   </div>
 </div>
 
@@ -474,14 +506,14 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
 
 <script>
 const PRODUCTS = [
-  {id:1,type:'haori',lbl:'Ново',cat:'Хаори яке',name:'ПОЛУНОЩЕН ЖЕРАВ',sub:'Хаори',price:1750,colors:['#0c0608','#2e3018','#4a0c1a'],desc:'Смел хаори от Ниши-джин нощна коприна, ръчно рисуван с мотив на жерав в сребърен лист. Носете открито или с подходящ nagajuban.',sizes:['S','M','L','XL'],details:['100% цумуги коприна','Детайл от сребърен лист','Подплатен с Киото юзен','Ръчно вързани химо завръзки','Само химическо чистене'],bg:'#0c0608',acc:'#7c8240',img:''},
-  {id:2,type:'haori',lbl:'',cat:'Хаори яке',name:'ГОРСКИ ДУХ',sub:'Хаори',price:1490,colors:['#2e3018','#4a0c1a','#0c0608'],desc:'Вдъхновен от шинтоистките горски светилища — маслиненозелен хаори с фини ирисови мотиви, вплетени директно в коприната.',sizes:['S','M','L','XL'],details:['Ниши-джин тъкан ирисов мотив','Подплата бени-иро','Конопена смес','Естествена дъбова боя'],bg:'#1e2010',acc:'#e4d8c0',img:''},
-  {id:3,type:'haori',lbl:'',cat:'Хаори яке',name:'ЗЛАТЕН ФЕНИКС',sub:'Хаори',price:1920,colors:['#2e3018','#4a0c1a','#0c0608'],desc:'Злато върху тъмно — най-впечатляващото хаори в колекцията. Мотивът на феникса покрива целия гръб.',sizes:['S','M','L','XL','XXL'],details:['Метална злато нишка','Феникс бродерия на гърба','Черна ро-копринена крепа','Само специалист чистач'],bg:'#0c0608',acc:'#c4a464',img:''},
-  {id:4,type:'haori',lbl:'Ново',cat:'Хаори яке',name:'ПУРПУРЕН ИРИС',sub:'Хаори',price:1640,colors:['#4a0c1a','#0c0608','#2e3018'],desc:'Дълбок бордо хаори с деликатни ирисови мотиви — вплетени с ипsilon техника от семейство Мацуда.',sizes:['S','M','L','XL'],details:['100% муга коприна','Ипsilon ирисова техника','Подплата от юзен','Сертификат за произход'],bg:'#3a0814',acc:'#e4d8c0',img:''},
-  {id:5,type:'kimono',lbl:'Ново',cat:'Официално кимоно',name:'ПУРПУРНА ХРИЗАНТЕМА',sub:'Фурисоде',price:2500,colors:['#4a0c1a','#2e3018','#0c0608'],desc:'Шедьовър на Ниши-джин брокат — с ръчно бродирани хризантемени клъстери върху дълбоко бордо основа.',sizes:['XS','S','M','L','XL'],details:['100% Ниши-джин копринен брокат','Ръчно бродирани детайли','Придружен с подходящ оби','Сертификат за произход','Само химическо чистене'],bg:'#3a0814',acc:'#e4d8c0',img:''},
-  {id:6,type:'kimono',lbl:'',cat:'Ежедневно кимоно',name:'ВЪЛНА ИНДИГО',sub:'Комон',price:1450,colors:['#0c1428','#4a0c1a','#2e3018'],desc:'Боядисано с натурално индиго по 400-годишния метод „катазоме". Повтарящият се вълнов мотив е традиционен „seigaiha".',sizes:['XS','S','M','L','XL','XXL'],details:['100% Хаката коприна','Естествено индиго','Техника катазоме','Ръчно пране при студено'],bg:'#0a1020',acc:'#e4d8c0',img:''},
-  {id:7,type:'kimono',lbl:'Ново',cat:'Ново пристигане',name:'САКУРА ЗДРАЧ',sub:'Томесоде',price:3200,colors:['#5c1222','#2e3018','#0c0608'],desc:'Новото произведение на семейство Мори — официален томесоде с ръчно бродирани черешови цветове. Само 12 парчета в света.',sizes:['XS','S','M','L'],details:['Лимитирано — 12 парчета в света','Ръчно бродирани черешови цветя','5 фамилни герба'],bg:'#2e0810',acc:'#e4d8c0',img:''},
-  {id:8,type:'kimono',lbl:'Винтидж',cat:'Винтидж кимоно',name:'ПЕОНИЯ ОТ МЕЙДЖИ',sub:'Учикаке',price:4700,colors:['#2e3018','#4a0c1a','#0c0608'],desc:'Автентично церемониално учикаке от периода Мейджи, около 1895 г. Бродерия от злато с пиони и феникси.',sizes:['Един размер'],details:['Автентично от периода Мейджи (ок.1895)','Бродерия от злато и сребро','Сертификат за автентичност'],bg:'#140a04',acc:'#c4a464',img:''},
+  {id:1,type:'haori',lbl:'Ново',cat:'Хаори яке',name:'ПОЛУНОЩЕН ЖЕРАВ',sub:'Хаори',price:895,colors:['#0c0608','#2e3018','#4a0c1a'],desc:'Смел хаори от Ниши-джин нощна коприна, ръчно рисуван с мотив на жерав в сребърен лист. Носете открито или с подходящ nagajuban.',sizes:['S','M','L','XL'],details:['100% цумуги коприна','Детайл от сребърен лист','Подплатен с Киото юзен','Ръчно вързани химо завръзки','Само химическо чистене'],bg:'#0c0608',acc:'#7c8240',img:''},
+  {id:2,type:'haori',lbl:'',cat:'Хаори яке',name:'ГОРСКИ ДУХ',sub:'Хаори',price:760,colors:['#2e3018','#4a0c1a','#0c0608'],desc:'Вдъхновен от шинтоистките горски светилища — маслиненозелен хаори с фини ирисови мотиви, вплетени директно в коприната.',sizes:['S','M','L','XL'],details:['Ниши-джин тъкан ирисов мотив','Подплата бени-иро','Конопена смес','Естествена дъбова боя'],bg:'#1e2010',acc:'#e4d8c0',img:''},
+  {id:3,type:'haori',lbl:'',cat:'Хаори яке',name:'ЗЛАТЕН ФЕНИКС',sub:'Хаори',price:980,colors:['#2e3018','#4a0c1a','#0c0608'],desc:'Злато върху тъмно — най-впечатляващото хаори в колекцията. Мотивът на феникса покрива целия гръб.',sizes:['S','M','L','XL','XXL'],details:['Метална злато нишка','Феникс бродерия на гърба','Черна ро-копринена крепа','Само специалист чистач'],bg:'#0c0608',acc:'#c4a464',img:''},
+  {id:4,type:'haori',lbl:'Ново',cat:'Хаори яке',name:'ПУРПУРЕН ИРИС',sub:'Хаори',price:840,colors:['#4a0c1a','#0c0608','#2e3018'],desc:'Дълбок бордо хаори с деликатни ирисови мотиви — вплетени с ипsilon техника от семейство Мацуда.',sizes:['S','M','L','XL'],details:['100% муга коприна','Ипsilon ирисова техника','Подплата от юзен','Сертификат за произход'],bg:'#3a0814',acc:'#e4d8c0',img:''},
+  {id:5,type:'kimono',lbl:'Ново',cat:'Официално кимоно',name:'ПУРПУРНА ХРИЗАНТЕМА',sub:'Фурисоде',price:1280,colors:['#4a0c1a','#2e3018','#0c0608'],desc:'Шедьовър на Ниши-джин брокат — с ръчно бродирани хризантемени клъстери върху дълбоко бордо основа.',sizes:['XS','S','M','L','XL'],details:['100% Ниши-джин копринен брокат','Ръчно бродирани детайли','Придружен с подходящ оби','Сертификат за произход','Само химическо чистене'],bg:'#3a0814',acc:'#e4d8c0',img:''},
+  {id:6,type:'kimono',lbl:'',cat:'Ежедневно кимоно',name:'ВЪЛНА ИНДИГО',sub:'Комон',price:740,colors:['#0c1428','#4a0c1a','#2e3018'],desc:'Боядисано с натурално индиго по 400-годишния метод „катазоме". Повтарящият се вълнов мотив е традиционен „seigaiha".',sizes:['XS','S','M','L','XL','XXL'],details:['100% Хаката коприна','Естествено индиго','Техника катазоме','Ръчно пране при студено'],bg:'#0a1020',acc:'#e4d8c0',img:''},
+  {id:7,type:'kimono',lbl:'Ново',cat:'Ново пристигане',name:'САКУРА ЗДРАЧ',sub:'Томесоде',price:1640,colors:['#5c1222','#2e3018','#0c0608'],desc:'Новото произведение на семейство Мори — официален томесоде с ръчно бродирани черешови цветове. Само 12 парчета в света.',sizes:['XS','S','M','L'],details:['Лимитирано — 12 парчета в света','Ръчно бродирани черешови цветя','5 фамилни герба'],bg:'#2e0810',acc:'#e4d8c0',img:''},
+  {id:8,type:'kimono',lbl:'Винтидж',cat:'Винтидж кимоно',name:'ПЕОНИЯ ОТ МЕЙДЖИ',sub:'Учикаке',price:2400,colors:['#2e3018','#4a0c1a','#0c0608'],desc:'Автентично церемониално учикаке от периода Мейджи, около 1895 г. Бродерия от злато с пиони и феникси.',sizes:['Един размер'],details:['Автентично от периода Мейджи (ок.1895)','Бродерия от злато и сребро','Сертификат за автентичност'],bg:'#140a04',acc:'#c4a464',img:''},
 ];
 
 let cart = JSON.parse(localStorage.getItem('kinora_cart') || '[]');
@@ -513,7 +545,7 @@ function mkCard(p) {
       <p class="pc-name">${p.name}</p>
       <p class="pc-sub">${p.sub}</p>
       <div class="pc-bot">
-        <span class="pc-price">${p.price.toLocaleString('bg-BG')} лв</span>
+        <span class="pc-price">${p.price.toLocaleString('bg-BG')} €</span>
         <div style="display:flex;gap:4px">${p.colors.map(c=>`<div style="width:9px;height:9px;background:${c};border:1px solid rgba(228,216,192,.16)"></div>`).join('')}</div>
       </div>
     </div>
@@ -550,7 +582,7 @@ function openM(id) {
     <p class="m-cat">${p.cat}</p>
     <h2 class="m-name">${p.name}</h2>
     <p class="m-sub">${p.sub}</p>
-    <p class="m-price">${p.price.toLocaleString('bg-BG')} лв</p>
+    <p class="m-price">${p.price.toLocaleString('bg-BG')} €</p>
     <p class="m-desc">${p.desc}</p>
     <p class="m-lbl">Размер</p>
     <div class="szr">${p.sizes.map(s=>`<button class="sz ${selSz[id]===s?'sel':''}" onclick="setSz(${id},'${s}',this)">${s}</button>`).join('')}</div>
@@ -560,8 +592,9 @@ function openM(id) {
       <span class="qn" id="qd${id}">${selQty[id]}</span>
       <button class="qb" onclick="chQ(${id},1)">+</button>
     </div>
-    <button class="abtn" onclick="addC(${id})">ДОБАВИ — ${p.price.toLocaleString('bg-BG')} лв</button>
+    <button class="abtn" onclick="addC(${id})">ДОБАВИ — ${p.price.toLocaleString('bg-BG')} €</button>
     <button class="wbtn">Запази в любими</button>
+    <button class="wbtn tryon-btn" onclick="tryOnSoon()">Виртуална проба <span class="soon">скоро</span></button>
     <ul class="detl">${p.details.map(d=>`<li>${d}</li>`).join('')}</ul>`;
   document.getElementById('mw').classList.add('on');
   document.body.classList.add('no-scroll');
@@ -570,6 +603,26 @@ function setSz(id,s,btn){selSz[id]=s;btn.closest('.szr').querySelectorAll('.sz')
 function chQ(id,d){selQty[id]=Math.max(1,(selQty[id]||1)+d);const e=document.getElementById(`qd${id}`);if(e)e.textContent=selQty[id]}
 function cMW(e){if(e.target===document.getElementById('mw'))cMD()}
 function cMD(){document.getElementById('mw').classList.remove('on');document.body.classList.remove('no-scroll')}
+function tryOnSoon(){showToast('Виртуалната проба идва скоро ✦')}
+
+/* VOUCHER */
+let voucherAmt = 50;
+function openVoucher(){ if(menuOpen){ toggleMenu(); setTimeout(showVoucher,500); } else showVoucher(); }
+function showVoucher(){ document.getElementById('vw').classList.add('on'); document.body.classList.add('no-scroll'); }
+function closeVoucher(){ document.getElementById('vw').classList.remove('on'); document.body.classList.remove('no-scroll'); }
+function cVW(e){ if(e.target===document.getElementById('vw')) closeVoucher(); }
+function updVTotal(){ document.getElementById('v-total').textContent = (voucherAmt||0).toLocaleString('bg-BG')+' €'; }
+function selVoucher(a,btn){ voucherAmt=a; document.getElementById('v-custom').value=''; document.querySelectorAll('.v-amt').forEach(b=>b.classList.remove('sel')); btn.classList.add('sel'); updVTotal(); }
+function customVoucher(v){ const n=parseInt(v,10); if(n>0){ voucherAmt=n; document.querySelectorAll('.v-amt').forEach(b=>b.classList.remove('sel')); } updVTotal(); }
+function addVoucher(){
+  const a = voucherAmt||0;
+  if(a < 10){ showToast('Минимална сума 10 €'); return; }
+  const id = 'voucher-'+a;
+  const ex = cart.find(c=>c.id===id);
+  if(ex) ex.qty += 1;
+  else cart.push({id, type:'voucher', name:'Подаръчен ваучер', sub:a.toLocaleString('bg-BG')+' €', qty:1, price:a});
+  saveCart(); upC(); closeVoucher(); showToast('Добавено — ваучер '+a+' €'); toggleCart();
+}
 
 /* CART */
 function addC(id) {
@@ -589,17 +642,20 @@ function upC(){
   if(!cart.length){cb.innerHTML='<p class="empty-cart">Количката ви е празна</p>';cf.style.display='none';return}
   cf.style.display='block';
   cb.innerHTML = cart.map((it,i) => {
-    const thumb = it.img ? `<img src="${it.img}" alt="${it.name}"/>` : (it.type==='haori'?hSVG(it.bg,it.acc,44):kSVG(it.bg,it.acc,44));
+    const thumb = it.type==='voucher'
+      ? `<div class="ci-gift">🎁</div>`
+      : (it.img ? `<img src="${it.img}" alt="${it.name}"/>` : (it.type==='haori'?hSVG(it.bg,it.acc,44):kSVG(it.bg,it.acc,44)));
+    const meta = it.type==='voucher' ? `Дигитален · Бр: ${it.qty}` : `Размер: ${it.sz} · Бр: ${it.qty}`;
     return `<div class="ci">
-      <div class="ci-img" style="background:${it.bg}">${thumb}</div>
-      <div><p class="ci-nm">${it.name}</p><p class="ci-mt">Размер: ${it.sz} · Бр: ${it.qty}</p></div>
+      <div class="ci-img" style="background:${it.bg||'var(--B)'}">${thumb}</div>
+      <div><p class="ci-nm">${it.name}</p><p class="ci-mt">${meta}</p></div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
-        <span class="ci-pr">${(it.price*it.qty).toLocaleString('bg-BG')} лв</span>
+        <span class="ci-pr">${(it.price*it.qty).toLocaleString('bg-BG')} €</span>
         <button class="cirm" onclick="rmC(${i})">×</button>
       </div>
     </div>`;
   }).join('');
-  document.getElementById('ctot').textContent = cart.reduce((s,i)=>s+i.price*i.qty,0).toLocaleString('bg-BG')+' лв';
+  document.getElementById('ctot').textContent = cart.reduce((s,i)=>s+i.price*i.qty,0).toLocaleString('bg-BG')+' €';
 }
 function toggleCart(){document.getElementById('cdrw').classList.toggle('on')}
 function goCheckout(){

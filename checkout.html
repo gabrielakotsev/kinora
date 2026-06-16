@@ -97,15 +97,15 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
     </div>
 
     <!-- DELIVERY -->
-    <div class="section-block">
+    <div class="section-block" id="delivery-block">
       <h2 class="block-title">Доставка</h2>
       <div class="form-group">
         <label>Начин на доставка</label>
         <select id="delivery_method" onchange="updateDelivery()">
-          <option value="econt_office">Еконт — офис (5.99 лв)</option>
-          <option value="econt_address">Еконт — до адрес (7.99 лв)</option>
-          <option value="speedy_office">Спиди — офис (5.49 лв)</option>
-          <option value="speedy_address">Спиди — до адрес (7.49 лв)</option>
+          <option value="econt_office">Еконт — офис (2.99 €)</option>
+          <option value="econt_address">Еконт — до адрес (3.99 €)</option>
+          <option value="speedy_office">Спиди — офис (2.79 €)</option>
+          <option value="speedy_address">Спиди — до адрес (3.79 €)</option>
         </select>
       </div>
       <div class="form-group">
@@ -150,7 +150,7 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
       <!-- COD INFO -->
       <div id="cod-section" style="display:none">
         <div class="delivery-note">
-          💵 Плащате в брой при получаване на пратката от куриера. Добавя се такса от 2 лв за наложен платеж.
+          💵 Плащате в брой при получаване на пратката от куриера. Добавя се такса от 1 € за наложен платеж.
         </div>
       </div>
 
@@ -168,10 +168,10 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
     <h2 class="block-title">Вашата поръчка</h2>
     <div id="order-items"></div>
     <div class="summary-totals">
-      <div class="tot-row"><span>Продукти</span><span id="subtotal-val">0 лв</span></div>
-      <div class="tot-row"><span>Доставка</span><span id="delivery-val">5.99 лв</span></div>
-      <div class="tot-row"><span id="cod-fee-label" style="display:none">Наложен платеж</span><span id="cod-fee-val" style="display:none">2.00 лв</span></div>
-      <div class="tot-row total"><span>Общо</span><span id="total-val">0 лв</span></div>
+      <div class="tot-row"><span>Продукти</span><span id="subtotal-val">0 €</span></div>
+      <div class="tot-row"><span>Доставка</span><span id="delivery-val">2.99 €</span></div>
+      <div class="tot-row"><span id="cod-fee-label" style="display:none">Наложен платеж</span><span id="cod-fee-val" style="display:none">1.00 €</span></div>
+      <div class="tot-row total"><span>Общо</span><span id="total-val">0 €</span></div>
     </div>
   </div>
 </div>
@@ -197,8 +197,8 @@ cardElement.on('change', e => { document.getElementById('card-errors').textConte
 let cart = JSON.parse(localStorage.getItem('kinora_cart') || '[]');
 let paymentMethod = 'card';
 const DELIVERY_PRICES = {
-  econt_office: 5.99, econt_address: 7.99,
-  speedy_office: 5.49, speedy_address: 7.49
+  econt_office: 2.99, econt_address: 3.99,
+  speedy_office: 2.79, speedy_address: 3.79
 };
 const DELIVERY_NOTES = {
   econt_office: '📦 Еконт офис — доставка до 1-2 работни дни.',
@@ -214,28 +214,38 @@ function renderSummary() {
   const el = document.getElementById('order-items');
   if (!cart.length) { el.innerHTML = '<p style="color:rgba(228,216,192,.3);font-size:13px">Количката е празна</p>'; return; }
   el.innerHTML = cart.map(it => {
-    const thumb = it.img ? `<img src="${it.img}" alt="${it.name}"/>` : (it.type==='haori'?hSVG(it.bg,it.acc):kSVG(it.bg,it.acc));
+    const thumb = it.type==='voucher' ? `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:26px">🎁</div>`
+      : (it.img ? `<img src="${it.img}" alt="${it.name}"/>` : (it.type==='haori'?hSVG(it.bg,it.acc):kSVG(it.bg,it.acc)));
+    const meta = it.type==='voucher' ? `${it.sub} · Дигитален · Бр. ${it.qty}` : `${it.sub} · Размер ${it.sz} · Бр. ${it.qty}`;
     return `<div class="summary-item">
-      <div class="si-img" style="background:${it.bg}">${thumb}</div>
-      <div><div class="si-name">${it.name}</div><div class="si-meta">${it.sub} · Размер ${it.sz} · Бр. ${it.qty}</div></div>
-      <div class="si-price">${(it.price*it.qty).toLocaleString('bg-BG')} лв</div>
+      <div class="si-img" style="background:${it.bg||'var(--B)'}">${thumb}</div>
+      <div><div class="si-name">${it.name}</div><div class="si-meta">${meta}</div></div>
+      <div class="si-price">${(it.price*it.qty).toLocaleString('bg-BG')} €</div>
     </div>`;
   }).join('');
+  applyVoucherMode();
   updateTotals();
 }
+function applyVoucherMode(){
+  if(!isVoucherOnly()) return;
+  const db=document.getElementById('delivery-block'); if(db) db.style.display='none';
+  const cod=document.getElementById('opt-cod'); if(cod) cod.style.display='none';
+  selectPayment('card');
+}
 
-function getDeliveryPrice() { return DELIVERY_PRICES[document.getElementById('delivery_method').value] || 5.99; }
-function getCODFee() { return paymentMethod === 'cod' ? 2 : 0; }
+function isVoucherOnly(){ return cart.length>0 && cart.every(i=>i.type==='voucher'); }
+function getDeliveryPrice() { if(isVoucherOnly()) return 0; return DELIVERY_PRICES[document.getElementById('delivery_method').value] || 2.99; }
+function getCODFee() { return paymentMethod === "cod" ? 1 : 0; }
 function getSubtotal() { return cart.reduce((s,i)=>s+i.price*i.qty,0); }
 function getTotal() { return getSubtotal() + getDeliveryPrice() + getCODFee(); }
 
 function updateTotals() {
-  document.getElementById('subtotal-val').textContent = getSubtotal().toLocaleString('bg-BG') + ' лв';
-  document.getElementById('delivery-val').textContent = getDeliveryPrice().toFixed(2) + ' лв';
-  document.getElementById('total-val').textContent = getTotal().toLocaleString('bg-BG') + ' лв';
+  document.getElementById('subtotal-val').textContent = getSubtotal().toLocaleString('bg-BG') + ' €';
+  document.getElementById('delivery-val').textContent = isVoucherOnly() ? 'по имейл' : getDeliveryPrice().toFixed(2) + ' €';
+  document.getElementById('total-val').textContent = getTotal().toLocaleString('bg-BG') + ' €';
   document.getElementById('cod-fee-label').style.display = paymentMethod==='cod'?'':'none';
   document.getElementById('cod-fee-val').style.display = paymentMethod==='cod'?'':'none';
-  document.getElementById('btn-text').textContent = `ПОТВЪРДИ — ${getTotal().toFixed(2)} лв`;
+  document.getElementById('btn-text').textContent = `ПОТВЪРДИ — ${getTotal().toFixed(2)} €`;
 }
 
 function updateDelivery() {
@@ -266,7 +276,7 @@ function getFormData() {
 }
 
 function validateForm(data) {
-  const required = ['first_name','last_name','email','phone','city','address'];
+  const required = isVoucherOnly() ? ['first_name','last_name','email','phone'] : ['first_name','last_name','email','phone','city','address'];
   for (const f of required) {
     if (!data[f]) { alert('Моля попълнете всички задължителни полета.'); return false; }
   }
@@ -344,7 +354,7 @@ async function submitOrder() {
       if (result.error) {
         document.getElementById('card-errors').textContent = result.error.message;
         btn.disabled = false; loader.classList.remove('show');
-        document.getElementById('btn-text').textContent = `ПОТВЪРДИ — ${getTotal().toFixed(2)} лв`;
+        document.getElementById('btn-text').textContent = `ПОТВЪРДИ — ${getTotal().toFixed(2)} €`;
         return;
       }
       orderData.stripe_payment_method = result.paymentMethod.id;
@@ -362,7 +372,7 @@ async function submitOrder() {
     console.error(err);
     alert('Възникна грешка. Моля опитайте отново или се свържете с нас на hello@kinorabg.com');
     btn.disabled = false; loader.classList.remove('show');
-    document.getElementById('btn-text').textContent = `ПОТВЪРДИ — ${getTotal().toFixed(2)} лв`;
+    document.getElementById('btn-text').textContent = `ПОТВЪРДИ — ${getTotal().toFixed(2)} €`;
   }
 }
 

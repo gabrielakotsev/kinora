@@ -1,0 +1,20 @@
+{
+  "name": "kinora-agent",
+  "version": "1.0.0",
+  "description": "Generate a ready-to-paste Kinora PRODUCTS object (name, EUR price, description, details) from photos of a haori/kimono.",
+  "type": "module",
+  "bin": {
+    "kinora-agent": "src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js",
+    "web": "node src/server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
+    "zod": "^3.25.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

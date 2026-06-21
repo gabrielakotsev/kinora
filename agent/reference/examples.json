@@ -1,0 +1,77 @@
+{
+  "_comment": "EDITABLE catalog reference. Each entry is a real, fully-priced Kinora item (from index.html PRODUCTS) plus 'cues' describing the visual/quality signals that justify its price tier. The agent prices new garments by visual similarity to these. The catalog is not final — refine prices, edit cues, or add entries as the real catalog firms up. Keep entries honest: the closer these match your true pricing, the better the suggestions.",
+  "examples": [
+    {
+      "type": "haori",
+      "name": "ПОЛУНОЩЕН ЖЕРАВ",
+      "sub": "Хаори",
+      "price": 895,
+      "desc": "Смел хаори от Ниши-джин нощна коприна, ръчно рисуван с мотив на жерав в сребърен лист. Носете открито или с подходящ nagajuban.",
+      "details": ["100% цумуги коприна", "Детайл от сребърен лист", "Подплатен с Киото юзен", "Ръчно вързани химо завръзки", "Само химическо чистене"],
+      "cues": "Hand-painted crane motif, silver-leaf detail, Nishijin tsumugi silk, Kyoto yūzen lining. Top-tier haori — hand-painting + precious metal leaf."
+    },
+    {
+      "type": "haori",
+      "name": "ГОРСКИ ДУХ",
+      "sub": "Хаори",
+      "price": 760,
+      "desc": "Вдъхновен от шинтоистките горски светилища — маслиненозелен хаори с фини ирисови мотиви, вплетени директно в коприната.",
+      "details": ["Ниши-джин тъкан ирисов мотив", "Подплата бени-иро", "Конопена смес", "Естествена дъбова боя"],
+      "cues": "Woven (not painted) iris motif, natural oak dye, hemp blend. Mid-high — Nishijin weave but no metallic/hand-painting."
+    },
+    {
+      "type": "haori",
+      "name": "ЗЛАТЕН ФЕНИКС",
+      "sub": "Хаори",
+      "price": 980,
+      "desc": "Злато върху тъмно — най-впечатляващото хаори в колекцията. Мотивът на феникса покрива целия гръб.",
+      "details": ["Метална злато нишка", "Феникс бродерия на гърба", "Черна ро-копринена крепа", "Само специалист чистач"],
+      "cues": "Metallic gold thread, full-back phoenix embroidery, ro silk crepe. Highest haori tier — large-scale gold embroidery."
+    },
+    {
+      "type": "haori",
+      "name": "ПУРПУРЕН ИРИС",
+      "sub": "Хаори",
+      "price": 840,
+      "desc": "Дълбок бордо хаори с деликатни ирисови мотиви — вплетени с ипsilon техника от семейство Мацуда.",
+      "details": ["100% муга коприна", "Ипsilon ирисова техника", "Подплата от юзен", "Сертификат за произход"],
+      "cues": "Named-atelier technique (Matsuda family), muga silk, yūzen lining, certificate of origin. High — provenance + specialist technique."
+    },
+    {
+      "type": "kimono",
+      "name": "ПУРПУРНА ХРИЗАНТЕМА",
+      "sub": "Фурисоде",
+      "price": 1280,
+      "desc": "Шедьовър на Ниши-джин брокат — с ръчно бродирани хризантемени клъстери върху дълбоко бордо основа.",
+      "details": ["100% Ниши-джин копринен брокат", "Ръчно бродирани детайли", "Придружен с подходящ оби", "Сертификат за произход", "Само химическо чистене"],
+      "cues": "Furisode (formal, long-sleeved), Nishijin silk brocade, hand embroidery, includes matching obi, certificate. High formal kimono."
+    },
+    {
+      "type": "kimono",
+      "name": "ВЪЛНА ИНДИГО",
+      "sub": "Комон",
+      "price": 740,
+      "desc": "Боядисано с натурално индиго по 400-годишния метод „катазоме“. Повтарящият се вълнов мотив е традиционен „seigaiha“.",
+      "details": ["100% Хаката коприна", "Естествено индиго", "Техника катазоме", "Ръчно пране при студено"],
+      "cues": "Komon (casual, all-over pattern), natural indigo katazome, seigaiha wave motif. Entry kimono — casual register, traditional dye but no embroidery."
+    },
+    {
+      "type": "kimono",
+      "name": "САКУРА ЗДРАЧ",
+      "sub": "Томесоде",
+      "price": 1640,
+      "desc": "Новото произведение на семейство Мори — официален томесоде с ръчно бродирани черешови цветове. Само 12 парчета в света.",
+      "details": ["Лимитирано — 12 парчета в света", "Ръчно бродирани черешови цветя", "5 фамилни герба"],
+      "cues": "Tomesode (most formal), named atelier (Mori), limited edition (12 worldwide), hand-embroidered sakura, 5 family crests. Very high — formality + scarcity."
+    },
+    {
+      "type": "kimono",
+      "name": "ПЕОНИЯ ОТ МЕЙДЖИ",
+      "sub": "Учикаке",
+      "price": 2400,
+      "desc": "Автентично церемониално учикаке от периода Мейджи, около 1895 г. Бродерия от злато с пиони и феникси.",
+      "details": ["Автентично от периода Мейджи (ок.1895)", "Бродерия от злато и сребро", "Сертификат за автентичност"],
+      "cues": "Uchikake (ceremonial overcoat), authentic Meiji-period antique (~1895), gold-and-silver embroidery, certificate of authenticity. Top of catalog — genuine antique + ceremonial grade."
+    }
+  ]
+}

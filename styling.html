@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>KINORA — Стайлинг &amp; Аутфит идеи</title>
+<meta name="description" content="Идеи за стайлинг — как да носиш KINORA хаори и кимоно."/>
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Golos+Text:wght@400;500;600;700&family=Yeseva+One&family=Noto+Serif+JP:wght@200;300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="CUR"></div><div id="CUR2"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <span class="nav-logo-m">KINORA</span>
+    <span class="nav-logo-s">haori &amp; kimono</span>
+  </a>
+  <div class="nav-right">
+    <button class="nav-cart-btn" onclick="toggleCart()">
+      Количка <span class="bct" id="bct">0</span>
+    </button>
+    <button class="burger" id="burger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- FULLSCREEN MENU -->
+<div class="full-menu" id="fmenu">
+  <div class="fm-left">
+    <ul class="fm-links">
+      <li><a class="fm-link" data-en="Haori Jackets" href="haori.html">ХАОРИ</a></li>
+      <li><a class="fm-link" data-en="Kimono" href="kimono.html">КИМОНО</a></li>
+      <li><a class="fm-link" data-en="Cart" href="#" onclick="openCartFromMenu();return false">КОЛИЧКА</a></li>
+      <li><a class="fm-link" data-en="Styling / Outfit Ideas" href="styling.html">СТАЙЛИНГ</a></li>
+      <li><a class="fm-link" data-en="Gift Voucher" href="voucher.html">ВАУЧЕР</a></li>
+    </ul>
+  </div>
+  <div class="fm-right">
+    <div class="fm-meta">
+      <p class="fm-meta-label">Информация</p>
+      <a href="#">Нашата история</a>
+      <a href="#">Размерна таблица</a>
+      <a href="#">Инструкции за грижа</a>
+      <a href="#">Връщане &amp; обмен</a>
+      <a href="mailto:hello@kinorabg.com">Контакт</a>
+    </div>
+    <div class="fm-meta">
+      <p class="fm-meta-label">Местоположение</p>
+      <p class="fm-meta-tag">Достъпни само в България.<br/>Безплатна доставка над 100 €.</p>
+    </div>
+  </div>
+</div>
+
+<!-- СТАЙЛИНГ -->
+<section class="sec" id="styling-sec" style="background:var(--B4);position:relative;overflow:hidden;padding-top:7rem">
+  <p style="margin-bottom:2rem"><a href="index.html" style="color:var(--OL3);text-decoration:none;font-size:9px;letter-spacing:.3em;text-transform:uppercase">← Начало</a></p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:end;margin-bottom:5rem;flex-wrap:wrap">
+    <div>
+      <p class="sec-lbl">Визии &amp; идеи</p>
+      <h2 class="sec-h">СТАЙЛИНГ &amp; <em>Аутфит Идеи</em></h2>
+    </div>
+    <p style="font-family:'Yeseva One',serif;font-size:17px;color:rgba(228,216,192,.3);line-height:1.95;align-self:flex-end">Как да носиш KINORA — от улицата до специалния повод.</p>
+  </div>
+  <div class="styling-grid">
+    <div class="sg-item">
+      <div class="sg-item-ph" style="background:var(--B2)">
+        <!-- ЗАМЕНИ с: <img src="assets/styling-1.jpg" alt="Улична визия"> -->
+        <div class="sg-ph-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(228,216,192,0.15)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Снимка 01</span></div>
+        <div class="sg-info"><p class="sg-outfit">аутфит идея</p><p class="sg-title">УЛИЧНА ВИЗИЯ</p></div>
+      </div>
+    </div>
+    <div class="sg-item"><div class="sg-item-ph" style="background:var(--OL)"><div class="sg-ph-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(228,216,192,0.15)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Снимка 02</span></div><div class="sg-info"><p class="sg-outfit">аутфит идея</p><p class="sg-title">ВЕЧЕРНА ВИЗИЯ</p></div></div></div>
+    <div class="sg-item"><div class="sg-item-ph" style="background:var(--B3)"><div class="sg-ph-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(228,216,192,0.15)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Снимка 03</span></div><div class="sg-info"><p class="sg-outfit">аутфит идея</p><p class="sg-title">БОХО СЛОИ</p></div></div></div>
+    <div class="sg-item"><div class="sg-item-ph" style="background:var(--NV)"><div class="sg-ph-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(228,216,192,0.15)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Снимка 04</span></div><div class="sg-info"><p class="sg-outfit">аутфит идея</p><p class="sg-title">МИНИМАЛИСТ</p></div></div></div>
+    <div class="sg-item"><div class="sg-item-ph" style="background:#1a1005"><div class="sg-ph-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(228,216,192,0.15)" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Снимка 05</span></div><div class="sg-info"><p class="sg-outfit">аутфит идея</p><p class="sg-title">АВАНГАРД</p></div></div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div><div class="fl-m">KINORA</div><div class="fl-s">haori &amp; kimono</div><p class="ft">Японски текстилен дом — пазим изкуството на Ниши-джин тъкачеството. София · Киото · Токио</p></div>
+  <div class="fc"><h4>Магазин</h4><ul><li><a href="#haori-sec">Хаори</a></li><li><a href="#kimono-sec">Кимона</a></li><li><a href="#">Аксесоари</a></li><li><a href="#">Подаръчни комплекти</a></li></ul></div>
+  <div class="fc"><h4>За нас</h4><ul><li><a href="#">Нашата история</a></li><li><a href="#">Занаятчии</a></li><li><a href="#">Устойчивост</a></li><li><a href="#">Преса</a></li></ul></div>
+  <div class="fc"><h4>Услуги</h4><ul><li><a href="#">Размерна таблица</a></li><li><a href="#">Инструкции за грижа</a></li><li><a href="#">Връщане</a></li><li><a href="mailto:hello@kinorabg.com">Контакт</a></li></ul></div>
+</footer>
+<div class="fbot">© 2026 KINORA — Всички права запазени · kinorabg.com</div>
+
+<!-- MODAL -->
+<div class="mw" id="mw" onclick="cMW(event)">
+  <div class="modal">
+    <div class="m-vis" id="mvis"></div>
+    <div class="m-bod" id="mbod"></div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="cdrw" id="cdrw">
+  <div class="chd"><h3>КОЛИЧКА</h3><button class="ccx" onclick="toggleCart()">×</button></div>
+  <div class="cbod" id="cbod"><p class="empty-cart">Количката ви е празна</p></div>
+  <div class="cft" id="cft" style="display:none">
+    <div class="ctr"><span class="ctl">Общо</span><span class="ctp" id="ctot">0 €</span></div>
+    <button class="cchk" onclick="goCheckout()">КЪМ ПЛАЩАНЕ</button>
+    <p style="font-size:8.5px;color:rgba(228,216,192,.14);text-align:center;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Безплатна доставка над 100 € · Сигурно плащане</p>
+  </div>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

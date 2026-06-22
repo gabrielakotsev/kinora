@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>KINORA — Подаръчен ваучер</title>
+<meta name="description" content="Подаръчен ваучер KINORA — дигитален, изпратен по имейл."/>
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Golos+Text:wght@400;500;600;700&family=Yeseva+One&family=Noto+Serif+JP:wght@200;300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="CUR"></div><div id="CUR2"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <span class="nav-logo-m">KINORA</span>
+    <span class="nav-logo-s">haori &amp; kimono</span>
+  </a>
+  <div class="nav-right">
+    <button class="nav-cart-btn" onclick="toggleCart()">
+      Количка <span class="bct" id="bct">0</span>
+    </button>
+    <button class="burger" id="burger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- FULLSCREEN MENU -->
+<div class="full-menu" id="fmenu">
+  <div class="fm-left">
+    <ul class="fm-links">
+      <li><a class="fm-link" data-en="Haori Jackets" href="haori.html">ХАОРИ</a></li>
+      <li><a class="fm-link" data-en="Kimono" href="kimono.html">КИМОНО</a></li>
+      <li><a class="fm-link" data-en="Cart" href="#" onclick="openCartFromMenu();return false">КОЛИЧКА</a></li>
+      <li><a class="fm-link" data-en="Styling / Outfit Ideas" href="styling.html">СТАЙЛИНГ</a></li>
+      <li><a class="fm-link" data-en="Gift Voucher" href="voucher.html">ВАУЧЕР</a></li>
+    </ul>
+  </div>
+  <div class="fm-right">
+    <div class="fm-meta">
+      <p class="fm-meta-label">Информация</p>
+      <a href="#">Нашата история</a>
+      <a href="#">Размерна таблица</a>
+      <a href="#">Инструкции за грижа</a>
+      <a href="#">Връщане &amp; обмен</a>
+      <a href="mailto:hello@kinorabg.com">Контакт</a>
+    </div>
+    <div class="fm-meta">
+      <p class="fm-meta-label">Местоположение</p>
+      <p class="fm-meta-tag">Достъпни само в България.<br/>Безплатна доставка над 100 €.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ВАУЧЕР -->
+<section class="sec" style="background:var(--NV2);min-height:72vh;display:flex;align-items:center;justify-content:center;padding-top:7rem">
+  <div class="vmodal" style="max-width:540px;width:100%;position:relative;background:var(--B);border:1px solid rgba(228,216,192,.07)">
+    <p style="margin-bottom:1.4rem"><a href="index.html" style="color:var(--OL3);text-decoration:none;font-size:9px;letter-spacing:.3em;text-transform:uppercase">← Начало</a></p>
+    <p class="m-cat">Подарете KINORA</p>
+    <h2 class="m-name">ПОДАРЪЧЕН ВАУЧЕР</h2>
+    <p class="m-desc">Дигитален ваучер, изпратен по имейл. Получателят го използва при поръчка. Изберете стойност:</p>
+    <div class="v-amts">
+      <button class="v-amt sel" data-amt="50" onclick="selVoucher(50,this)">50 €</button>
+      <button class="v-amt" data-amt="100" onclick="selVoucher(100,this)">100 €</button>
+      <button class="v-amt" data-amt="200" onclick="selVoucher(200,this)">200 €</button>
+      <button class="v-amt" data-amt="300" onclick="selVoucher(300,this)">300 €</button>
+    </div>
+    <p class="m-lbl">Или въведете сума</p>
+    <input class="v-custom" id="v-custom" type="number" min="10" step="10" placeholder="напр. 150 €" oninput="customVoucher(this.value)"/>
+    <button class="abtn" onclick="addVoucher()">ДОБАВИ В КОЛИЧКАТА — <span id="v-total">50 €</span></button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div><div class="fl-m">KINORA</div><div class="fl-s">haori &amp; kimono</div><p class="ft">Японски текстилен дом — пазим изкуството на Ниши-джин тъкачеството. София · Киото · Токио</p></div>
+  <div class="fc"><h4>Магазин</h4><ul><li><a href="#haori-sec">Хаори</a></li><li><a href="#kimono-sec">Кимона</a></li><li><a href="#">Аксесоари</a></li><li><a href="#">Подаръчни комплекти</a></li></ul></div>
+  <div class="fc"><h4>За нас</h4><ul><li><a href="#">Нашата история</a></li><li><a href="#">Занаятчии</a></li><li><a href="#">Устойчивост</a></li><li><a href="#">Преса</a></li></ul></div>
+  <div class="fc"><h4>Услуги</h4><ul><li><a href="#">Размерна таблица</a></li><li><a href="#">Инструкции за грижа</a></li><li><a href="#">Връщане</a></li><li><a href="mailto:hello@kinorabg.com">Контакт</a></li></ul></div>
+</footer>
+<div class="fbot">© 2026 KINORA — Всички права запазени · kinorabg.com</div>
+
+<!-- MODAL -->
+<div class="mw" id="mw" onclick="cMW(event)">
+  <div class="modal">
+    <div class="m-vis" id="mvis"></div>
+    <div class="m-bod" id="mbod"></div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="cdrw" id="cdrw">
+  <div class="chd"><h3>КОЛИЧКА</h3><button class="ccx" onclick="toggleCart()">×</button></div>
+  <div class="cbod" id="cbod"><p class="empty-cart">Количката ви е празна</p></div>
+  <div class="cft" id="cft" style="display:none">
+    <div class="ctr"><span class="ctl">Общо</span><span class="ctp" id="ctot">0 €</span></div>
+    <button class="cchk" onclick="goCheckout()">КЪМ ПЛАЩАНЕ</button>
+    <p style="font-size:8.5px;color:rgba(228,216,192,.14);text-align:center;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Безплатна доставка над 100 € · Сигурно плащане</p>
+  </div>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

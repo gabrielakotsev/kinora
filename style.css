@@ -38,9 +38,7 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .fm-links{list-style:none}
 .fm-links li{overflow:hidden;margin-bottom:.2rem}
 .fm-link{display:block;font-family:'Tenor Sans',sans-serif;font-size:clamp(56px,9vw,100px);letter-spacing:.06em;color:rgba(228,216,192,.18);line-height:1.05;cursor:none;transition:color .3s;transform:translateY(100%);transition:transform .6s cubic-bezier(.77,0,.175,1),color .3s;text-decoration:none;position:relative}
-.fm-link::after{content:attr(data-en);position:absolute;right:0;bottom:.4rem;font-family:'Yeseva One',serif;font-size:14px;letter-spacing:.18em;color:rgba(228,216,192,.2);transition:color .3s}
 .fm-link:hover{color:var(--BG)}
-.fm-link:hover::after{color:var(--GD)}
 .full-menu.open .fm-link{transform:translateY(0)}
 .full-menu.open .fm-links li:nth-child(1) .fm-link{transition-delay:.08s}
 .full-menu.open .fm-links li:nth-child(2) .fm-link{transition-delay:.16s}

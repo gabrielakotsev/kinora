@@ -246,8 +246,10 @@ function applyVoucherMode(){
   selectPayment('card');
 }
 
+const FREE_SHIPPING_THRESHOLD = 100;
 function isVoucherOnly(){ return cart.length>0 && cart.every(i=>i.type==='voucher'); }
-function getDeliveryPrice() { if(isVoucherOnly()) return 0; return DELIVERY_PRICES[document.getElementById('delivery_method').value] || 2.99; }
+function isFreeShipping() { return getSubtotal() >= FREE_SHIPPING_THRESHOLD; }
+function getDeliveryPrice() { if(isVoucherOnly() || isFreeShipping()) return 0; return DELIVERY_PRICES[document.getElementById('delivery_method').value] || 2.99; }
 function getCODFee() { return paymentMethod === "cod" ? 1 : 0; }
 function getSubtotal() { return cart.reduce((s,i)=>s+i.price*i.qty,0); }
 function getGross() { return getSubtotal() + getDeliveryPrice() + getCODFee(); }
@@ -260,7 +262,7 @@ function getTotal() { return Math.max(0, getGross() - getVoucherDiscount()); }
 
 function updateTotals() {
   document.getElementById('subtotal-val').textContent = getSubtotal().toLocaleString('bg-BG') + ' €';
-  document.getElementById('delivery-val').textContent = isVoucherOnly() ? 'по имейл' : getDeliveryPrice().toFixed(2) + ' €';
+  document.getElementById('delivery-val').textContent = isVoucherOnly() ? 'по имейл' : (isFreeShipping() ? 'Безплатно' : getDeliveryPrice().toFixed(2) + ' €');
   const discount = getVoucherDiscount();
   document.getElementById('voucher-row').style.display = discount > 0 ? '' : 'none';
   document.getElementById('voucher-val').textContent = '−' + discount.toFixed(2) + ' €';

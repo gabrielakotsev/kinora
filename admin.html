@@ -342,7 +342,7 @@ async function loadOrders() {
 function updateStats() {
   document.getElementById('st-total').textContent = allOrders.length;
   document.getElementById('st-pending').textContent = allOrders.filter(o=>o.status==='pending').length;
-  document.getElementById('st-revenue').textContent = Math.round(allOrders.reduce((s,o)=>s+(o.total||0),0)).toLocaleString('bg-BG');
+  document.getElementById('st-revenue').textContent = Math.round(allOrders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+(o.total||0),0)).toLocaleString('bg-BG');
   document.getElementById('st-shipped').textContent = allOrders.filter(o=>o.status==='shipped').length;
 }
 

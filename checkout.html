@@ -4,6 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>KINORA — Плащане</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<meta name="theme-color" content="#4a0c1a"/>
 <link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Golos+Text:wght@400;500;600;700&family=Yeseva+One&display=swap" rel="stylesheet"/>
 <script src="https://js.stripe.com/v3/"></script>
 <style>
@@ -167,10 +171,18 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
   <div class="checkout-right">
     <h2 class="block-title">Вашата поръчка</h2>
     <div id="order-items"></div>
+    <div class="voucher-redeem" id="voucher-redeem" style="display:flex;gap:8px;margin:1.2rem 0">
+      <input type="text" id="voucher-code" placeholder="Код за ваучер" autocomplete="off"
+        style="flex:1;text-transform:uppercase" />
+      <button type="button" id="voucher-apply-btn" onclick="applyVoucher()"
+        style="background:none;border:1px solid rgba(228,216,192,.22);color:var(--BG);padding:0 16px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer">Приложи</button>
+    </div>
+    <div id="voucher-msg" style="font-size:12px;margin:-6px 0 10px;display:none"></div>
     <div class="summary-totals">
       <div class="tot-row"><span>Продукти</span><span id="subtotal-val">0 €</span></div>
       <div class="tot-row"><span>Доставка</span><span id="delivery-val">2.99 €</span></div>
       <div class="tot-row"><span id="cod-fee-label" style="display:none">Наложен платеж</span><span id="cod-fee-val" style="display:none">1.00 €</span></div>
+      <div class="tot-row" id="voucher-row" style="display:none"><span>Ваучер</span><span id="voucher-val" style="color:var(--GD)">0 €</span></div>
       <div class="tot-row total"><span>Общо</span><span id="total-val">0 €</span></div>
     </div>
   </div>
@@ -230,6 +242,7 @@ function applyVoucherMode(){
   if(!isVoucherOnly()) return;
   const db=document.getElementById('delivery-block'); if(db) db.style.display='none';
   const cod=document.getElementById('opt-cod'); if(cod) cod.style.display='none';
+  const vr=document.getElementById('voucher-redeem'); if(vr) vr.style.display='none';
   selectPayment('card');
 }
 
@@ -237,11 +250,20 @@ function isVoucherOnly(){ return cart.length>0 && cart.every(i=>i.type==='vouche
 function getDeliveryPrice() { if(isVoucherOnly()) return 0; return DELIVERY_PRICES[document.getElementById('delivery_method').value] || 2.99; }
 function getCODFee() { return paymentMethod === "cod" ? 1 : 0; }
 function getSubtotal() { return cart.reduce((s,i)=>s+i.price*i.qty,0); }
-function getTotal() { return getSubtotal() + getDeliveryPrice() + getCODFee(); }
+function getGross() { return getSubtotal() + getDeliveryPrice() + getCODFee(); }
+// A voucher can't be used to buy a voucher, and never exceeds the order's value.
+function getVoucherDiscount() {
+  if (!appliedVoucher || isVoucherOnly()) return 0;
+  return Math.min(appliedVoucher.balance, getGross());
+}
+function getTotal() { return Math.max(0, getGross() - getVoucherDiscount()); }
 
 function updateTotals() {
   document.getElementById('subtotal-val').textContent = getSubtotal().toLocaleString('bg-BG') + ' €';
   document.getElementById('delivery-val').textContent = isVoucherOnly() ? 'по имейл' : getDeliveryPrice().toFixed(2) + ' €';
+  const discount = getVoucherDiscount();
+  document.getElementById('voucher-row').style.display = discount > 0 ? '' : 'none';
+  document.getElementById('voucher-val').textContent = '−' + discount.toFixed(2) + ' €';
   document.getElementById('total-val').textContent = getTotal().toLocaleString('bg-BG') + ' €';
   document.getElementById('cod-fee-label').style.display = paymentMethod==='cod'?'':'none';
   document.getElementById('cod-fee-val').style.display = paymentMethod==='cod'?'':'none';
@@ -313,6 +335,87 @@ async function saveOrderToSupabase(orderData) {
   return [{ id: newId }];
 }
 
+let appliedVoucher = null; // { code, balance }
+
+function showVoucherMsg(text, ok) {
+  const el = document.getElementById('voucher-msg');
+  el.textContent = text;
+  el.style.color = ok ? 'var(--GD)' : '#e07070';
+  el.style.display = text ? '' : 'none';
+}
+
+async function applyVoucher() {
+  const input = document.getElementById('voucher-code');
+  const code = input.value.trim().toUpperCase();
+  if (!code) { showVoucherMsg('Въведете код.', false); return; }
+
+  const btn = document.getElementById('voucher-apply-btn');
+  btn.disabled = true;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/check_voucher`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`
+      },
+      body: JSON.stringify({ p_code: code })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const rows = await res.json();
+    const v = Array.isArray(rows) ? rows[0] : rows;
+
+    if (!v || v.status !== 'active' || Number(v.balance) <= 0) {
+      appliedVoucher = null;
+      showVoucherMsg('Невалиден или изчерпан ваучер.', false);
+    } else {
+      appliedVoucher = { code, balance: Number(v.balance) };
+      showVoucherMsg(`Ваучерът е приложен · наличност ${appliedVoucher.balance.toFixed(2)} €`, true);
+    }
+  } catch (err) {
+    console.warn('check_voucher failed:', err);
+    appliedVoucher = null;
+    showVoucherMsg('Грешка при проверка на ваучера.', false);
+  } finally {
+    btn.disabled = false;
+    updateTotals();
+  }
+}
+
+// Atomically apply the voucher balance to this order. Returns amount applied.
+async function redeemVoucher(orderId) {
+  if (!appliedVoucher) return 0;
+  const requested = getVoucherDiscount();
+  if (requested <= 0) return 0;
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/redeem_voucher`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    },
+    body: JSON.stringify({ p_code: appliedVoucher.code, p_requested: requested, p_order_id: orderId })
+  });
+  if (!res.ok) throw new Error('redeem_voucher: ' + await res.text());
+  const rows = await res.json();
+  const r = Array.isArray(rows) ? rows[0] : rows;
+  return Number(r?.applied || 0);
+}
+
+async function sendOrderMail(payload) {
+  // Best-effort: never throw — a failed email must not break checkout.
+  try {
+    const res = await fetch('/api/send-order-mail', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) console.warn('send-order-mail returned', res.status);
+  } catch (err) {
+    console.warn('send-order-mail failed:', err);
+  }
+}
+
 async function submitOrder() {
   const form = getFormData();
   if (!validateForm(form)) return;
@@ -363,6 +466,24 @@ async function submitOrder() {
 
     const saved = await saveOrderToSupabase(orderData);
     const orderId = saved[0]?.id || 'N/A';
+
+    // Redeem the gift voucher (atomic, server-side balance check). If it fails,
+    // stop before clearing the cart so the customer isn't charged the wrong total.
+    if (appliedVoucher) {
+      const applied = await redeemVoucher(orderId);
+      if (applied <= 0) {
+        showVoucherMsg('Ваучерът вече не е валиден. Моля проверете отново.', false);
+        appliedVoucher = null;
+        updateTotals();
+        btn.disabled = false; loader.classList.remove('show');
+        document.getElementById('btn-text').textContent = `ПОТВЪРДИ — ${getTotal().toFixed(2)} €`;
+        return;
+      }
+    }
+
+    // Send confirmation + admin alert + voucher emails via Mailgun (best-effort).
+    // The order is already saved, so a mail failure must not block the customer.
+    await sendOrderMail({ ...orderData, id: orderId, items: cart });
 
     localStorage.removeItem('kinora_cart');
     localStorage.setItem('kinora_last_order', JSON.stringify({ ...orderData, id: orderId }));

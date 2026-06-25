@@ -4,6 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>KINORA Admin — Поръчки</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<meta name="theme-color" content="#4a0c1a"/>
 <link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -56,6 +60,16 @@ body{font-family:'Golos Text',sans-serif;background:var(--NV);color:var(--BG);mi
 .s-shipped{color:#4a8c9a;border-color:rgba(74,140,154,.3);background:rgba(74,140,154,.08)}
 .s-completed{color:rgba(228,216,192,.5);border-color:rgba(228,216,192,.15);background:rgba(228,216,192,.04)}
 .s-awaiting_payment{color:#d4906a;border-color:rgba(212,144,106,.3);background:rgba(212,144,106,.08)}
+.s-active{color:#7c8240;border-color:rgba(124,130,64,.3);background:rgba(124,130,64,.08)}
+.s-depleted{color:rgba(228,216,192,.45);border-color:rgba(228,216,192,.14);background:rgba(228,216,192,.04)}
+.s-void{color:#e07070;border-color:rgba(224,112,112,.3);background:rgba(224,112,112,.08)}
+.s-invalid{color:#e07070;border-color:rgba(224,112,112,.3);background:rgba(224,112,112,.08)}
+/* TABS */
+.tabs{display:flex;gap:.4rem;margin-bottom:2rem;border-bottom:1px solid var(--line)}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:10px 20px 14px;font-family:'Tenor Sans',sans-serif;font-size:13px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;color:rgba(228,216,192,.35);transition:all .2s;margin-bottom:-1px}
+.tab-btn.on{color:var(--BG);border-bottom-color:var(--GD)}
+.tab-btn:hover{color:var(--BG)}
+.voucher-code{font-family:'Tenor Sans',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--GD)}
 /* ORDER DRAWER */
 .order-drawer{position:fixed;top:0;right:0;bottom:0;width:480px;background:var(--NV2);border-left:1px solid var(--line);z-index:50;transform:translateX(100%);transition:transform .38s cubic-bezier(.4,0,.2,1);overflow-y:auto}
 .order-drawer.on{transform:translateX(0)}
@@ -112,30 +126,61 @@ body{font-family:'Golos Text',sans-serif;background:var(--NV);color:var(--BG);mi
     </div>
     <div style="display:flex;align-items:center;gap:1rem">
       <span style="font-size:10px;letter-spacing:.15em;color:rgba(228,216,192,.25)" id="last-refresh"></span>
-      <button class="logout-btn" onclick="loadOrders()">↻ Опресни</button>
+      <button class="logout-btn" onclick="refreshActive()">↻ Опресни</button>
       <button class="logout-btn" onclick="doLogout()">Излез</button>
     </div>
   </div>
   <div class="admin-body">
-    <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-label">Общо поръчки</div><div class="stat-val" id="st-total">—</div></div>
-      <div class="stat-card"><div class="stat-label">Нови (pending)</div><div class="stat-val" id="st-pending">—</div></div>
-      <div class="stat-card"><div class="stat-label">Оборот (€)</div><div class="stat-val" id="st-revenue">—</div></div>
-      <div class="stat-card"><div class="stat-label">Изпратени</div><div class="stat-val" id="st-shipped">—</div></div>
+    <!-- TAB SWITCHER -->
+    <div class="tabs">
+      <button class="tab-btn on" id="tab-orders" onclick="switchTab('orders')">Поръчки</button>
+      <button class="tab-btn" id="tab-vouchers" onclick="switchTab('vouchers')">Ваучери</button>
     </div>
-    <!-- FILTERS -->
-    <div class="filters">
-      <button class="filter-btn on" onclick="filterOrders('all',this)">Всички</button>
-      <button class="filter-btn" onclick="filterOrders('pending',this)">Нови</button>
-      <button class="filter-btn" onclick="filterOrders('paid',this)">Платени</button>
-      <button class="filter-btn" onclick="filterOrders('shipped',this)">Изпратени</button>
-      <button class="filter-btn" onclick="filterOrders('completed',this)">Завършени</button>
-      <input class="search-input" id="search-input" placeholder="Търси по клиент, имейл..." oninput="renderTable()"/>
+
+    <!-- ===== ORDERS VIEW ===== -->
+    <div id="view-orders">
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Общо поръчки</div><div class="stat-val" id="st-total">—</div></div>
+        <div class="stat-card"><div class="stat-label">Нови (pending)</div><div class="stat-val" id="st-pending">—</div></div>
+        <div class="stat-card"><div class="stat-label">Оборот (€)</div><div class="stat-val" id="st-revenue">—</div></div>
+        <div class="stat-card"><div class="stat-label">Изпратени</div><div class="stat-val" id="st-shipped">—</div></div>
+      </div>
+      <!-- FILTERS -->
+      <div class="filters">
+        <button class="filter-btn on" onclick="filterOrders('all',this)">Всички</button>
+        <button class="filter-btn" onclick="filterOrders('pending',this)">Нови</button>
+        <button class="filter-btn" onclick="filterOrders('paid',this)">Платени</button>
+        <button class="filter-btn" onclick="filterOrders('shipped',this)">Изпратени</button>
+        <button class="filter-btn" onclick="filterOrders('completed',this)">Завършени</button>
+        <input class="search-input" id="search-input" placeholder="Търси по клиент, имейл..." oninput="renderTable()"/>
+      </div>
+      <!-- TABLE -->
+      <div id="table-wrap">
+        <div class="loading">Зарежда поръчки...</div>
+      </div>
     </div>
-    <!-- TABLE -->
-    <div id="table-wrap">
-      <div class="loading">Зарежда поръчки...</div>
+
+    <!-- ===== VOUCHERS VIEW ===== -->
+    <div id="view-vouchers" style="display:none">
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Издадени ваучери</div><div class="stat-val" id="vs-total">—</div></div>
+        <div class="stat-card"><div class="stat-label">Активни</div><div class="stat-val" id="vs-active">—</div></div>
+        <div class="stat-card"><div class="stat-label">Продадена стойност (€)</div><div class="stat-val" id="vs-issued">—</div></div>
+        <div class="stat-card"><div class="stat-label">Неизползвани (€)</div><div class="stat-val" id="vs-outstanding">—</div></div>
+      </div>
+      <!-- FILTERS -->
+      <div class="filters">
+        <button class="filter-btn on" onclick="filterVouchers('all',this)">Всички</button>
+        <button class="filter-btn" onclick="filterVouchers('active',this)">Активни</button>
+        <button class="filter-btn" onclick="filterVouchers('depleted',this)">Изчерпани</button>
+        <input class="search-input" id="voucher-search" placeholder="Търси по код, имейл..." oninput="renderVouchers()"/>
+      </div>
+      <!-- TABLE -->
+      <div id="vouchers-wrap">
+        <div class="loading">Зарежда ваучери...</div>
+      </div>
     </div>
   </div>
 </div>
@@ -156,6 +201,9 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 let allOrders = [];
 let currentFilter = 'all';
 let currentOrder = null;
+let allVouchers = [];
+let voucherFilter = 'all';
+let vouchersLoaded = false;
 
 // --- Supabase Auth (real email/password login) ---
 function getToken() { return sessionStorage.getItem('kinora_admin_token'); }
@@ -388,8 +436,96 @@ async function saveStatus(id) {
   }
 }
 
-// Auto-refresh every 60 seconds
-setInterval(() => { if(getToken()) loadOrders(); }, 60000);
+// ===== TABS & VOUCHERS =====
+let activeTab = 'orders';
+
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tab-orders').classList.toggle('on', tab==='orders');
+  document.getElementById('tab-vouchers').classList.toggle('on', tab==='vouchers');
+  document.getElementById('view-orders').style.display = tab==='orders' ? '' : 'none';
+  document.getElementById('view-vouchers').style.display = tab==='vouchers' ? '' : 'none';
+  if (tab==='vouchers' && !vouchersLoaded) loadVouchers();
+}
+
+function refreshActive() {
+  if (activeTab==='vouchers') loadVouchers(); else loadOrders();
+}
+
+async function loadVouchers() {
+  try {
+    const res = await authFetch(`${SUPABASE_URL}/rest/v1/vouchers?select=*&order=created_at.desc`);
+    if (res.status === 401) { clearSession(); location.reload(); return; }
+    if (!res.ok) throw new Error(await res.text());
+    allVouchers = await res.json();
+    vouchersLoaded = true;
+    updateVoucherStats();
+    renderVouchers();
+    document.getElementById('last-refresh').textContent = 'Обновено: ' + new Date().toLocaleTimeString('bg-BG');
+  } catch(e) {
+    document.getElementById('vouchers-wrap').innerHTML = '<div class="loading" style="color:#e07070">Грешка при зареждане на ваучерите. Изпълни vouchers-schema.sql в Supabase.</div>';
+  }
+}
+
+function updateVoucherStats() {
+  const total = allVouchers.length;
+  const active = allVouchers.filter(v=>v.status==='active').length;
+  const issued = allVouchers.reduce((s,v)=>s+Number(v.original_amount||0),0);
+  const outstanding = allVouchers.reduce((s,v)=>s+Number(v.balance||0),0);
+  document.getElementById('vs-total').textContent = total;
+  document.getElementById('vs-active').textContent = active;
+  document.getElementById('vs-issued').textContent = Math.round(issued).toLocaleString('bg-BG');
+  document.getElementById('vs-outstanding').textContent = Math.round(outstanding).toLocaleString('bg-BG');
+}
+
+function filterVouchers(f, btn) {
+  voucherFilter = f;
+  document.querySelectorAll('#view-vouchers .filter-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderVouchers();
+}
+
+const VOUCHER_STATUS_LABELS = { active:'Активен', depleted:'Изчерпан', void:'Анулиран' };
+
+function renderVouchers() {
+  const search = document.getElementById('voucher-search').value.toLowerCase();
+  let vouchers = allVouchers;
+  if (voucherFilter !== 'all') vouchers = vouchers.filter(v=>v.status===voucherFilter);
+  if (search) vouchers = vouchers.filter(v =>
+    (v.code||'').toLowerCase().includes(search) ||
+    (v.recipient_email||'').toLowerCase().includes(search)
+  );
+
+  if (!vouchers.length) {
+    document.getElementById('vouchers-wrap').innerHTML = `<div class="empty-state"><h3>НЯМА ВАУЧЕРИ</h3><p>Не са намерени ваучери с тези критерии.</p></div>`;
+    return;
+  }
+
+  document.getElementById('vouchers-wrap').innerHTML = `<table class="orders-table">
+    <thead><tr>
+      <th>Код</th><th>Получател</th><th>Дата</th><th>Стойност</th><th>Наличност</th><th>Статус</th><th>Поръчка</th><th>Използван</th>
+    </tr></thead>
+    <tbody>${vouchers.map(v => {
+      const date = new Date(v.created_at).toLocaleDateString('bg-BG',{day:'2-digit',month:'2-digit',year:'numeric'});
+      const used = v.last_used_at ? new Date(v.last_used_at).toLocaleDateString('bg-BG',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+      const sClass = `s-${v.status||'active'}`;
+      const orderRef = v.order_id ? '#'+String(v.order_id).substring(0,8).toUpperCase() : '—';
+      return `<tr>
+        <td><span class="voucher-code">${v.code||'—'}</span></td>
+        <td style="font-size:12px;color:rgba(228,216,192,.45)">${v.recipient_email||'—'}</td>
+        <td style="color:rgba(228,216,192,.4);font-size:12px">${date}</td>
+        <td style="font-size:13px;color:rgba(228,216,192,.55)">${Number(v.original_amount||0).toFixed(2)} €</td>
+        <td style="color:var(--GD);font-family:'Tenor Sans',sans-serif;font-size:16px;letter-spacing:.04em">${Number(v.balance||0).toFixed(2)} €</td>
+        <td><span class="status-badge ${sClass}">${VOUCHER_STATUS_LABELS[v.status]||v.status}</span></td>
+        <td style="font-size:12px;color:rgba(228,216,192,.4)">${orderRef}</td>
+        <td style="font-size:12px;color:rgba(228,216,192,.4)">${used}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+// Auto-refresh every 60 seconds — refreshes whichever tab is open.
+setInterval(() => { if(getToken()) refreshActive(); }, 60000);
 </script>
 </body>
 </html>

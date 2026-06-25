@@ -1,0 +1,10 @@
+{
+  "name": "kinora",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Kinora storefront — static HTML + Vercel serverless API (Mailgun email).",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  }
+}

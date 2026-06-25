@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="KINORA">
+  <!-- Burgundy disc -->
+  <circle cx="32" cy="32" r="32" fill="#4a0c1a"/>
+  <!-- Kamon double ring (gold) -->
+  <circle cx="32" cy="32" r="27.5" fill="none" stroke="#c4a464" stroke-width="2"/>
+  <circle cx="32" cy="32" r="23.5" fill="none" stroke="#c4a464" stroke-width="1"/>
+  <!-- Geometric "K" in brand cream (matches KINORA wordmark) -->
+  <g fill="#e4d8c0">
+    <rect x="20" y="18" width="5.5" height="28"/>
+    <polygon points="25.5,32 39,18 44.5,18 28.5,34"/>
+    <polygon points="25.5,32 39.5,46 45,46 28.5,30"/>
+  </g>
+</svg>

@@ -1,52 +1,13 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "**/*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "style.css",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "app.js",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/haori",
-      "dest": "/haori.html"
-    },
-    {
-      "src": "/kimono",
-      "dest": "/kimono.html"
-    },
-    {
-      "src": "/styling",
-      "dest": "/styling.html"
-    },
-    {
-      "src": "/voucher",
-      "dest": "/voucher.html"
-    },
-    {
-      "src": "/checkout",
-      "dest": "/checkout.html"
-    },
-    {
-      "src": "/success",
-      "dest": "/success.html"
-    },
-    {
-      "src": "/admin",
-      "dest": "/admin.html"
-    }
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/haori", "destination": "/haori.html" },
+    { "source": "/kimono", "destination": "/kimono.html" },
+    { "source": "/styling", "destination": "/styling.html" },
+    { "source": "/voucher", "destination": "/voucher.html" },
+    { "source": "/checkout", "destination": "/checkout.html" },
+    { "source": "/success", "destination": "/success.html" },
+    { "source": "/admin", "destination": "/admin.html" }
   ],
   "headers": [
     {

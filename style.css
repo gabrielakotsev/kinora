@@ -141,6 +141,8 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .badge{position:absolute;top:1.2rem;left:1.2rem;font-size:7.5px;letter-spacing:.32em;text-transform:uppercase;padding:5px 11px;font-family:'Golos Text',sans-serif;font-weight:500;z-index:2}
 .b-new{background:var(--OL);color:var(--BG2)}
 .b-vtg{background:rgba(196,164,100,.12);color:var(--GD);border:1px solid rgba(196,164,100,.25)}
+.b-sold{background:var(--NV);color:var(--BG);border:1px solid rgba(228,216,192,.3)}
+.abtn.sold-out{background:var(--NV2);color:rgba(228,216,192,.35);cursor:not-allowed;border:1px solid var(--line)}
 
 /* STYLING SECTION */
 .styling-grid{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:auto auto;gap:2px}

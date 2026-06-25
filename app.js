@@ -50,6 +50,24 @@ const PRODUCTS = [
 let cart = JSON.parse(localStorage.getItem('kinora_cart') || '[]');
 let selSz = {}, selQty = {};
 
+/* SOLD-OUT — кои уникати вече са продадени (от Supabase, без достъп до поръчките) */
+const SUPABASE_URL = 'https://owkoprksrvjlebonaehj.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93a29wcmtzcnZqbGVib25hZWhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NTIxNzgsImV4cCI6MjA5NjIyODE3OH0.UZdyvXOmEJTZ6r54fSlVgNNBja98qx-dpJqu9yGNlFA';
+let soldIds = new Set();
+function isSold(id){ return soldIds.has(id); }
+async function loadSoldIds(){
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/sold_product_ids`, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${SUPABASE_KEY}` },
+      body:'{}'
+    });
+    if(!res.ok) return;
+    const ids = await res.json();
+    if(Array.isArray(ids)) soldIds = new Set(ids);
+  }catch(e){ /* мрежова грешка — показваме всичко като налично */ }
+}
+
 function hSVG(bg, ac, w=155) {
   const h = Math.round(w*1.45);
   return `<svg width="${w}" height="${h}" viewBox="0 0 200 290" xmlns="http://www.w3.org/2000/svg"><path d="M76,32 L44,56 L26,130 L24,238 L100,245 L176,238 L174,130 L156,56 L124,32 Z" fill="${bg}"/><path d="M100,32 L88,68 L100,90 L112,68 Z" fill="${ac}" opacity=".76"/><path d="M100,32 L76,32 L44,56 L62,78 L88,68 Z" fill="${ac}" opacity=".45"/><path d="M100,32 L124,32 L156,56 L138,78 L112,68 Z" fill="${ac}" opacity=".45"/><path d="M24,130 L44,56 L4,68 L2,162 L24,168 Z" fill="${bg}" opacity=".78"/><path d="M176,130 L156,56 L196,68 L198,162 L176,168 Z" fill="${bg}" opacity=".78"/><path d="M88,90 Q85,108 83,124" stroke="${ac}" stroke-width="1.5" fill="none" opacity=".6"/><path d="M112,90 Q115,108 117,124" stroke="${ac}" stroke-width="1.5" fill="none" opacity=".6"/><circle cx="100" cy="193" r="18" fill="none" stroke="${ac}" stroke-width=".7" opacity=".46"/><path d="M100,177 L103,188 L114,188 L106,195 L109,206 L100,200 L91,206 L94,195 L86,188 L97,188 Z" fill="${ac}" opacity=".3"/><path d="M24,228 Q62,218 100,224 Q138,230 176,220 L176,245 L24,245 Z" fill="${bg}" opacity=".48"/></svg>`;
@@ -65,10 +83,14 @@ function getVisual(p, w) {
 }
 
 function mkCard(p) {
+  const sold = isSold(p.id);
+  const badge = sold
+    ? `<div class="badge b-sold">Изчерпан</div>`
+    : (p.lbl ? `<div class="badge ${p.lbl==='Винтидж'?'b-vtg':'b-new'}">${p.lbl}</div>` : '');
   return `<div class="pc" onclick="openM(${p.id})">
     <div class="pcv" style="background:${p.bg}">
       ${getVisual(p, 155)}
-      ${p.lbl ? `<div class="badge ${p.lbl==='Винтидж'?'b-vtg':'b-new'}">${p.lbl}</div>` : ''}
+      ${badge}
       <div class="pco"><button class="pco-b">Бърз преглед</button></div>
     </div>
     <div class="pcbody">
@@ -91,8 +113,12 @@ function fillGrid(id, type, limit){
   if(limit) list = list.slice(0, limit);
   el.innerHTML = list.map(mkCard).join('');
 }
-fillGrid('haori-grid','haori',4);            // начална: 4 хаори
-fillGrid('kimono-grid','kimono',HOME_LIMIT); // начална: до 5 кимона
+function renderAllGrids(){
+  fillGrid('haori-grid','haori',4);            // начална: 4 хаори
+  fillGrid('kimono-grid','kimono',HOME_LIMIT); // начална: до 5 кимона
+  fillGridPaged('haori-grid-all','haori-pager','haori',{sortId:'haori-sort',countId:'haori-count'});
+  fillGridPaged('kimono-grid-all','kimono-pager','kimono',{sortId:'kimono-sort',countId:'kimono-count'});
+}
 
 /* PAGINATED GRID — 8 артикула на страница (страници ХАОРИ / КИМОНО) */
 const PER_PAGE = 8;
@@ -161,8 +187,9 @@ function fillGridPaged(gridId, pagerId, type, opts={}){
   applySort();
   render(pageFromHash());
 }
-fillGridPaged('haori-grid-all','haori-pager','haori',{sortId:'haori-sort',countId:'haori-count'});
-fillGridPaged('kimono-grid-all','kimono-pager','kimono',{sortId:'kimono-sort',countId:'kimono-count'});
+
+renderAllGrids();                         // първоначално — всичко налично
+loadSoldIds().then(()=>{ if(soldIds.size) renderAllGrids(); }); // маркирай изчерпаните
 
 /* MENU */
 let menuOpen = false;
@@ -211,7 +238,9 @@ function openM(id) {
     <p class="m-lbl">Размер</p>
     <div class="szr">${p.sizes.map(s=>`<button class="sz ${selSz[id]===s?'sel':''}" onclick="setSz(${id},'${s}',this)">${s}</button>`).join('')}</div>
     <p class="m-unique">✦ Уникат — само 1 наличен брой</p>
-    <button class="abtn" onclick="addC(${id})">ДОБАВИ — ${p.price.toLocaleString('bg-BG')} €</button>
+    ${isSold(id)
+      ? `<button class="abtn sold-out" disabled>ИЗЧЕРПАН</button>`
+      : `<button class="abtn" onclick="addC(${id})">ДОБАВИ — ${p.price.toLocaleString('bg-BG')} €</button>`}
     <button class="wbtn">Запази в любими</button>
     <button class="wbtn tryon-btn" onclick="tryOnSoon()">Виртуална проба <span class="soon">скоро</span></button>
     ${measureBlock(p)}
@@ -247,6 +276,7 @@ function addVoucher(){
 /* CART */
 function addC(id) {
   const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
+  if(isSold(id)){ showToast(`${p.name} е изчерпан`); cMD(); return; }
   const sz = selSz[id]||p.sizes[0];
   // Всеки артикул е уникат (1/1) — не може да се добави повече от веднъж.
   if(cart.find(c=>c.id===id)){ showToast(`${p.name} вече е в количката — уникат`); cMD(); return; }

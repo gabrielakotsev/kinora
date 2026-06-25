@@ -185,6 +185,8 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .qn{font-family:'Tenor Sans',sans-serif;font-size:22px;min-width:28px;text-align:center;color:var(--BG)}
 .abtn{background:var(--BG);color:var(--B);border:none;padding:16px;font-family:'Golos Text',sans-serif;font-size:9.5px;letter-spacing:.25em;text-transform:uppercase;cursor:none;width:100%;font-weight:500;transition:all .25s;margin-bottom:.7rem}
 .abtn:hover{background:var(--GD);color:var(--NV)}
+.bnow{background:none;color:var(--GD);border:1px solid var(--GD);padding:15px;font-family:'Golos Text',sans-serif;font-size:9.5px;letter-spacing:.25em;text-transform:uppercase;cursor:none;width:100%;font-weight:500;transition:all .25s;margin-bottom:.7rem}
+.bnow:hover{background:var(--GD);color:var(--NV)}
 .wbtn{background:none;color:rgba(228,216,192,.28);border:1px solid rgba(228,216,192,.1);padding:13px;font-family:inherit;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;cursor:none;width:100%;transition:all .2s}
 .wbtn:hover{border-color:rgba(228,216,192,.3);color:var(--BG)}
 .tryon-btn{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:.5rem}

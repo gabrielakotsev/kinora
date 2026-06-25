@@ -1,6 +1,17 @@
 let PRODUCTS = [];
 
-let cart = JSON.parse(localStorage.getItem('kinora_cart') || '[]');
+const CART_TTL_MS = 24 * 60 * 60 * 1000; // артикулите се пазят до 24 часа
+
+// Зарежда количката устойчиво: пропуска повредени данни и изтекли (>24ч) артикули.
+function loadCart() {
+  let raw;
+  try { raw = JSON.parse(localStorage.getItem('kinora_cart') || '[]'); }
+  catch (e) { raw = []; }
+  if (!Array.isArray(raw)) raw = [];
+  const now = Date.now();
+  return raw.filter(it => it && (!it.addedAt || (now - it.addedAt) < CART_TTL_MS));
+}
+let cart = loadCart();
 let selSz = {}, selQty = {};
 
 /* SOLD-OUT — кои уникати вече са продадени (от Supabase, без достъп до поръчките) */
@@ -167,6 +178,7 @@ async function boot(){
     await loadProducts();
     await loadSoldIds().catch(()=>{}); // изчерпани — по желание; не блокира
     renderAllGrids();
+    revalidateCart(); // сверявай количката с каталога след зареждане
   } catch(e){
     renderProductsError();
   }
@@ -222,8 +234,8 @@ function openM(id) {
     <p class="m-unique">✦ Уникат — само 1 наличен брой</p>
     ${isSold(id)
       ? `<button class="abtn sold-out" disabled>ИЗЧЕРПАН</button>`
-      : `<button class="abtn" onclick="addC(${id})">ДОБАВИ — ${p.price.toLocaleString('bg-BG')} €</button>`}
-    <button class="wbtn">Запази в любими</button>
+      : `<button class="abtn" onclick="addC(${id})">ДОБАВИ — ${p.price.toLocaleString('bg-BG')} €</button>
+         <button class="bnow" onclick="buyNow(${id})">Купи сега</button>`}
     <button class="wbtn tryon-btn" onclick="tryOnSoon()">Виртуална проба <span class="soon">скоро</span></button>
     ${measureBlock(p)}
     ${detailsBlock(p)}`;
@@ -251,7 +263,7 @@ function addVoucher(){
   const id = 'voucher-'+a;
   const ex = cart.find(c=>c.id===id);
   if(ex) ex.qty += 1;
-  else cart.push({id, type:'voucher', name:'Подаръчен ваучер', sub:a.toLocaleString('bg-BG')+' €', qty:1, price:a});
+  else cart.push({id, type:'voucher', name:'Подаръчен ваучер', sub:a.toLocaleString('bg-BG')+' €', qty:1, price:a, addedAt:Date.now()});
   saveCart(); upC(); closeVoucher(); showToast('Добавено — ваучер '+a+' €'); toggleCart();
 }
 
@@ -262,11 +274,42 @@ function addC(id) {
   const sz = selSz[id]||p.sizes[0];
   // Всеки артикул е уникат (1/1) — не може да се добави повече от веднъж.
   if(cart.find(c=>c.id===id)){ showToast(`${p.name} вече е в количката — уникат`); cMD(); return; }
-  cart.push({id,name:p.name,sub:p.sub,sz,qty:1,price:p.price,bg:p.bg,acc:p.acc,type:p.type,img:p.img||''});
+  cart.push({id,name:p.name,sub:p.sub,sz,qty:1,price:p.price,bg:p.bg,acc:p.acc,type:p.type,img:p.img||'',addedAt:Date.now()});
   saveCart(); upC(); cMD(); showToast(`Добавено — ${p.name}`);
+  return true;
+}
+function buyNow(id) {
+  // Добавя (ако е валиден) и отива директно към плащане.
+  const already = cart.find(c=>c.id===id);
+  if (already || addC(id)) goCheckout();
 }
 function rmC(i){cart.splice(i,1);saveCart();upC()}
 function saveCart(){localStorage.setItem('kinora_cart',JSON.stringify(cart))}
+
+// Сверява количката спрямо текущия каталог: маха продадени/изтрити артикули и
+// обновява цените. Изисква заредени PRODUCTS. Връща броя премахнати артикули.
+function revalidateCart(){
+  if(!PRODUCTS.length) return 0;
+  const removed = [];
+  cart = cart.filter(it => {
+    if(it.type === 'voucher') return true;               // ваучерите винаги са валидни
+    const p = PRODUCTS.find(x=>x.id===it.id);
+    if(!p || isSold(it.id)){ removed.push(it.name); return false; } // изтрит или продаден
+    if(typeof p.price === 'number') it.price = p.price;   // синхронизирай цената
+    if(p.img!=null) it.img = p.img;                       // и снимката
+    return true;
+  });
+  if(removed.length){
+    saveCart();
+    showToast(removed.length===1
+      ? `${removed[0]} вече не е наличен и беше премахнат`
+      : `${removed.length} артикула вече не са налични и бяха премахнати`);
+  } else {
+    saveCart(); // запази обновените цени
+  }
+  upC();
+  return removed.length;
+}
 function upC(){
   const ct = cart.reduce((s,i)=>s+i.qty,0);
   document.getElementById('bct').textContent = ct;

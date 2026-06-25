@@ -104,6 +104,7 @@ nav{height:60px;display:flex;align-items:center;justify-content:center;padding:0
   <div class="card" id="items-card">
     <p class="card-title">Вашата поръчка</p>
     <div id="items-list"></div>
+    <div class="row" id="od-referral-row" style="display:none"><span class="k" id="od-referral-label">Отстъпка</span><span class="v" id="od-referral" style="color:var(--GD);font-size:14px"></span></div>
     <div class="total-row"><span class="k">Общо</span><span class="v" id="od-total">—</span></div>
   </div>
 
@@ -154,6 +155,11 @@ document.getElementById('od-phone').textContent = order.customer_phone || '—';
 document.getElementById('od-delivery').textContent = DELIVERY_LABELS[order.delivery_method] || order.delivery_method || '—';
 document.getElementById('od-address').textContent = [order.customer_city, order.customer_address].filter(Boolean).join(', ') || '—';
 document.getElementById('od-total').textContent = (order.total!=null) ? Number(order.total).toFixed(2) + ' €' : '—';
+if (order.referral_discount && Number(order.referral_discount) > 0) {
+  document.getElementById('od-referral-row').style.display = '';
+  document.getElementById('od-referral-label').textContent = order.referral_code ? `Отстъпка (${order.referral_code})` : 'Отстъпка';
+  document.getElementById('od-referral').textContent = '−' + Number(order.referral_discount).toFixed(2) + ' €';
+}
 
 // Items
 let items = [];

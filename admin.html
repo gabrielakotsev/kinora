@@ -158,6 +158,7 @@ body{font-family:'Golos Text',sans-serif;background:var(--NV);color:var(--BG);mi
       <button class="tab-btn on" id="tab-orders" onclick="switchTab('orders')">Поръчки</button>
       <button class="tab-btn" id="tab-vouchers" onclick="switchTab('vouchers')">Ваучери</button>
       <button class="tab-btn" id="tab-products" onclick="switchTab('products')">Продукти</button>
+      <button class="tab-btn" id="tab-referrals" onclick="switchTab('referrals')">Кодове</button>
     </div>
 
     <!-- ===== ORDERS VIEW ===== -->
@@ -234,7 +235,34 @@ body{font-family:'Golos Text',sans-serif;background:var(--NV);color:var(--BG);mi
       </div>
       <div id="products-wrap"><div class="loading">Зарежда продукти...</div></div>
     </div>
+
+    <!-- ===== REFERRAL CODES VIEW ===== -->
+    <div id="view-referrals" style="display:none">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Общо кодове</div><div class="stat-val" id="rs-total">—</div></div>
+        <div class="stat-card"><div class="stat-label">Активни</div><div class="stat-val" id="rs-active">—</div></div>
+        <div class="stat-card"><div class="stat-label">Използвания</div><div class="stat-val" id="rs-uses">—</div></div>
+        <div class="stat-card"><div class="stat-label">Продажби (€)</div><div class="stat-val" id="rs-sales">—</div></div>
+      </div>
+      <div class="filters">
+        <button class="filter-btn on" onclick="filterReferrals('all',this)">Всички</button>
+        <button class="filter-btn" onclick="filterReferrals('active',this)">Активни</button>
+        <button class="filter-btn" onclick="filterReferrals('inactive',this)">Спрени</button>
+        <button class="filter-btn" style="margin-left:auto;border-color:var(--GD);color:var(--GD)" onclick="newReferral()">+ Нов код</button>
+        <input class="search-input" id="referral-search" placeholder="Търси по код, инфлуенсър..." oninput="renderReferrals()"/>
+      </div>
+      <div id="referrals-wrap" class="table-scroll"><div class="loading">Зарежда кодове...</div></div>
+    </div>
   </div>
+</div>
+
+<!-- REFERRAL EDITOR DRAWER -->
+<div class="order-drawer" id="referral-drawer">
+  <div class="od-header">
+    <h3 id="rd-title">КОД</h3>
+    <button class="od-close" onclick="closeReferralDrawer()">×</button>
+  </div>
+  <div class="od-body" id="rd-body"></div>
 </div>
 
 <!-- PRODUCT EDITOR DRAWER -->
@@ -700,17 +728,19 @@ let activeTab = 'orders';
 
 function switchTab(tab) {
   activeTab = tab;
-  ['orders','vouchers','products'].forEach(t=>{
+  ['orders','vouchers','products','referrals'].forEach(t=>{
     document.getElementById('tab-'+t).classList.toggle('on', tab===t);
     document.getElementById('view-'+t).style.display = tab===t ? '' : 'none';
   });
   if (tab==='vouchers' && !vouchersLoaded) loadVouchers();
   if (tab==='products' && !productsLoaded) loadProductsAdmin();
+  if (tab==='referrals' && !referralsLoaded) loadReferrals();
 }
 
 function refreshActive() {
   if (activeTab==='vouchers') loadVouchers();
   else if (activeTab==='products') loadProductsAdmin();
+  else if (activeTab==='referrals') loadReferrals();
   else loadOrders();
 }
 
@@ -1090,11 +1120,178 @@ async function deleteProduct(id) {
   } catch(e){ alert('Грешка при изтриване: '+e.message); }
 }
 
+// ===== REFERRAL CODES =====
+let allReferrals = [];
+let referralFilter = 'all';
+let referralsLoaded = false;
+
+async function loadReferrals() {
+  try {
+    const res = await authFetch(`${SUPABASE_URL}/rest/v1/referral_codes?select=*&order=created_at.desc`);
+    if (res.status === 401) { clearSession(); location.reload(); return; }
+    if (!res.ok) throw new Error(await res.text());
+    allReferrals = await res.json();
+    referralsLoaded = true;
+    updateReferralStats();
+    renderReferrals();
+    document.getElementById('last-refresh').textContent = 'Обновено: ' + new Date().toLocaleTimeString('bg-BG');
+  } catch(e) {
+    document.getElementById('referrals-wrap').innerHTML = '<div class="loading" style="color:#e07070">Грешка при зареждане. Изпълни referrals-schema.sql в Supabase.</div>';
+  }
+}
+
+function refIsExpired(r){ return r.expires_at && new Date(r.expires_at) <= new Date(); }
+function refIsMaxed(r){ return r.max_uses != null && r.uses >= r.max_uses; }
+function refStatus(r){
+  if (!r.active) return {cls:'s-depleted', label:'Спрян'};
+  if (refIsExpired(r)) return {cls:'s-invalid', label:'Изтекъл'};
+  if (refIsMaxed(r)) return {cls:'s-invalid', label:'Изчерпан'};
+  return {cls:'s-active', label:'Активен'};
+}
+
+function updateReferralStats() {
+  document.getElementById('rs-total').textContent = allReferrals.length;
+  document.getElementById('rs-active').textContent = allReferrals.filter(r=>r.active && !refIsExpired(r) && !refIsMaxed(r)).length;
+  document.getElementById('rs-uses').textContent = allReferrals.reduce((s,r)=>s+(r.uses||0),0);
+  document.getElementById('rs-sales').textContent = Math.round(allReferrals.reduce((s,r)=>s+Number(r.total_sales||0),0)).toLocaleString('bg-BG');
+}
+
+function filterReferrals(f, btn) {
+  referralFilter = f;
+  document.querySelectorAll('#view-referrals .filter-btn').forEach(b=>b.classList.remove('on'));
+  if (btn && btn.textContent.indexOf('Нов')===-1) btn.classList.add('on');
+  renderReferrals();
+}
+
+function renderReferrals() {
+  const search = (document.getElementById('referral-search').value||'').toLowerCase();
+  let list = allReferrals;
+  if (referralFilter==='active') list = list.filter(r=>r.active && !refIsExpired(r) && !refIsMaxed(r));
+  else if (referralFilter==='inactive') list = list.filter(r=>!r.active);
+  if (search) list = list.filter(r=>(r.code||'').toLowerCase().includes(search) || (r.influencer_name||'').toLowerCase().includes(search));
+
+  if (!list.length) {
+    document.getElementById('referrals-wrap').innerHTML = `<div class="empty-state"><h3>НЯМА КОДОВЕ</h3><p>Натисни „+ Нов код", за да създадеш.</p></div>`;
+    return;
+  }
+  document.getElementById('referrals-wrap').innerHTML = `<table class="orders-table">
+    <thead><tr><th>Код</th><th>Инфлуенсър</th><th>%</th><th>Използвания</th><th>Продажби</th><th>Изтича</th><th>Статус</th><th></th></tr></thead>
+    <tbody>${list.map(r=>{
+      const st = refStatus(r);
+      const uses = `${r.uses||0}${r.max_uses!=null?(' / '+r.max_uses):''}`;
+      const exp = r.expires_at ? new Date(r.expires_at).toLocaleDateString('bg-BG',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+      const toggle = r.active ? 'Спри' : 'Активирай';
+      return `<tr onclick="editReferral('${(r.code||'').replace(/'/g,'')}')">
+        <td><span class="voucher-code">${r.code||'—'}</span></td>
+        <td style="font-size:13px;color:rgba(228,216,192,.6)">${r.influencer_name||'—'}</td>
+        <td style="color:var(--GD);font-family:'Tenor Sans',sans-serif;font-size:15px">${r.percent}%</td>
+        <td style="font-size:12px;color:rgba(228,216,192,.5)">${uses}</td>
+        <td style="font-size:12px;color:rgba(228,216,192,.5)">${Number(r.total_sales||0).toFixed(2)} €</td>
+        <td style="font-size:12px;color:rgba(228,216,192,.4)">${exp}</td>
+        <td><span class="status-badge ${st.cls}">${st.label}</span></td>
+        <td onclick="event.stopPropagation()" style="text-align:right;white-space:nowrap">
+          <button class="filter-btn" style="padding:5px 10px;font-size:8px" onclick="toggleReferral('${(r.code||'').replace(/'/g,'')}')">${toggle}</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+function referralForm(r) {
+  const isNew = !r.code;
+  const expVal = r.expires_at ? new Date(r.expires_at).toISOString().slice(0,10) : '';
+  return `
+    <div class="pf-group"><label>Код</label>
+      <input class="status-select" id="rf-code" value="${(r.code||'').replace(/"/g,'&quot;')}" ${isNew?'':'disabled'} placeholder="напр. MARIA10" style="text-transform:uppercase"/></div>
+    <div class="pf-group"><label>Инфлуенсър</label>
+      <input class="status-select" id="rf-influencer" value="${(r.influencer_name||'').replace(/"/g,'&quot;')}" placeholder="име"/></div>
+    <div class="pf-group"><label>Отстъпка (%)</label>
+      <input class="status-select" id="rf-percent" type="number" min="1" max="100" value="${r.percent||10}"/></div>
+    <div class="pf-group"><label>Изтича на (по желание)</label>
+      <input class="status-select" id="rf-expires" type="date" value="${expVal}"/></div>
+    <div class="pf-group"><label>Макс. използвания (по желание)</label>
+      <input class="status-select" id="rf-maxuses" type="number" min="1" value="${r.max_uses!=null?r.max_uses:''}" placeholder="без лимит"/></div>
+    <div class="pf-group"><label class="pf-toggle"><input type="checkbox" id="rf-active" ${r.active!==false?'checked':''} style="width:auto"/> Активен</label></div>
+    <button class="pf-save" onclick="saveReferral(${isNew?'true':'false'}, '${(r.code||'').replace(/'/g,'')}')">${isNew?'СЪЗДАЙ КОД':'ЗАПАЗИ'}</button>
+    ${isNew?'':`<button class="pf-del" onclick="deleteReferral('${(r.code||'').replace(/'/g,'')}')">Изтрий кода</button>`}`;
+}
+
+function openReferralDrawer(r) {
+  document.getElementById('rd-title').textContent = r.code ? r.code : 'НОВ КОД';
+  document.getElementById('rd-body').innerHTML = referralForm(r);
+  document.getElementById('referral-drawer').classList.add('on');
+}
+function closeReferralDrawer(){ document.getElementById('referral-drawer').classList.remove('on'); }
+function newReferral(){ openReferralDrawer({active:true, percent:10}); }
+function editReferral(code){ const r=allReferrals.find(x=>x.code===code); if(r) openReferralDrawer(r); }
+
+function collectReferral() {
+  const exp = document.getElementById('rf-expires').value;
+  const maxu = document.getElementById('rf-maxuses').value;
+  return {
+    code: document.getElementById('rf-code').value.trim().toUpperCase(),
+    influencer_name: document.getElementById('rf-influencer').value.trim(),
+    percent: Math.max(1, Math.min(100, Number(document.getElementById('rf-percent').value)||0)),
+    expires_at: exp ? new Date(exp).toISOString() : null,
+    max_uses: maxu ? Number(maxu) : null,
+    active: document.getElementById('rf-active').checked
+  };
+}
+
+async function saveReferral(isNew, code) {
+  const data = collectReferral();
+  if (!data.code) { adminToast('Въведи код', true); return; }
+  if (!data.percent) { adminToast('Въведи валиден процент', true); return; }
+  try {
+    let res;
+    if (isNew) {
+      res = await authFetch(`${SUPABASE_URL}/rest/v1/referral_codes`, {
+        method:'POST', headers:{'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify(data)
+      });
+    } else {
+      const { code: _c, ...patch } = data; // code is the PK, don't change it
+      res = await authFetch(`${SUPABASE_URL}/rest/v1/referral_codes?code=eq.${encodeURIComponent(code)}`, {
+        method:'PATCH', headers:{'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify(patch)
+      });
+    }
+    if (!res.ok) throw new Error(await res.text());
+    closeReferralDrawer();
+    await loadReferrals();
+    adminToast('✓ Запазено');
+  } catch(e) { adminToast('Грешка: '+e.message, true); }
+}
+
+async function toggleReferral(code) {
+  const r = allReferrals.find(x=>x.code===code); if(!r) return;
+  try {
+    const res = await authFetch(`${SUPABASE_URL}/rest/v1/referral_codes?code=eq.${encodeURIComponent(code)}`, {
+      method:'PATCH', headers:{'Content-Type':'application/json','Prefer':'return=minimal'}, body:JSON.stringify({active: !r.active})
+    });
+    if (!res.ok) throw new Error(await res.text());
+    r.active = !r.active;
+    updateReferralStats(); renderReferrals();
+    adminToast(r.active ? '✓ Активиран' : '✓ Спрян');
+  } catch(e) { adminToast('Грешка: '+e.message, true); }
+}
+
+async function deleteReferral(code) {
+  if (!confirm('Изтриване на код ' + code + '? (статистиката му ще се загуби)')) return;
+  try {
+    const res = await authFetch(`${SUPABASE_URL}/rest/v1/referral_codes?code=eq.${encodeURIComponent(code)}`, {
+      method:'DELETE', headers:{'Prefer':'return=minimal'}
+    });
+    if (!res.ok) throw new Error(await res.text());
+    closeReferralDrawer();
+    await loadReferrals();
+    adminToast('✓ Изтрит');
+  } catch(e) { adminToast('Грешка: '+e.message, true); }
+}
+
 // ===== KEYBOARD SHORTCUTS (#10) =====
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     document.getElementById('order-drawer')?.classList.remove('on');
     document.getElementById('product-drawer')?.classList.remove('on');
+    document.getElementById('referral-drawer')?.classList.remove('on');
   }
   // "/" focuses the active tab's search (unless already typing)
   if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) {

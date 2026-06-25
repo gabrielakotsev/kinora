@@ -5,11 +5,10 @@
 -- table holds customer PII. This security-definer function returns ONLY the set
 -- of product ids that appear in non-cancelled orders, nothing else.
 
--- An item counts as sold when:
---   * it's in a CONFIRMED order (paid/shipped/completed) — counts forever, OR
---   * it's in an UNPAID order (pending COD / awaiting_payment card) created in the
---     last hour — a short reservation so two buyers can't grab the same 1/1 during
---     checkout. Abandoned unpaid orders stop counting automatically after 1 hour.
+-- An item counts as sold as soon as it appears in ANY order that is not cancelled.
+-- COD/card orders mark the 1/1 item sold immediately and KEEP it sold. If a buyer
+-- never pays (e.g. refuses the COD parcel), set that order's status to 'cancelled'
+-- in the admin panel to return the item to stock.
 create or replace function public.sold_product_ids()
 returns integer[]
 language sql
@@ -23,10 +22,7 @@ as $$
     from public.orders o,
          lateral jsonb_array_elements(o.items::jsonb) as item
     where (item ->> 'id') ~ '^[0-9]+$'   -- skip voucher ids like "voucher-50"
-      and (
-        o.status in ('paid','shipped','completed')
-        or (o.status in ('pending','awaiting_payment') and o.created_at > now() - interval '1 hour')
-      )
+      and coalesce(o.status, '') <> 'cancelled'
   ) s
   where pid is not null;
 $$;

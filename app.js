@@ -99,17 +99,35 @@ const PER_PAGE = 8;
 function pageFromHash(){ const m = location.hash.match(/page=(\d+)/); return m ? Math.max(1, parseInt(m[1],10)) : 1; }
 function setPageHash(n){ history.replaceState(null,'', n>1 ? '#page='+n : location.pathname + location.search); }
 
-function fillGridPaged(gridId, pagerId, type){
+const SORTERS = {
+  featured:    (a,b) => 0,
+  'price-asc': (a,b) => a.price - b.price,
+  'price-desc':(a,b) => b.price - a.price,
+  'name-asc':  (a,b) => a.name.localeCompare(b.name, 'bg'),
+  new:         (a,b) => (b.lbl==='Ново'?1:0) - (a.lbl==='Ново'?1:0),
+};
+
+function fillGridPaged(gridId, pagerId, type, opts={}){
   const grid = document.getElementById(gridId);
   const pager = document.getElementById(pagerId);
   if(!grid) return;
-  const list = PRODUCTS.filter(p=>p.type===type);
-  const pages = Math.max(1, Math.ceil(list.length / PER_PAGE));
+  const base = PRODUCTS.filter(p=>p.type===type);
+  const sortEl = opts.sortId ? document.getElementById(opts.sortId) : null;
+  const countEl = opts.countId ? document.getElementById(opts.countId) : null;
+  let list = base.slice();
+  let pages = 1;
+
+  function applySort(){
+    const key = (sortEl && SORTERS[sortEl.value]) ? sortEl.value : 'featured';
+    list = base.slice().sort(SORTERS[key]);
+    pages = Math.max(1, Math.ceil(list.length / PER_PAGE));
+  }
 
   function render(page){
     page = Math.min(Math.max(1,page), pages);
     const start = (page-1)*PER_PAGE;
     grid.innerHTML = list.slice(start, start+PER_PAGE).map(mkCard).join('');
+    if(countEl) countEl.textContent = list.length + (list.length===1 ? ' артикул' : ' артикула');
     setPageHash(page);
     drawPager(page);
   }
@@ -117,8 +135,8 @@ function fillGridPaged(gridId, pagerId, type){
   function drawPager(page){
     if(!pager) return;
     if(pages <= 1){ pager.innerHTML=''; return; }
-    const btn = (label, target, opts={}) =>
-      `<button ${opts.disabled?'disabled':''} ${opts.active?'class="active"':''} data-page="${target}">${label}</button>`;
+    const btn = (label, target, o={}) =>
+      `<button ${o.disabled?'disabled':''} ${o.active?'class="active"':''} data-page="${target}">${label}</button>`;
     let html = btn('‹', page-1, {disabled: page===1});
     for(let i=1;i<=pages;i++){
       if(i===1 || i===pages || Math.abs(i-page)<=1){
@@ -137,10 +155,14 @@ function fillGridPaged(gridId, pagerId, type){
     });
   }
 
+  if(sortEl){
+    sortEl.onchange = () => { applySort(); render(1); };
+  }
+  applySort();
   render(pageFromHash());
 }
-fillGridPaged('haori-grid-all','haori-pager','haori');     // страница ХАОРИ: 8/стр.
-fillGridPaged('kimono-grid-all','kimono-pager','kimono');  // страница КИМОНО: 8/стр.
+fillGridPaged('haori-grid-all','haori-pager','haori',{sortId:'haori-sort',countId:'haori-count'});
+fillGridPaged('kimono-grid-all','kimono-pager','kimono',{sortId:'kimono-sort',countId:'kimono-count'});
 
 /* MENU */
 let menuOpen = false;

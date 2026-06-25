@@ -205,6 +205,7 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .m-measure dt{font-size:8px;letter-spacing:.26em;text-transform:uppercase;color:var(--OL3)}
 .m-measure dd{font-family:'Tenor Sans',sans-serif;font-size:17px;color:var(--BG);margin:0}
 .m-measure dd span{font-size:10px;color:rgba(228,216,192,.3);margin-left:2px}
+.m-unique{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--OL3);margin:.2rem 0 1.4rem}
 
 /* CART DRAWER */
 .cdrw{position:fixed;top:0;right:0;bottom:0;width:420px;background:var(--NV2);z-index:1000;transform:translateX(100%);transition:transform .42s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-left:1px solid var(--line)}

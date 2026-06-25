@@ -210,12 +210,7 @@ function openM(id) {
     <p class="m-desc">${p.desc}</p>
     <p class="m-lbl">Размер</p>
     <div class="szr">${p.sizes.map(s=>`<button class="sz ${selSz[id]===s?'sel':''}" onclick="setSz(${id},'${s}',this)">${s}</button>`).join('')}</div>
-    <p class="m-lbl">Количество</p>
-    <div class="qrow">
-      <button class="qb" onclick="chQ(${id},-1)">−</button>
-      <span class="qn" id="qd${id}">${selQty[id]}</span>
-      <button class="qb" onclick="chQ(${id},1)">+</button>
-    </div>
+    <p class="m-unique">✦ Уникат — само 1 наличен брой</p>
     <button class="abtn" onclick="addC(${id})">ДОБАВИ — ${p.price.toLocaleString('bg-BG')} €</button>
     <button class="wbtn">Запази в любими</button>
     <button class="wbtn tryon-btn" onclick="tryOnSoon()">Виртуална проба <span class="soon">скоро</span></button>
@@ -252,10 +247,10 @@ function addVoucher(){
 /* CART */
 function addC(id) {
   const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
-  const sz = selSz[id]||p.sizes[0], qty = selQty[id]||1;
-  const ex = cart.find(c=>c.id===id&&c.sz===sz);
-  if(ex) ex.qty += qty;
-  else cart.push({id,name:p.name,sub:p.sub,sz,qty,price:p.price,bg:p.bg,acc:p.acc,type:p.type,img:p.img||''});
+  const sz = selSz[id]||p.sizes[0];
+  // Всеки артикул е уникат (1/1) — не може да се добави повече от веднъж.
+  if(cart.find(c=>c.id===id)){ showToast(`${p.name} вече е в количката — уникат`); cMD(); return; }
+  cart.push({id,name:p.name,sub:p.sub,sz,qty:1,price:p.price,bg:p.bg,acc:p.acc,type:p.type,img:p.img||''});
   saveCart(); upC(); cMD(); showToast(`Добавено — ${p.name}`);
 }
 function rmC(i){cart.splice(i,1);saveCart();upC()}
@@ -270,7 +265,7 @@ function upC(){
     const thumb = it.type==='voucher'
       ? `<div class="ci-gift">🎁</div>`
       : (it.img ? `<img src="${it.img}" alt="${it.name}"/>` : (it.type==='haori'?hSVG(it.bg,it.acc,44):kSVG(it.bg,it.acc,44)));
-    const meta = it.type==='voucher' ? `Дигитален · Бр: ${it.qty}` : `Размер: ${it.sz} · Бр: ${it.qty}`;
+    const meta = it.type==='voucher' ? `Дигитален · Бр: ${it.qty}` : `Размер: ${it.sz} · Уникат`;
     return `<div class="ci">
       <div class="ci-img" style="background:${it.bg||'var(--B)'}">${thumb}</div>
       <div><p class="ci-nm">${it.name}</p><p class="ci-mt">${meta}</p></div>

@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>KINORA — Кимоно | Цялата колекция</title>
-<meta name="description" content="Цялата колекция автентични японски кимона от KINORA."/>
+<title>KINORA — Размерна таблица</title>
+<meta name="description" content="Размерна таблица за KINORA хаори и кимоно — мерки в сантиметри."/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Golos+Text:wght@400;500;600;700&family=Yeseva+One&family=Noto+Serif+JP:wght@200;300&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
 </head>
@@ -54,34 +57,57 @@
   </div>
 </div>
 
-<!-- COLLECTION HEADER -->
-<section class="sec" id="collection-sec" style="background:var(--NV2);padding-top:7rem">
-  <p style="margin-bottom:2rem"><a href="index.html" style="color:var(--OL3);text-decoration:none;font-size:9px;letter-spacing:.3em;text-transform:uppercase">← Начало</a></p>
-  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:2rem">
-    <div>
-      <p class="sec-lbl">Цялата колекция</p>
-      <h2 class="sec-h">КИМОНО</h2>
-    </div>
-    <p style="font-family:'Yeseva One',serif;font-size:16px;color:rgba(228,216,192,.3);max-width:340px;line-height:1.9">Изтъкани по традиционни методи, преосмислени за съвременния живот.</p>
+<!-- CONTENT -->
+<section class="info-sec">
+  <div class="info-head">
+    <a class="info-back" href="index.html">← Начало</a>
+    <p class="sec-lbl">Услуги</p>
+    <h2 class="sec-h">РАЗМЕРНА <em>Таблица</em></h2>
+    <p class="info-lead">Японското облекло се носи свободно. Хаори и кимоно са с релаксиран, обвиващ силует — повечето модели са с универсален размер. По-долу са ориентировъчните мерки.</p>
   </div>
-  <div class="collection-grid" id="kimono-grid-all"></div>
+
+  <div class="info-body">
+    <h3>Хаори — мерки (см)</h3>
+    <table class="sz-table">
+      <thead><tr><th>Размер</th><th>Гръб (ширина)</th><th>Дължина</th><th>Ръкав</th></tr></thead>
+      <tbody>
+        <tr><td>S / M</td><td>54</td><td>92</td><td>34</td></tr>
+        <tr><td>L / XL</td><td>60</td><td>98</td><td>36</td></tr>
+        <tr><td>One size</td><td>58</td><td>95</td><td>35</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Кимоно — мерки (см)</h3>
+    <table class="sz-table">
+      <thead><tr><th>Размер</th><th>Гръб (ширина)</th><th>Дължина</th><th>Ръкав</th></tr></thead>
+      <tbody>
+        <tr><td>S / M</td><td>56</td><td>120</td><td>50</td></tr>
+        <tr><td>L / XL</td><td>62</td><td>128</td><td>52</td></tr>
+        <tr><td>One size</td><td>59</td><td>124</td><td>51</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Как да мерим</h3>
+    <ul>
+      <li><b>Гръб (ширина)</b> — от единия раменен шев до другия, по равно положена дреха.</li>
+      <li><b>Дължина</b> — от най-високата точка на рамото до долния ръб.</li>
+      <li><b>Ръкав</b> — от раменния шев до края на ръкава.</li>
+    </ul>
+    <p>Мерките са на плоско положена дреха и са ориентировъчни — допускат се отклонения до ±2 см, тъй като всяко парче е ръчно изтъкано и ушито.</p>
+
+    <div class="info-note">
+      <p>Не сте сигурни за размера? Пишете ни на <a href="contact.html">страницата за контакт</a> с вашите мерки и ще ви препоръчаме подходящ модел.</p>
+    </div>
+  </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
   <div><div class="fl-m">KINORA</div><div class="fl-s">haori &amp; kimono</div></div>
-  <div class="fc"><h4>Магазин</h4><ul><li><a href="#haori-sec">Хаори</a></li><li><a href="#kimono-sec">Кимона</a></li><li><a href="#">Аксесоари</a></li><li><a href="#">Подаръчни комплекти</a></li></ul></div>
+  <div class="fc"><h4>Магазин</h4><ul><li><a href="haori.html">Хаори</a></li><li><a href="kimono.html">Кимона</a></li><li><a href="#">Аксесоари</a></li><li><a href="#">Подаръчни комплекти</a></li></ul></div>
   <div class="fc"><h4>Услуги</h4><ul><li><a href="size-chart.html">Размерна таблица</a></li><li><a href="care.html">Инструкции за грижа</a></li><li><a href="returns.html">Връщане</a></li><li><a href="contact.html">Контакт</a></li></ul></div>
 </footer>
 <div class="fbot">© 2026 KINORA — Всички права запазени · kinorabg.com</div>
-
-<!-- MODAL -->
-<div class="mw" id="mw" onclick="cMW(event)">
-  <div class="modal">
-    <div class="m-vis" id="mvis"></div>
-    <div class="m-bod" id="mbod"></div>
-  </div>
-</div>
 
 <!-- CART -->
 <div class="cdrw" id="cdrw">

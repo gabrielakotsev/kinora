@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>KINORA — Връщане &amp; обмен</title>
+<meta name="description" content="Политика за връщане и обмен на KINORA — 30 дни, безплатно връщане в България."/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Golos+Text:wght@400;500;600;700&family=Yeseva+One&family=Noto+Serif+JP:wght@200;300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="CUR"></div><div id="CUR2"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <span class="nav-logo-m">KINORA</span>
+    <span class="nav-logo-s">haori &amp; kimono</span>
+  </a>
+  <div class="nav-right">
+    <button class="nav-cart-btn" onclick="toggleCart()">
+      Количка <span class="bct" id="bct">0</span>
+    </button>
+    <button class="burger" id="burger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- FULLSCREEN MENU -->
+<div class="full-menu" id="fmenu">
+  <div class="fm-left">
+    <ul class="fm-links">
+      <li><a class="fm-link" data-en="Haori Jackets" href="haori.html">ХАОРИ</a></li>
+      <li><a class="fm-link" data-en="Kimono" href="kimono.html">КИМОНО</a></li>
+      <li><a class="fm-link" data-en="Cart" href="#" onclick="openCartFromMenu();return false">КОЛИЧКА</a></li>
+      <li><a class="fm-link" data-en="Styling / Outfit Ideas" href="styling.html">СТАЙЛИНГ</a></li>
+      <li><a class="fm-link" data-en="Gift Voucher" href="voucher.html">ВАУЧЕР</a></li>
+    </ul>
+  </div>
+  <div class="fm-right">
+    <div class="fm-meta">
+      <p class="fm-meta-label">Информация</p>
+      <a href="size-chart.html">Размерна таблица</a>
+      <a href="care.html">Инструкции за грижа</a>
+      <a href="returns.html">Връщане &amp; обмен</a>
+      <a href="contact.html">Контакт</a>
+    </div>
+    <div class="fm-meta">
+      <p class="fm-meta-label">Местоположение</p>
+      <p class="fm-meta-tag">Достъпни само в България.<br/>Безплатна доставка над 100 €.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<section class="info-sec">
+  <div class="info-head">
+    <a class="info-back" href="index.html">← Начало</a>
+    <p class="sec-lbl">Услуги</p>
+    <h2 class="sec-h">ВРЪЩАНЕ <em>&amp; обмен</em></h2>
+    <p class="info-lead">Искаме всяко парче да ви носи радост. Ако нещо не е както сте очаквали, можете да го върнете до 30 дни — спокойно и без скрити условия.</p>
+  </div>
+
+  <div class="info-body">
+    <h3>Как протича връщането</h3>
+    <div class="steps">
+      <div class="step"><div class="step-n">1</div><div class="step-tx"><h4>Свържете се с нас</h4><p>Пишете ни на <a href="contact.html">страницата за контакт</a> с номера на поръчката в рамките на 30 дни от получаването.</p></div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-tx"><h4>Опаковайте дрехата</h4><p>Върнете я в оригиналното състояние — неносена, с етикети, в защитната опаковка.</p></div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-tx"><h4>Изпратете обратно</h4><p>Ще ви изпратим адрес и инструкции. Връщането в България е безплатно за нас.</p></div></div>
+      <div class="step"><div class="step-n">4</div><div class="step-tx"><h4>Получете възстановяване</h4><p>След проверка възстановяваме сумата по първоначалния начин на плащане до 5 работни дни.</p></div></div>
+    </div>
+
+    <h3>Условия</h3>
+    <ul>
+      <li>Срок за връщане: <b>30 дни</b> от датата на получаване.</li>
+      <li>Дрехата трябва да е <b>неносена, непрана</b>, с прикачени етикети.</li>
+      <li>Безплатно връщане за поръчки в България.</li>
+      <li>Обменът за друг размер или модел е безплатен (при наличност).</li>
+    </ul>
+
+    <h3>Изключения</h3>
+    <ul>
+      <li>Подаръчни ваучери не подлежат на връщане.</li>
+      <li>Артикули по поръчка или с персонализация.</li>
+      <li>Дрехи със следи от носене, аромати или повреди.</li>
+    </ul>
+
+    <h3>Повредена или грешна пратка</h3>
+    <p>Ако сте получили дефектен или грешен артикул, свържете се с нас до 48 часа от получаването. Ще организираме замяна или пълно възстановяване за наша сметка.</p>
+
+    <div class="info-note">
+      <p>Готови сте да започнете връщане? Отворете <a href="contact.html">страницата за контакт</a> и изберете тема „Връщане / обмен“.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div><div class="fl-m">KINORA</div><div class="fl-s">haori &amp; kimono</div></div>
+  <div class="fc"><h4>Магазин</h4><ul><li><a href="haori.html">Хаори</a></li><li><a href="kimono.html">Кимона</a></li><li><a href="#">Аксесоари</a></li><li><a href="#">Подаръчни комплекти</a></li></ul></div>
+  <div class="fc"><h4>Услуги</h4><ul><li><a href="size-chart.html">Размерна таблица</a></li><li><a href="care.html">Инструкции за грижа</a></li><li><a href="returns.html">Връщане</a></li><li><a href="contact.html">Контакт</a></li></ul></div>
+</footer>
+<div class="fbot">© 2026 KINORA — Всички права запазени · kinorabg.com</div>
+
+<!-- CART -->
+<div class="cdrw" id="cdrw">
+  <div class="chd"><h3>КОЛИЧКА</h3><button class="ccx" onclick="toggleCart()">×</button></div>
+  <div class="cbod" id="cbod"><p class="empty-cart">Количката ви е празна</p></div>
+  <div class="cft" id="cft" style="display:none">
+    <div class="ctr"><span class="ctl">Общо</span><span class="ctp" id="ctot">0 €</span></div>
+    <button class="cchk" onclick="goCheckout()">КЪМ ПЛАЩАНЕ</button>
+    <p style="font-size:8.5px;color:rgba(228,216,192,.14);text-align:center;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Безплатна доставка над 100 € · Сигурно плащане</p>
+  </div>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

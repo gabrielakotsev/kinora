@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>KINORA — Контакт</title>
+<meta name="description" content="Свържете се с KINORA — въпроси за поръчки, размери, връщане и стайлинг."/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Golos+Text:wght@400;500;600;700&family=Yeseva+One&family=Noto+Serif+JP:wght@200;300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="CUR"></div><div id="CUR2"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <span class="nav-logo-m">KINORA</span>
+    <span class="nav-logo-s">haori &amp; kimono</span>
+  </a>
+  <div class="nav-right">
+    <button class="nav-cart-btn" onclick="toggleCart()">
+      Количка <span class="bct" id="bct">0</span>
+    </button>
+    <button class="burger" id="burger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- FULLSCREEN MENU -->
+<div class="full-menu" id="fmenu">
+  <div class="fm-left">
+    <ul class="fm-links">
+      <li><a class="fm-link" data-en="Haori Jackets" href="haori.html">ХАОРИ</a></li>
+      <li><a class="fm-link" data-en="Kimono" href="kimono.html">КИМОНО</a></li>
+      <li><a class="fm-link" data-en="Cart" href="#" onclick="openCartFromMenu();return false">КОЛИЧКА</a></li>
+      <li><a class="fm-link" data-en="Styling / Outfit Ideas" href="styling.html">СТАЙЛИНГ</a></li>
+      <li><a class="fm-link" data-en="Gift Voucher" href="voucher.html">ВАУЧЕР</a></li>
+    </ul>
+  </div>
+  <div class="fm-right">
+    <div class="fm-meta">
+      <p class="fm-meta-label">Информация</p>
+      <a href="size-chart.html">Размерна таблица</a>
+      <a href="care.html">Инструкции за грижа</a>
+      <a href="returns.html">Връщане &amp; обмен</a>
+      <a href="contact.html">Контакт</a>
+    </div>
+    <div class="fm-meta">
+      <p class="fm-meta-label">Местоположение</p>
+      <p class="fm-meta-tag">Достъпни само в България.<br/>Безплатна доставка над 100 €.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<section class="info-sec">
+  <div class="info-head">
+    <a class="info-back" href="index.html">← Начало</a>
+    <p class="sec-lbl">Услуги</p>
+    <h2 class="sec-h">КОНТ<em>акт</em></h2>
+    <p class="info-lead">Имате въпрос за поръчка, размер или стайлинг? Пишете ни — отговаряме лично, обикновено до 24 часа.</p>
+  </div>
+
+  <div class="contact-wrap">
+    <form class="cform" id="contactForm" novalidate>
+      <div class="cf-2">
+        <div class="cf-row">
+          <label for="cf-name">Име</label>
+          <input class="cf-input" id="cf-name" name="name" type="text" autocomplete="name" placeholder="Вашето име"/>
+        </div>
+        <div class="cf-row">
+          <label for="cf-email">Имейл *</label>
+          <input class="cf-input" id="cf-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required/>
+        </div>
+      </div>
+      <div class="cf-row">
+        <label for="cf-topic">Тема</label>
+        <select class="cf-sel" id="cf-topic" name="topic">
+          <option value="Общ въпрос">Общ въпрос</option>
+          <option value="Поръчка">Поръчка</option>
+          <option value="Размери">Размери</option>
+          <option value="Връщане / обмен">Връщане / обмен</option>
+          <option value="Стайлинг">Стайлинг</option>
+          <option value="Ваучер">Ваучер</option>
+        </select>
+      </div>
+      <div class="cf-row">
+        <label for="cf-message">Съобщение *</label>
+        <textarea class="cf-area" id="cf-message" name="message" placeholder="Как можем да помогнем?" required></textarea>
+      </div>
+      <button class="btn-A" type="submit" id="cf-submit" style="align-self:flex-start">Изпрати съобщение</button>
+      <p class="cf-msg" id="cf-msg" role="status" aria-live="polite"></p>
+    </form>
+
+    <aside class="cf-side">
+      <div class="cf-block">
+        <p class="cf-lbl">Имейл</p>
+        <a href="mailto:hello@kinorabg.com">hello@kinorabg.com</a>
+      </div>
+      <div class="cf-block">
+        <p class="cf-lbl">Работно време</p>
+        <p>Понеделник – Петък<br/>10:00 – 18:00 (EET)</p>
+      </div>
+      <div class="cf-block">
+        <p class="cf-lbl">Местоположение</p>
+        <p>София, България<br/>Доставка в цялата страна</p>
+      </div>
+      <div class="cf-block">
+        <p class="cf-lbl">Полезни връзки</p>
+        <p><a href="size-chart.html">Размерна таблица</a><br/><a href="returns.html">Връщане &amp; обмен</a></p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div><div class="fl-m">KINORA</div><div class="fl-s">haori &amp; kimono</div></div>
+  <div class="fc"><h4>Магазин</h4><ul><li><a href="haori.html">Хаори</a></li><li><a href="kimono.html">Кимона</a></li><li><a href="#">Аксесоари</a></li><li><a href="#">Подаръчни комплекти</a></li></ul></div>
+  <div class="fc"><h4>Услуги</h4><ul><li><a href="size-chart.html">Размерна таблица</a></li><li><a href="care.html">Инструкции за грижа</a></li><li><a href="returns.html">Връщане</a></li><li><a href="contact.html">Контакт</a></li></ul></div>
+</footer>
+<div class="fbot">© 2026 KINORA — Всички права запазени · kinorabg.com</div>
+
+<!-- CART -->
+<div class="cdrw" id="cdrw">
+  <div class="chd"><h3>КОЛИЧКА</h3><button class="ccx" onclick="toggleCart()">×</button></div>
+  <div class="cbod" id="cbod"><p class="empty-cart">Количката ви е празна</p></div>
+  <div class="cft" id="cft" style="display:none">
+    <div class="ctr"><span class="ctl">Общо</span><span class="ctp" id="ctot">0 €</span></div>
+    <button class="cchk" onclick="goCheckout()">КЪМ ПЛАЩАНЕ</button>
+    <p style="font-size:8.5px;color:rgba(228,216,192,.14);text-align:center;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Безплатна доставка над 100 € · Сигурно плащане</p>
+  </div>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script src="app.js"></script>
+<script>
+(function () {
+  var form = document.getElementById('contactForm');
+  if (!form) return;
+  var msg = document.getElementById('cf-msg');
+  var btn = document.getElementById('cf-submit');
+  var isEmail = function (s) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); };
+
+  function setMsg(text, kind) {
+    msg.textContent = text;
+    msg.className = 'cf-msg' + (kind ? ' ' + kind : '');
+  }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var name = form.name.value.trim();
+    var email = form.email.value.trim();
+    var topic = form.topic.value;
+    var message = form.message.value.trim();
+
+    if (!isEmail(email)) { setMsg('Моля, въведете валиден имейл адрес.', 'err'); form.email.focus(); return; }
+    if (!message) { setMsg('Моля, напишете съобщение.', 'err'); form.message.focus(); return; }
+
+    btn.disabled = true;
+    var original = btn.textContent;
+    btn.textContent = 'Изпращане…';
+    setMsg('', '');
+
+    try {
+      var res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, email: email, topic: topic, message: message })
+      });
+      if (!res.ok) {
+        var data = await res.json().catch(function () { return {}; });
+        throw new Error(data.error || 'Грешка при изпращане');
+      }
+      form.reset();
+      setMsg('Благодарим! Съобщението е изпратено — ще се свържем скоро.', 'ok');
+    } catch (err) {
+      setMsg('Съобщението не може да бъде изпратено. Пишете ни на hello@kinorabg.com.', 'err');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -5,6 +5,10 @@
     { "source": "/kimono", "destination": "/kimono.html" },
     { "source": "/styling", "destination": "/styling.html" },
     { "source": "/voucher", "destination": "/voucher.html" },
+    { "source": "/size-chart", "destination": "/size-chart.html" },
+    { "source": "/care", "destination": "/care.html" },
+    { "source": "/returns", "destination": "/returns.html" },
+    { "source": "/contact", "destination": "/contact.html" },
     { "source": "/checkout", "destination": "/checkout.html" },
     { "source": "/success", "destination": "/success.html" },
     { "source": "/admin", "destination": "/admin.html" }

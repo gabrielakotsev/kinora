@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>KINORA — Инструкции за грижа</title>
+<meta name="description" content="Как да се грижите за вашето KINORA хаори и кимоно — пране, съхранение и гладене."/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Golos+Text:wght@400;500;600;700&family=Yeseva+One&family=Noto+Serif+JP:wght@200;300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="CUR"></div><div id="CUR2"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <span class="nav-logo-m">KINORA</span>
+    <span class="nav-logo-s">haori &amp; kimono</span>
+  </a>
+  <div class="nav-right">
+    <button class="nav-cart-btn" onclick="toggleCart()">
+      Количка <span class="bct" id="bct">0</span>
+    </button>
+    <button class="burger" id="burger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- FULLSCREEN MENU -->
+<div class="full-menu" id="fmenu">
+  <div class="fm-left">
+    <ul class="fm-links">
+      <li><a class="fm-link" data-en="Haori Jackets" href="haori.html">ХАОРИ</a></li>
+      <li><a class="fm-link" data-en="Kimono" href="kimono.html">КИМОНО</a></li>
+      <li><a class="fm-link" data-en="Cart" href="#" onclick="openCartFromMenu();return false">КОЛИЧКА</a></li>
+      <li><a class="fm-link" data-en="Styling / Outfit Ideas" href="styling.html">СТАЙЛИНГ</a></li>
+      <li><a class="fm-link" data-en="Gift Voucher" href="voucher.html">ВАУЧЕР</a></li>
+    </ul>
+  </div>
+  <div class="fm-right">
+    <div class="fm-meta">
+      <p class="fm-meta-label">Информация</p>
+      <a href="size-chart.html">Размерна таблица</a>
+      <a href="care.html">Инструкции за грижа</a>
+      <a href="returns.html">Връщане &amp; обмен</a>
+      <a href="contact.html">Контакт</a>
+    </div>
+    <div class="fm-meta">
+      <p class="fm-meta-label">Местоположение</p>
+      <p class="fm-meta-tag">Достъпни само в България.<br/>Безплатна доставка над 100 €.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<section class="info-sec">
+  <div class="info-head">
+    <a class="info-back" href="index.html">← Начало</a>
+    <p class="sec-lbl">Услуги</p>
+    <h2 class="sec-h">ИНСТРУКЦИИ <em>за грижа</em></h2>
+    <p class="info-lead">Ниши-джин коприната е жив занаят. С правилна грижа вашето хаори или кимоно ще пази цвета и блясъка си поколения наред.</p>
+  </div>
+
+  <div class="info-body">
+    <div class="care-grid">
+      <div class="care-card">
+        <div class="care-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 6h18l-1.5 5.5a6 6 0 0 1-5.8 4.5H10.3a6 6 0 0 1-5.8-4.5L3 6Z"/><path d="M8 6V4a4 4 0 0 1 8 0v2"/></svg></div>
+        <h4>Само химическо чистене</h4>
+        <p>Поверете дрехата на специалист по коприна. Не перете в пералня и не накисвайте.</p>
+      </div>
+      <div class="care-card">
+        <div class="care-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="9"/><path d="M12 12 8 8"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg></div>
+        <h4>Гладене на ниска степен</h4>
+        <p>Гладете отвътре или през памучна кърпа на минимална температура (коприна). Без пара директно върху бродерията.</p>
+      </div>
+      <div class="care-card">
+        <div class="care-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></div>
+        <h4>Далеч от пряка светлина</h4>
+        <p>Слънцето избелва естествените багрила. Съхранявайте на сенчесто, проветриво място.</p>
+      </div>
+      <div class="care-card">
+        <div class="care-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 21V8l9-5 9 5v13"/><path d="M3 8h18M9 21v-7h6v7"/></svg></div>
+        <h4>Съхранение на закачалка</h4>
+        <p>Закачете на широка закачалка в дишащ калъф. Сгъвайте по оригиналните линии за дълго съхранение.</p>
+      </div>
+    </div>
+
+    <h3>Ежедневна грижа</h3>
+    <ul>
+      <li>Проветрявайте дрехата след носене, преди да я приберете.</li>
+      <li>Петна попивайте леко с чиста суха кърпа — никога не търкайте.</li>
+      <li>Избягвайте парфюм и лак за коса директно върху коприната.</li>
+      <li>Сваляйте бижута с остри ръбове, които могат да закачат нишките.</li>
+    </ul>
+
+    <h3>При петно</h3>
+    <p>Действайте бързо: попийте излишъка, не разтривайте, и занесете дрехата на химическо чистене възможно най-скоро. Споменете, че материята е естествена японска коприна (Ниши-джин).</p>
+
+    <div class="info-note">
+      <p>Имате въпрос за конкретно парче? Свържете се с нас през <a href="contact.html">страницата за контакт</a> — ще ви насочим лично.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div><div class="fl-m">KINORA</div><div class="fl-s">haori &amp; kimono</div></div>
+  <div class="fc"><h4>Магазин</h4><ul><li><a href="haori.html">Хаори</a></li><li><a href="kimono.html">Кимона</a></li><li><a href="#">Аксесоари</a></li><li><a href="#">Подаръчни комплекти</a></li></ul></div>
+  <div class="fc"><h4>Услуги</h4><ul><li><a href="size-chart.html">Размерна таблица</a></li><li><a href="care.html">Инструкции за грижа</a></li><li><a href="returns.html">Връщане</a></li><li><a href="contact.html">Контакт</a></li></ul></div>
+</footer>
+<div class="fbot">© 2026 KINORA — Всички права запазени · kinorabg.com</div>
+
+<!-- CART -->
+<div class="cdrw" id="cdrw">
+  <div class="chd"><h3>КОЛИЧКА</h3><button class="ccx" onclick="toggleCart()">×</button></div>
+  <div class="cbod" id="cbod"><p class="empty-cart">Количката ви е празна</p></div>
+  <div class="cft" id="cft" style="display:none">
+    <div class="ctr"><span class="ctl">Общо</span><span class="ctp" id="ctot">0 €</span></div>
+    <button class="cchk" onclick="goCheckout()">КЪМ ПЛАЩАНЕ</button>
+    <p style="font-size:8.5px;color:rgba(228,216,192,.14);text-align:center;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Безплатна доставка над 100 € · Сигурно плащане</p>
+  </div>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 const PRODUCTS = [
-  {id:1,type:'haori',lbl:'',cat:'Хаори яке',name:'ТЕРНА',sub:'Хаори',price:85,colors:['#0c0608','#2e3018','#4a0c1a'],desc:'Описанието за това хаори ще бъде добавено скоро.',sizes:['Универсален (XS–XL)'],details:['Материал — попълни','Подплата — попълни','Произход — попълни','Инструкции за грижа — попълни'],bg:'#0c0608',acc:'#7c8240',img:''},
+  {id:1,type:'haori',lbl:'',cat:'Хаори яке',name:'ТЕРНА',sub:'Хаори',price:85,colors:['#0c0608','#2e3018','#4a0c1a'],desc:'Описанието за това хаори ще бъде добавено скоро.',sizes:['Универсален (XS–XL)'],measure:{back:58,length:95,sleeve:35},details:['Материал — попълни','Подплата — попълни','Произход — попълни','Инструкции за грижа — попълни'],bg:'#0c0608',acc:'#7c8240',img:''},
   {id:2,type:'haori',lbl:'',cat:'Хаори яке',name:'ГЕОНА',sub:'Хаори',price:110,colors:['#2e3018','#4a0c1a','#0c0608'],desc:'Описанието за това хаори ще бъде добавено скоро.',sizes:['Универсален (XS–XL)'],details:['Материал — попълни','Подплата — попълни','Произход — попълни','Инструкции за грижа — попълни'],bg:'#1e2010',acc:'#e4d8c0',img:''},
   {id:3,type:'haori',lbl:'',cat:'Хаори яке',name:'КАРЕ',sub:'Хаори',price:99,colors:['#2e3018','#4a0c1a','#0c0608'],desc:'Описанието за това хаори ще бъде добавено скоро.',sizes:['Универсален (XS–XL)'],details:['Материал — попълни','Подплата — попълни','Произход — попълни','Инструкции за грижа — попълни'],bg:'#0c0608',acc:'#c4a464',img:''},
 
@@ -179,6 +179,21 @@ function goTo(id) {
 function openCartFromMenu() { toggleMenu(); setTimeout(() => toggleCart(), 500); }
 
 /* MODAL */
+// Измервания: добави към продукта  measure:{back:58,length:95,sleeve:35}  (в см)
+function measureBlock(p){
+  if(!p.measure) return '';
+  const m = p.measure, row = (lbl,v)=> v==null ? '' :
+    `<div><dt>${lbl}</dt><dd>${v}<span>см</span></dd></div>`;
+  const inner = row('Гръб',m.back)+row('Дължина',m.length)+row('Ръкав',m.sleeve);
+  return inner ? `<p class="m-lbl" style="margin-top:1.6rem">Мерки</p><dl class="m-measure">${inner}</dl>` : '';
+}
+// Скрий списъка с детайли, докато все още са незапълнени плейсхолдъри ("— попълни").
+function detailsBlock(p){
+  const real = (p.details||[]).filter(d => d && !/попълни/i.test(d));
+  if(!real.length) return '';
+  return `<ul class="detl">${real.map(d=>`<li>${d}</li>`).join('')}</ul>`;
+}
+
 function openM(id) {
   const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
   selSz[id] = selSz[id] || p.sizes[0];
@@ -204,7 +219,8 @@ function openM(id) {
     <button class="abtn" onclick="addC(${id})">ДОБАВИ — ${p.price.toLocaleString('bg-BG')} €</button>
     <button class="wbtn">Запази в любими</button>
     <button class="wbtn tryon-btn" onclick="tryOnSoon()">Виртуална проба <span class="soon">скоро</span></button>
-    <ul class="detl">${p.details.map(d=>`<li>${d}</li>`).join('')}</ul>`;
+    ${measureBlock(p)}
+    ${detailsBlock(p)}`;
   document.getElementById('mw').classList.add('on');
   document.body.classList.add('no-scroll');
 }

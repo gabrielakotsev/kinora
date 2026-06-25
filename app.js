@@ -91,7 +91,7 @@ function fillGrid(id, type, limit){
   if(limit) list = list.slice(0, limit);
   el.innerHTML = list.map(mkCard).join('');
 }
-fillGrid('haori-grid','haori',HOME_LIMIT);   // начална: 5 хаори
+fillGrid('haori-grid','haori',4);            // начална: 4 хаори
 fillGrid('kimono-grid','kimono',HOME_LIMIT); // начална: до 5 кимона
 
 /* PAGINATED GRID — 8 артикула на страница (страници ХАОРИ / КИМОНО) */

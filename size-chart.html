@@ -90,67 +90,60 @@
     <h3>Как да мерим</h3>
 
     <figure class="size-fig size-fig--light">
-      <svg viewBox="0 0 600 600" role="img" aria-label="Илюстрация на мерките за кимоно">
+      <svg viewBox="0 0 760 920" role="img" aria-label="Илюстрация на мерките за кимоно">
         <defs>
-          <marker id="a" markerWidth="11" markerHeight="11" refX="5.5" refY="5.5" orient="auto"><path d="M2 2 L9 5.5 L2 9" fill="none" stroke="#222" stroke-width="1.6"/></marker>
+          <marker id="olv" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto"><path d="M2 2 L10 6 L2 10" fill="none" stroke="#7c8240" stroke-width="2"/></marker>
+          <marker id="gld" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto"><path d="M2 2 L10 6 L2 10" fill="none" stroke="#c4a464" stroke-width="2"/></marker>
+          <marker id="bgd" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto"><path d="M2 2 L10 6 L2 10" fill="none" stroke="#7a1a30" stroke-width="2"/></marker>
         </defs>
-        <!-- sleeves (orange fill) -->
-        <g fill="#f4d3ab" stroke="#222" stroke-width="2" stroke-linejoin="round">
-          <rect x="100" y="130" width="160" height="160"/>
-          <rect x="340" y="130" width="160" height="160"/>
-          <!-- lower body skirt panels (orange) -->
-          <rect x="230" y="130" width="140" height="450"/>
-        </g>
-        <!-- inner body panel (light) over the orange, forming the open front -->
-        <g fill="#ededed" stroke="#222" stroke-width="2" stroke-linejoin="round">
-          <path d="M270 130 L270 110 L292 92 L308 92 L330 110 L330 130 Z"/>
-          <rect x="285" y="130" width="60" height="450"/>
-        </g>
-        <!-- collar / front opening lines -->
-        <g fill="none" stroke="#222" stroke-width="2">
-          <line x1="285" y1="130" x2="285" y2="470"/>
-          <line x1="345" y1="130" x2="345" y2="470"/>
-          <line x1="270" y1="130" x2="270" y2="470"/>
-          <line x1="330" y1="130" x2="330" y2="470"/>
-        </g>
-        <!-- centre dashed line -->
-        <line x1="315" y1="130" x2="315" y2="575" stroke="#222" stroke-width="1.4" stroke-dasharray="6 6"/>
 
-        <!-- arrows (black) -->
-        <g stroke="#222" stroke-width="1.8" fill="none">
-          <!-- Sleeve Length (vertical, left sleeve) -->
-          <line x1="170" y1="135" x2="170" y2="285" marker-start="url(#a)" marker-end="url(#a)"/>
-          <!-- Length (vertical, full) -->
-          <line x1="245" y1="135" x2="245" y2="575" marker-start="url(#a)" marker-end="url(#a)"/>
-          <!-- Half Width (horizontal, centre to sleeve end) -->
-          <line x1="318" y1="180" x2="495" y2="180" marker-start="url(#a)" marker-end="url(#a)"/>
-          <!-- Half Body Width (horizontal, centre to body edge) -->
-          <line x1="318" y1="370" x2="362" y2="370" marker-start="url(#a)" marker-end="url(#a)"/>
-        </g>
+        <text x="40" y="50" font-family="'Tenor Sans',sans-serif" font-size="30" fill="#1a1208" letter-spacing="1">Мерки за кимоно</text>
 
-        <!-- labels (white bg pill for legibility over fills) -->
-        <g font-family="'Golos Text',sans-serif" font-size="17" fill="#222">
-          <g text-anchor="middle">
-            <rect x="118" y="200" width="104" height="24" fill="#fff"/><text x="170" y="217">Ръкав</text>
-            <rect x="208" y="345" width="74" height="24" fill="#fff"/><text x="245" y="362">Дължина</text>
-            <rect x="402" y="168" width="70" height="24" fill="#fff"/><text x="437" y="185">Ширина</text>
-          </g>
-          <g text-anchor="middle">
-            <rect x="372" y="356" width="118" height="42" fill="#fff"/>
-            <text x="431" y="372">Ширина на</text><text x="431" y="392">тялото</text>
-          </g>
+        <!-- ============ TOP KIMONO (sleeve + neck-to-sleeve) ============ -->
+        <g fill="none" stroke="#1a1208" stroke-width="2.4" stroke-linejoin="round">
+          <!-- left sleeve -->
+          <rect x="60" y="150" width="150" height="200"/>
+          <!-- left body -->
+          <rect x="210" y="150" width="120" height="260"/>
+          <!-- right body -->
+          <rect x="430" y="150" width="120" height="260"/>
+          <!-- right sleeve -->
+          <rect x="550" y="150" width="150" height="200"/>
+          <!-- collar block (raised) -->
+          <path d="M330 150 L345 120 L415 120 L430 150"/>
+          <!-- front overlap panels -->
+          <line x1="345" y1="120" x2="345" y2="410"/>
+          <line x1="415" y1="120" x2="415" y2="410"/>
+          <rect x="362" y="120" width="36" height="290"/>
         </g>
+        <!-- Ръкав (olive, vertical on left sleeve) -->
+        <line x1="135" y1="155" x2="135" y2="345" stroke="#7c8240" stroke-width="2.6" marker-start="url(#olv)" marker-end="url(#olv)"/>
+        <text x="135" y="270" fill="#7c8240" font-family="'Golos Text',sans-serif" font-weight="700" font-size="22" text-anchor="middle"><tspan x="135">Дължина</tspan><tspan x="135" dy="26">на ръкава</tspan></text>
+        <!-- От тила до края на ръкава (gold, horizontal) -->
+        <line x1="380" y1="210" x2="695" y2="210" stroke="#c4a464" stroke-width="2.6" marker-start="url(#gld)" marker-end="url(#gld)"/>
+        <text x="430" y="180" fill="#c4a464" font-family="'Golos Text',sans-serif" font-weight="700" font-size="22"><tspan x="430">От тила до</tspan><tspan x="430" dy="26">края на ръкава</tspan></text>
+
+        <!-- ============ BOTTOM KIMONO (body length) ============ -->
+        <g fill="none" stroke="#1a1208" stroke-width="2.4" stroke-linejoin="round">
+          <rect x="60" y="560" width="150" height="200"/>
+          <rect x="210" y="560" width="340" height="320"/>
+          <rect x="550" y="560" width="150" height="200"/>
+          <!-- collar -->
+          <path d="M345 560 L360 530 L400 530 L415 560"/>
+        </g>
+        <!-- Дължина (burgundy, vertical, full body) -->
+        <line x1="380" y1="540" x2="380" y2="875" stroke="#7a1a30" stroke-width="2.6" marker-start="url(#bgd)" marker-end="url(#bgd)"/>
+        <text x="400" y="720" fill="#7a1a30" font-family="'Golos Text',sans-serif" font-weight="700" font-size="22" text-anchor="start">Дължина (на тялото)</text>
       </svg>
       <figcaption>
-        Мерки за кимоно, измерени върху равно положена дреха.
+        Мерки за кимоно, измерени върху равно положена дреха. Допуск ±2 см.
       </figcaption>
     </figure>
 
     <ul>
-      <li><b>Ръкав</b> — височината на ръкава, от горния до долния му ръб.</li>
-      <li><b>Дължина</b> — от най-високата точка на яката до долния ръб.</li>
-      <li><b>Ширина</b> — от средата на гърба (яката) до края на ръкава.</li>
-      <li><b>Ширина на тялото</b> — половината от ширината на тялото, от центъра до страничния ръб.</li>
+      <li><b>Дължина на ръкава</b> — височината на ръкава, от горния до долния му ръб.</li>
+      <li><b>От тила до края на ръкава</b> — от средата на гърба (яката) до края на ръкава.</li>
+      <li><b>Дължина (на тялото)</b> — от най-високата точка на яката до долния ръб.</li>
     </ul>
     <p>Мерките са на плоско положена дреха и са ориентировъчни — допускат се отклонения до ±2 см, тъй като всяко парче е ръчно изтъкано и ушито.</p>
 

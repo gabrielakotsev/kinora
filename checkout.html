@@ -106,10 +106,10 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
       <div class="form-group">
         <label>Начин на доставка</label>
         <select id="delivery_method" onchange="updateDelivery()">
-          <option value="econt_office">Еконт — офис (2.99 €)</option>
-          <option value="econt_address">Еконт — до адрес (3.99 €)</option>
-          <option value="speedy_office">Спиди — офис (2.79 €)</option>
-          <option value="speedy_address">Спиди — до адрес (3.79 €)</option>
+          <option value="econt_office" data-base="Еконт — офис">Еконт — офис (2.99 €)</option>
+          <option value="econt_address" data-base="Еконт — до адрес">Еконт — до адрес (3.99 €)</option>
+          <option value="speedy_office" data-base="Спиди — офис">Спиди — офис (2.79 €)</option>
+          <option value="speedy_address" data-base="Спиди — до адрес">Спиди — до адрес (3.79 €)</option>
         </select>
       </div>
       <div class="form-group">
@@ -260,7 +260,19 @@ function getVoucherDiscount() {
 }
 function getTotal() { return Math.max(0, getGross() - getVoucherDiscount()); }
 
+function refreshDeliveryOptions() {
+  const sel = document.getElementById('delivery_method');
+  if (!sel) return;
+  const free = isFreeShipping() && !isVoucherOnly();
+  Array.from(sel.options).forEach(opt => {
+    const base = opt.dataset.base || opt.textContent.replace(/\s*\(.*\)$/, '');
+    const price = DELIVERY_PRICES[opt.value];
+    opt.textContent = free ? `${base} (безплатно)` : `${base} (${price.toFixed(2)} €)`;
+  });
+}
+
 function updateTotals() {
+  refreshDeliveryOptions();
   document.getElementById('subtotal-val').textContent = getSubtotal().toLocaleString('bg-BG') + ' €';
   document.getElementById('delivery-val').textContent = isVoucherOnly() ? 'по имейл' : (isFreeShipping() ? 'Безплатно' : getDeliveryPrice().toFixed(2) + ' €');
   const discount = getVoucherDiscount();

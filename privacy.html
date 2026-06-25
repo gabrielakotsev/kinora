@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>KINORA — Политика за поверителност</title>
+<meta name="description" content="Как KINORA събира, използва и защитава Вашите лични данни (GDPR)."/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Golos+Text:wght@400;500;600;700&family=Yeseva+One&family=Noto+Serif+JP:wght@200;300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="CUR"></div><div id="CUR2"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <span class="nav-logo-m">KINORA</span>
+    <span class="nav-logo-s">haori &amp; kimono</span>
+  </a>
+  <div class="nav-right">
+    <button class="nav-cart-btn" onclick="toggleCart()">
+      Количка <span class="bct" id="bct">0</span>
+    </button>
+    <button class="burger" id="burger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- FULLSCREEN MENU -->
+<div class="full-menu" id="fmenu">
+  <div class="fm-left">
+    <ul class="fm-links">
+      <li><a class="fm-link" data-en="Haori Jackets" href="haori.html">ХАОРИ</a></li>
+      <li><a class="fm-link" data-en="Kimono" href="kimono.html">КИМОНО</a></li>
+      <li><a class="fm-link" data-en="Cart" href="#" onclick="openCartFromMenu();return false">КОЛИЧКА</a></li>
+      <li><a class="fm-link" data-en="Styling / Outfit Ideas" href="styling.html">СТАЙЛИНГ</a></li>
+      <li><a class="fm-link" data-en="Gift Voucher" href="voucher.html">ВАУЧЕР</a></li>
+    </ul>
+  </div>
+  <div class="fm-right">
+    <div class="fm-meta">
+      <p class="fm-meta-label">Информация</p>
+      <a href="size-chart.html">Размерна таблица</a>
+      <a href="care.html">Инструкции за грижа</a>
+      <a href="returns.html">Връщане &amp; обмен</a>
+      <a href="contact.html">Контакт</a>
+    </div>
+    <div class="fm-meta">
+      <p class="fm-meta-label">Местоположение</p>
+      <p class="fm-meta-tag">Достъпни само в България.<br/>Безплатна доставка над 100 €.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<section class="info-sec">
+  <div class="info-head">
+    <a class="info-back" href="index.html">← Начало</a>
+    <p class="sec-lbl">Правна информация</p>
+    <h2 class="sec-h">ПОВЕРИТЕЛ<em>ност</em></h2>
+    <p class="info-lead">Поверителността Ви е важна за нас. Тази политика обяснява какви лични данни събираме, защо и какви права имате съгласно GDPR.</p>
+  </div>
+
+  <div class="legal-body">
+    <h3>Администратор на лични данни</h3>
+    <p>Администратор е <span class="legal-ph">[ФИРМА / ИМЕ]</span>, ЕИК / Булстат <span class="legal-ph">[ЕИК]</span>, със седалище <span class="legal-ph">[АДРЕС]</span>. За въпроси относно данните: <a href="mailto:hello@kinorabg.com">hello@kinorabg.com</a>.</p>
+
+    <h3>Какви данни събираме</h3>
+    <ul>
+      <li><b>При поръчка:</b> име, имейл, телефон, адрес за доставка, град и пощенски код.</li>
+      <li><b>При контакт:</b> име, имейл и съдържанието на Вашето съобщение.</li>
+      <li><b>Технически:</b> данни за поръчката и кореспонденцията, необходими за изпълнение и поддръжка.</li>
+    </ul>
+    <p>Не събираме специални категории лични данни и не съхраняваме данни за банкови карти — плащанията с карта се обработват изцяло от Stripe.</p>
+
+    <h3>За какво използваме данните</h3>
+    <ul>
+      <li>Изпълнение на поръчки, доставка и комуникация по тях.</li>
+      <li>Отговор на запитвания, изпратени през формата за контакт.</li>
+      <li>Изпълнение на законови задължения (счетоводство, рекламации).</li>
+    </ul>
+
+    <h3>Основания за обработка</h3>
+    <ul>
+      <li><b>Изпълнение на договор</b> — за обработка на Вашите поръчки.</li>
+      <li><b>Законово задължение</b> — за счетоводни и данъчни цели.</li>
+      <li><b>Законен интерес</b> — за отговор на запитвания и защита от злоупотреби.</li>
+    </ul>
+
+    <h3>С кого споделяме данни</h3>
+    <ul>
+      <li><b>Куриерски фирми</b> — за доставка на поръчките.</li>
+      <li><b>Stripe</b> — за обработка на плащания с карта.</li>
+      <li><b>Mailgun</b> — за изпращане на транзакционни имейли (потвърждения, отговори).</li>
+    </ul>
+    <p>Не продаваме и не отдаваме под наем Вашите лични данни на трети страни.</p>
+
+    <h3>Срок на съхранение</h3>
+    <p>Съхраняваме данните само толкова, колкото е необходимо за целите, за които са събрани, и в съответствие със законовите срокове (напр. счетоводни документи).</p>
+
+    <h3>Вашите права</h3>
+    <ul>
+      <li>Достъп до данните, които съхраняваме за Вас.</li>
+      <li>Коригиране на неточни данни.</li>
+      <li>Изтриване („право да бъдеш забравен“).</li>
+      <li>Ограничаване или възражение срещу обработката.</li>
+      <li>Преносимост на данните.</li>
+      <li>Жалба до Комисията за защита на личните данни (КЗЛД) — <a href="https://www.cpdp.bg" target="_blank" rel="noopener">cpdp.bg</a>.</li>
+    </ul>
+    <p>За упражняване на правата си пишете на <a href="mailto:hello@kinorabg.com">hello@kinorabg.com</a>.</p>
+
+    <h3>Бисквитки</h3>
+    <p>Сайтът използва само технически необходимо локално съхранение за функционирането на количката. Подробности — в <a href="cookies.html">Политиката за бисквитки</a>.</p>
+
+    <p class="legal-updated">Последна актуализация: юни 2026</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div><div class="fl-m">KINORA</div><div class="fl-s">haori &amp; kimono</div></div>
+  <div class="fc"><h4>Магазин</h4><ul><li><a href="haori.html">Хаори</a></li><li><a href="kimono.html">Кимона</a></li><li><a href="#">Аксесоари</a></li><li><a href="#">Подаръчни комплекти</a></li></ul></div>
+  <div class="fc"><h4>Услуги</h4><ul><li><a href="size-chart.html">Размерна таблица</a></li><li><a href="care.html">Инструкции за грижа</a></li><li><a href="returns.html">Връщане</a></li><li><a href="contact.html">Контакт</a></li></ul></div>
+</footer>
+<div class="fbot">© 2026 KINORA — Всички права запазени · kinorabg.com · <a href="terms.html">Общи условия</a> · <a href="privacy.html">Поверителност</a> · <a href="cookies.html">Бисквитки</a></div>
+
+<!-- CART -->
+<div class="cdrw" id="cdrw">
+  <div class="chd"><h3>КОЛИЧКА</h3><button class="ccx" onclick="toggleCart()">×</button></div>
+  <div class="cbod" id="cbod"><p class="empty-cart">Количката ви е празна</p></div>
+  <div class="cft" id="cft" style="display:none">
+    <div class="ctr"><span class="ctl">Общо</span><span class="ctp" id="ctot">0 €</span></div>
+    <button class="cchk" onclick="goCheckout()">КЪМ ПЛАЩАНЕ</button>
+    <p style="font-size:8.5px;color:rgba(228,216,192,.14);text-align:center;margin-top:.8rem;letter-spacing:.1em;text-transform:uppercase">Безплатна доставка над 100 € · Сигурно плащане</p>
+  </div>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

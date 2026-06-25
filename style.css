@@ -236,6 +236,8 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
 .fc a{font-size:13px;color:rgba(228,216,192,.2);transition:color .2s;font-weight:300;text-decoration:none}
 .fc a:hover{color:var(--GD)}
 .fbot{background:var(--NV);border-top:1px solid rgba(228,216,192,.04);text-align:center;padding:1.5rem;font-size:8.5px;color:rgba(228,216,192,.12);letter-spacing:.14em;text-transform:uppercase}
+.fbot a{color:rgba(228,216,192,.3);text-decoration:none}
+.fbot a:hover{color:var(--GD)}
 
 @media(max-width:900px){
   .haori-split,.modal{grid-template-columns:1fr}
@@ -298,6 +300,22 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
 .info-body a:hover{color:var(--GD2);border-color:var(--GD2)}
 .info-note{margin-top:3.5rem;padding:1.6rem 1.8rem;border:1px solid var(--line);background:var(--NV2)}
 .info-note p{font-size:12px;color:rgba(228,216,192,.42);line-height:1.8;margin:0}
+
+/* legal / long-form text pages */
+.legal-body{max-width:760px;counter-reset:lsec}
+.legal-body h3{font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--GD);margin:3rem 0 1rem;display:flex;gap:.7em}
+.legal-body h3:first-child{margin-top:0}
+.legal-body h3::before{counter-increment:lsec;content:counter(lsec) ".";color:var(--OL3)}
+.legal-body p,.legal-body li{font-size:13.5px;line-height:1.95;color:rgba(228,216,192,.6)}
+.legal-body p{margin-bottom:1rem}
+.legal-body ul{list-style:none;margin:0 0 1.2rem;padding:0}
+.legal-body li{padding-left:1.4rem;position:relative;margin-bottom:.5rem}
+.legal-body li::before{content:'⊹';color:var(--OL3);position:absolute;left:0;top:1px}
+.legal-body a{color:var(--GD);text-decoration:none;border-bottom:1px solid rgba(196,164,100,.3)}
+.legal-body a:hover{color:var(--GD2)}
+.legal-body b{color:var(--BG);font-weight:600}
+.legal-ph{background:rgba(196,164,100,.1);color:var(--GD2);padding:1px 6px;border-radius:2px;font-size:12px;letter-spacing:.04em}
+.legal-updated{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(228,216,192,.3);margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--line)}
 
 /* size table */
 .sz-table{width:100%;border-collapse:collapse;margin:1.5rem 0 2rem;max-width:600px}

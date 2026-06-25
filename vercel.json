@@ -9,6 +9,9 @@
     { "source": "/care", "destination": "/care.html" },
     { "source": "/returns", "destination": "/returns.html" },
     { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/cookies", "destination": "/cookies.html" },
     { "source": "/checkout", "destination": "/checkout.html" },
     { "source": "/success", "destination": "/success.html" },
     { "source": "/admin", "destination": "/admin.html" }

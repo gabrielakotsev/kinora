@@ -301,6 +301,15 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
 .info-note{margin-top:3.5rem;padding:1.6rem 1.8rem;border:1px solid var(--line);background:var(--NV2)}
 .info-note p{font-size:12px;color:rgba(228,216,192,.42);line-height:1.8;margin:0}
 
+/* size diagram */
+.size-fig{margin:2rem 0 1rem;max-width:560px;border:1px solid var(--line);background:var(--NV2);padding:1.8rem}
+.size-fig svg{width:100%;height:auto;display:block}
+.size-fig figcaption{font-size:11px;letter-spacing:.04em;color:rgba(228,216,192,.4);margin-top:1rem;line-height:1.7}
+.size-fig--light{background:#faf7f1;border-color:rgba(228,216,192,.18)}
+.size-fig--light figcaption{color:#6b6256}
+.size-fig .sf-key{display:inline-flex;align-items:center;gap:6px;margin-right:1.2rem;white-space:nowrap}
+.size-fig .sf-dot{width:10px;height:2px;display:inline-block}
+
 /* legal / long-form text pages */
 .legal-body{max-width:760px;counter-reset:lsec}
 .legal-body h3{font-family:'Tenor Sans',sans-serif;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--GD);margin:3rem 0 1rem;display:flex;gap:.7em}

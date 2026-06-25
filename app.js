@@ -93,8 +93,54 @@ function fillGrid(id, type, limit){
 }
 fillGrid('haori-grid','haori',HOME_LIMIT);   // начална: 5 хаори
 fillGrid('kimono-grid','kimono',HOME_LIMIT); // начална: до 5 кимона
-fillGrid('haori-grid-all','haori',0);        // страница ХАОРИ: всички
-fillGrid('kimono-grid-all','kimono',0);      // страница КИМОНО: всички
+
+/* PAGINATED GRID — 8 артикула на страница (страници ХАОРИ / КИМОНО) */
+const PER_PAGE = 8;
+function pageFromHash(){ const m = location.hash.match(/page=(\d+)/); return m ? Math.max(1, parseInt(m[1],10)) : 1; }
+function setPageHash(n){ history.replaceState(null,'', n>1 ? '#page='+n : location.pathname + location.search); }
+
+function fillGridPaged(gridId, pagerId, type){
+  const grid = document.getElementById(gridId);
+  const pager = document.getElementById(pagerId);
+  if(!grid) return;
+  const list = PRODUCTS.filter(p=>p.type===type);
+  const pages = Math.max(1, Math.ceil(list.length / PER_PAGE));
+
+  function render(page){
+    page = Math.min(Math.max(1,page), pages);
+    const start = (page-1)*PER_PAGE;
+    grid.innerHTML = list.slice(start, start+PER_PAGE).map(mkCard).join('');
+    setPageHash(page);
+    drawPager(page);
+  }
+
+  function drawPager(page){
+    if(!pager) return;
+    if(pages <= 1){ pager.innerHTML=''; return; }
+    const btn = (label, target, opts={}) =>
+      `<button ${opts.disabled?'disabled':''} ${opts.active?'class="active"':''} data-page="${target}">${label}</button>`;
+    let html = btn('‹', page-1, {disabled: page===1});
+    for(let i=1;i<=pages;i++){
+      if(i===1 || i===pages || Math.abs(i-page)<=1){
+        html += btn(i, i, {active:i===page});
+      } else if(i===page-2 || i===page+2){
+        html += `<span class="pager-gap">…</span>`;
+      }
+    }
+    html += btn('›', page+1, {disabled: page===pages});
+    pager.innerHTML = html;
+    pager.querySelectorAll('button[data-page]').forEach(b=>{
+      b.onclick = () => {
+        render(parseInt(b.dataset.page,10));
+        document.getElementById('collection-sec')?.scrollIntoView({behavior:'smooth',block:'start'});
+      };
+    });
+  }
+
+  render(pageFromHash());
+}
+fillGridPaged('haori-grid-all','haori-pager','haori');     // страница ХАОРИ: 8/стр.
+fillGridPaged('kimono-grid-all','kimono-pager','kimono');  // страница КИМОНО: 8/стр.
 
 /* MENU */
 let menuOpen = false;

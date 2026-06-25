@@ -129,6 +129,48 @@ export function adminAlert(order) {
   return { subject, html };
 }
 
+// ── Order shipped ──────────────────────────────────────────────────────────────
+export function orderShipped(order, tracking) {
+  const name = esc((order.customer_name || '').split(' ')[0] || 'клиент');
+  const shortId = order.id ? String(order.id).slice(0, 8) : '';
+  const subject = `Поръчката е изпратена${shortId ? ` #${shortId}` : ''} — Kinora`;
+  const courier = (order.delivery_method || '').startsWith('speedy') ? 'Спиди' : 'Еконт';
+  const html = shell(`
+    <h1 style="font-family:'Tenor Sans',Georgia,serif;font-size:22px;color:${COLORS.cream};margin:0 0 12px;font-weight:normal">
+      Поръчката Ви е на път, ${name}!
+    </h1>
+    <p style="color:${COLORS.muted};font-size:14px;line-height:1.7;margin:0 0 16px">
+      Изпратихме поръчката Ви${shortId ? ` <strong style="color:${COLORS.cream}">#${shortId}</strong>` : ''} чрез ${courier}.
+    </p>
+    ${tracking ? `
+    <div style="border:1px solid ${COLORS.gold};padding:20px;text-align:center;margin:0 0 20px">
+      <div style="color:${COLORS.muted};font-size:11px;letter-spacing:.25em;text-transform:uppercase">Номер за проследяване</div>
+      <div style="color:${COLORS.cream};font-size:20px;letter-spacing:.12em;font-family:monospace;margin-top:8px">${esc(tracking)}</div>
+    </div>` : ''}
+    ${summaryTable(order)}
+  `);
+  return { subject, html };
+}
+
+// ── Order cancelled ──────────────────────────────────────────────────────────────
+export function orderCancelled(order) {
+  const name = esc((order.customer_name || '').split(' ')[0] || 'клиент');
+  const shortId = order.id ? String(order.id).slice(0, 8) : '';
+  const subject = `Поръчката е отказана${shortId ? ` #${shortId}` : ''} — Kinora`;
+  const html = shell(`
+    <h1 style="font-family:'Tenor Sans',Georgia,serif;font-size:22px;color:${COLORS.cream};margin:0 0 12px;font-weight:normal">
+      Здравейте, ${name}
+    </h1>
+    <p style="color:${COLORS.muted};font-size:14px;line-height:1.7;margin:0 0 16px">
+      Поръчката Ви${shortId ? ` <strong style="color:${COLORS.cream}">#${shortId}</strong>` : ''} беше отказана.
+      ${order.cancel_reason ? `Причина: <span style="color:${COLORS.cream}">${esc(order.cancel_reason)}</span>.` : ''}
+      Ако смятате, че това е грешка, или имате въпрос, пишете ни на hello@kinorabg.com.
+    </p>
+    ${summaryTable(order)}
+  `);
+  return { subject, html };
+}
+
 // ── Gift voucher delivery ──────────────────────────────────────────────────────
 export function voucherDelivery({ code, amount, recipientName, message }) {
   const subject = `Вашият подаръчен ваучер Kinora — ${eur(amount)}`;

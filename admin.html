@@ -64,6 +64,10 @@ body{font-family:'Golos Text',sans-serif;background:var(--NV);color:var(--BG);mi
 .s-depleted{color:rgba(228,216,192,.45);border-color:rgba(228,216,192,.14);background:rgba(228,216,192,.04)}
 .s-void{color:#e07070;border-color:rgba(224,112,112,.3);background:rgba(224,112,112,.08)}
 .s-invalid{color:#e07070;border-color:rgba(224,112,112,.3);background:rgba(224,112,112,.08)}
+.s-cancelled{color:#e07070;border-color:rgba(224,112,112,.3);background:rgba(224,112,112,.08)}
+.period-btn{background:none;border:1px solid rgba(228,216,192,.1);padding:6px 14px;font-family:inherit;font-size:9px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;color:rgba(228,216,192,.35);transition:all .2s}
+.period-btn.on,.period-btn:hover{border-color:var(--GD);color:var(--GD)}
+.table-scroll{overflow-x:auto}
 /* TABS */
 .tabs{display:flex;gap:.4rem;margin-bottom:2rem;border-bottom:1px solid var(--line)}
 .tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:10px 20px 14px;font-family:'Tenor Sans',sans-serif;font-size:13px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;color:rgba(228,216,192,.35);transition:all .2s;margin-bottom:-1px}
@@ -158,9 +162,17 @@ body{font-family:'Golos Text',sans-serif;background:var(--NV);color:var(--BG);mi
 
     <!-- ===== ORDERS VIEW ===== -->
     <div id="view-orders">
+      <!-- PERIOD TOGGLE -->
+      <div class="filters" style="margin-bottom:1rem">
+        <button class="period-btn on" onclick="setPeriod('all',this)">Всички</button>
+        <button class="period-btn" onclick="setPeriod('month',this)">Този месец</button>
+        <button class="period-btn" onclick="setPeriod('30d',this)">30 дни</button>
+        <button class="filter-btn" style="margin-left:auto;border-color:var(--GD);color:var(--GD)" onclick="newManualOrder()">+ Нова поръчка</button>
+        <button class="filter-btn" onclick="exportOrdersCSV()">↓ CSV</button>
+      </div>
       <!-- STATS -->
       <div class="stats-row">
-        <div class="stat-card"><div class="stat-label">Общо поръчки</div><div class="stat-val" id="st-total">—</div></div>
+        <div class="stat-card"><div class="stat-label">Поръчки <span id="st-period-lbl" style="opacity:.6"></span></div><div class="stat-val" id="st-total">—</div></div>
         <div class="stat-card"><div class="stat-label">Нови (pending)</div><div class="stat-val" id="st-pending">—</div></div>
         <div class="stat-card"><div class="stat-label">Оборот (€)</div><div class="stat-val" id="st-revenue">—</div></div>
         <div class="stat-card"><div class="stat-label">Изпратени</div><div class="stat-val" id="st-shipped">—</div></div>
@@ -172,10 +184,11 @@ body{font-family:'Golos Text',sans-serif;background:var(--NV);color:var(--BG);mi
         <button class="filter-btn" onclick="filterOrders('paid',this)">Платени</button>
         <button class="filter-btn" onclick="filterOrders('shipped',this)">Изпратени</button>
         <button class="filter-btn" onclick="filterOrders('completed',this)">Завършени</button>
+        <button class="filter-btn" onclick="filterOrders('attention',this)">⚠ За внимание</button>
         <input class="search-input" id="search-input" placeholder="Търси по клиент, имейл..." oninput="renderTable()"/>
       </div>
       <!-- TABLE -->
-      <div id="table-wrap">
+      <div id="table-wrap" class="table-scroll">
         <div class="loading">Зарежда поръчки...</div>
       </div>
     </div>
@@ -194,6 +207,7 @@ body{font-family:'Golos Text',sans-serif;background:var(--NV);color:var(--BG);mi
         <button class="filter-btn on" onclick="filterVouchers('all',this)">Всички</button>
         <button class="filter-btn" onclick="filterVouchers('active',this)">Активни</button>
         <button class="filter-btn" onclick="filterVouchers('depleted',this)">Изчерпани</button>
+        <button class="filter-btn" style="margin-left:auto;border-color:var(--GD);color:var(--GD)" onclick="newVoucher()">+ Издай ваучер</button>
         <input class="search-input" id="voucher-search" placeholder="Търси по код, имейл..." oninput="renderVouchers()"/>
       </div>
       <!-- TABLE -->
@@ -339,18 +353,58 @@ async function loadOrders() {
   }
 }
 
+let currentPeriod = 'all';
+function periodStart(p) {
+  const now = new Date();
+  if (p === 'month') return new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  if (p === '30d') return now.getTime() - 30*24*60*60*1000;
+  return 0;
+}
+function inPeriod(o) {
+  if (currentPeriod === 'all') return true;
+  return new Date(o.created_at).getTime() >= periodStart(currentPeriod);
+}
+function needsAttention(o) {
+  if (!['pending','awaiting_payment'].includes(o.status)) return false;
+  return (Date.now() - new Date(o.created_at).getTime()) > 24*60*60*1000;
+}
+
+function setPeriod(p, btn) {
+  currentPeriod = p;
+  document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('st-period-lbl').textContent = p==='month' ? '(този месец)' : p==='30d' ? '(30 дни)' : '';
+  updateStats();
+  renderTable();
+}
+
 function updateStats() {
-  document.getElementById('st-total').textContent = allOrders.length;
-  document.getElementById('st-pending').textContent = allOrders.filter(o=>o.status==='pending').length;
-  document.getElementById('st-revenue').textContent = Math.round(allOrders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+(o.total||0),0)).toLocaleString('bg-BG');
-  document.getElementById('st-shipped').textContent = allOrders.filter(o=>o.status==='shipped').length;
+  const scoped = allOrders.filter(inPeriod);
+  document.getElementById('st-total').textContent = scoped.length;
+  document.getElementById('st-pending').textContent = scoped.filter(o=>o.status==='pending').length;
+  document.getElementById('st-revenue').textContent = Math.round(scoped.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+(o.total||0),0)).toLocaleString('bg-BG');
+  document.getElementById('st-shipped').textContent = scoped.filter(o=>o.status==='shipped').length;
 }
 
 function filterOrders(f, btn) {
   currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('#view-orders .filters .filter-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   renderTable();
+}
+
+// Orders matching the current filter chip + period + search (shared by table & CSV).
+function filteredOrders() {
+  const search = (document.getElementById('search-input').value||'').toLowerCase();
+  let orders = allOrders.filter(inPeriod);
+  if (currentFilter === 'attention') orders = orders.filter(needsAttention);
+  else if (currentFilter !== 'all') orders = orders.filter(o=>o.status===currentFilter);
+  if (search) orders = orders.filter(o =>
+    (o.customer_name||'').toLowerCase().includes(search) ||
+    (o.customer_email||'').toLowerCase().includes(search) ||
+    (o.id||'').toLowerCase().includes(search)
+  );
+  return orders;
 }
 
 const STATUS_LABELS = {
@@ -367,14 +421,7 @@ const DELIVERY_LABELS = {
 };
 
 function renderTable() {
-  const search = document.getElementById('search-input').value.toLowerCase();
-  let orders = allOrders;
-  if (currentFilter !== 'all') orders = orders.filter(o=>o.status===currentFilter);
-  if (search) orders = orders.filter(o =>
-    (o.customer_name||'').toLowerCase().includes(search) ||
-    (o.customer_email||'').toLowerCase().includes(search) ||
-    (o.id||'').toLowerCase().includes(search)
-  );
+  const orders = filteredOrders();
 
   if (!orders.length) {
     document.getElementById('table-wrap').innerHTML = `<div class="empty-state"><h3>НЯМА ПОРЪЧКИ</h3><p>Не са намерени поръчки с тези критерии.</p></div>`;
@@ -445,9 +492,20 @@ function openDrawer(id) {
     </div>
     <div class="od-section">
       <div class="od-section-title">Статус на поръчката</div>
-      <select class="status-select" id="status-select">
+      <select class="status-select" id="status-select" onchange="onStatusChange()">
         ${Object.entries(STATUS_LABELS).map(([v,l])=>`<option value="${v}" ${o.status===v?'selected':''}>${l}</option>`).join('')}
       </select>
+      <div id="status-extra-shipped" style="display:${o.status==='shipped'?'block':'none'};margin-top:.7rem">
+        <label style="font-size:8.5px;letter-spacing:.3em;text-transform:uppercase;color:rgba(228,216,192,.4);display:block;margin-bottom:.4rem">Номер за проследяване</label>
+        <input class="status-select" id="tracking-input" placeholder="напр. 105..." value="${(o.tracking_number||'').replace(/"/g,'&quot;')}" style="margin-top:0"/>
+      </div>
+      <div id="status-extra-cancel" style="display:${o.status==='cancelled'?'block':'none'};margin-top:.7rem">
+        <label style="font-size:8.5px;letter-spacing:.3em;text-transform:uppercase;color:rgba(228,216,192,.4);display:block;margin-bottom:.4rem">Причина за отказ</label>
+        <input class="status-select" id="cancel-input" placeholder="по желание" value="${(o.cancel_reason||'').replace(/"/g,'&quot;')}" style="margin-top:0"/>
+      </div>
+      <label id="email-toggle-wrap" style="display:${(o.status==='shipped'||o.status==='cancelled')?'flex':'none'};align-items:center;gap:.5rem;margin-top:.8rem;font-size:12px;color:rgba(228,216,192,.6);cursor:pointer">
+        <input type="checkbox" id="notify-customer" checked style="width:auto"/> Изпрати имейл на клиента
+      </label>
       <button class="save-status-btn" onclick="saveStatus('${o.id}')">ЗАПАЗИ СТАТУСА</button>
     </div>
     <div class="od-section" style="border-top:1px solid var(--line);padding-top:1.5rem">
@@ -463,24 +521,178 @@ function closeDrawer() {
   document.getElementById('order-drawer').classList.remove('on');
 }
 
+function onStatusChange() {
+  const s = document.getElementById('status-select').value;
+  document.getElementById('status-extra-shipped').style.display = s==='shipped' ? 'block' : 'none';
+  document.getElementById('status-extra-cancel').style.display = s==='cancelled' ? 'block' : 'none';
+  document.getElementById('email-toggle-wrap').style.display = (s==='shipped'||s==='cancelled') ? 'flex' : 'none';
+}
+
 async function saveStatus(id) {
   const newStatus = document.getElementById('status-select').value;
+  const trackingEl = document.getElementById('tracking-input');
+  const cancelEl = document.getElementById('cancel-input');
+  const notifyEl = document.getElementById('notify-customer');
+  const patch = { status: newStatus };
+  if (newStatus === 'shipped' && trackingEl) patch.tracking_number = trackingEl.value.trim();
+  if (newStatus === 'cancelled' && cancelEl) patch.cancel_reason = cancelEl.value.trim();
   try {
     const res = await authFetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: newStatus })
+      body: JSON.stringify(patch)
     });
-    if (res.ok) {
-      const o = allOrders.find(x=>x.id===id);
-      if (o) o.status = newStatus;
-      renderTable();
-      updateStats();
-      alert('✓ Статусът е обновен: ' + STATUS_LABELS[newStatus]);
+    if (!res.ok) throw new Error(await res.text());
+    const o = allOrders.find(x=>x.id===id);
+    if (o) Object.assign(o, patch);
+    renderTable();
+    updateStats();
+
+    // Optional customer email on shipped/cancelled
+    if (notifyEl && notifyEl.checked && (newStatus==='shipped' || newStatus==='cancelled') && o) {
+      adminToast('Статусът е обновен. Изпращане на имейл…');
+      try {
+        const mr = await fetch('/api/order-status-mail', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ type:newStatus, order:o, tracking: patch.tracking_number || '' })
+        });
+        adminToast(mr.ok ? '✓ Имейлът е изпратен на клиента' : 'Статусът е обновен (имейлът не бе изпратен)');
+      } catch(e) {
+        adminToast('Статусът е обновен (имейлът не бе изпратен)');
+      }
+    } else {
+      adminToast('✓ Статусът е обновен: ' + STATUS_LABELS[newStatus]);
     }
   } catch(e) {
-    alert('Грешка при обновяване. Опитай отново.');
+    adminToast('Грешка при обновяване. Опитай отново.', true);
   }
+}
+
+// Lightweight toast (replaces alert)
+let _adminToastT;
+function adminToast(msg, isErr) {
+  let el = document.getElementById('admin-toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'admin-toast';
+    el.style.cssText = 'position:fixed;bottom:1.6rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--NV);border:1px solid var(--OL);color:var(--BG);padding:12px 24px;font-size:12px;letter-spacing:.06em;z-index:2000;transition:transform .3s;max-width:90vw;text-align:center';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.borderColor = isErr ? '#e07070' : 'var(--OL)';
+  el.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(_adminToastT);
+  _adminToastT = setTimeout(()=>{ el.style.transform = 'translateX(-50%) translateY(80px)'; }, 3200);
+}
+
+// ===== CSV EXPORT (#6) =====
+function exportOrdersCSV() {
+  const orders = filteredOrders();
+  if (!orders.length) { adminToast('Няма поръчки за експорт', true); return; }
+  const headers = ['Поръчка','Дата','Клиент','Имейл','Телефон','Град','Адрес','Доставка','Плащане','Статус','Артикули','Сума (€)'];
+  const cell = v => '"' + String(v==null?'':v).replace(/"/g,'""') + '"';
+  const rows = orders.map(o => {
+    let items = [];
+    try { items = typeof o.items==='string'?JSON.parse(o.items):(o.items||[]); } catch(e){}
+    const itemsStr = items.map(i=>`${i.name||''}${i.sz?(' / '+i.sz):''} x${i.qty||1}`).join('; ');
+    return [
+      (o.id||'').substring(0,8).toUpperCase(),
+      new Date(o.created_at).toLocaleString('bg-BG'),
+      o.customer_name, o.customer_email, o.customer_phone, o.customer_city, o.customer_address,
+      DELIVERY_LABELS[o.delivery_method]||o.delivery_method, o.payment_method==='cod'?'Наложен платеж':'Карта',
+      STATUS_LABELS[o.status]||o.status, itemsStr, (o.total||0).toFixed(2)
+    ].map(cell).join(',');
+  });
+  const csv = '﻿' + [headers.map(cell).join(','), ...rows].join('\r\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `kinora-orders-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(a.href);
+  adminToast('✓ CSV изтеглен (' + orders.length + ' поръчки)');
+}
+
+// ===== MANUAL ORDER (#2) =====
+let manualProductsCache = null;
+async function newManualOrder() {
+  if (!manualProductsCache) {
+    try {
+      const r = await authFetch(`${SUPABASE_URL}/rest/v1/products?select=id,name,price,type,is_active&order=name`);
+      manualProductsCache = await r.json();
+    } catch(e) { adminToast('Грешка при зареждане на продукти', true); return; }
+  }
+  const sold = soldProductIds || new Set();
+  const opts = manualProductsCache.map(p =>
+    `<label style="display:flex;align-items:center;gap:.6rem;padding:.4rem 0;font-size:13px;color:var(--BG)">
+      <input type="checkbox" class="mo-prod" value="${p.id}" data-price="${p.price}" data-name="${(p.name||'').replace(/"/g,'&quot;')}" onchange="recalcManual()" style="width:auto"/>
+      ${p.name} — ${Number(p.price).toFixed(2)} € ${sold.has(p.id)?'<span style="color:#e07070;font-size:10px">(изчерпан)</span>':''}
+    </label>`).join('');
+  document.getElementById('drawer-title').textContent = 'НОВА ПОРЪЧКА';
+  document.getElementById('drawer-body').innerHTML = `
+    <div class="od-section">
+      <div class="od-section-title">Продукти</div>
+      <div style="max-height:200px;overflow-y:auto;border:1px solid var(--line);padding:.6rem .8rem">${opts||'Няма продукти'}</div>
+    </div>
+    <div class="od-section">
+      <div class="od-section-title">Клиент</div>
+      <input class="status-select" id="mo-name" placeholder="Име" style="margin-bottom:.5rem"/>
+      <input class="status-select" id="mo-email" placeholder="Имейл" style="margin-bottom:.5rem"/>
+      <input class="status-select" id="mo-phone" placeholder="Телефон" style="margin-bottom:.5rem"/>
+      <input class="status-select" id="mo-city" placeholder="Град" style="margin-bottom:.5rem"/>
+      <input class="status-select" id="mo-address" placeholder="Адрес"/>
+    </div>
+    <div class="od-section">
+      <div class="od-section-title">Доставка и плащане</div>
+      <select class="status-select" id="mo-delivery" style="margin-bottom:.5rem">
+        ${Object.entries(DELIVERY_LABELS).map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}
+      </select>
+      <select class="status-select" id="mo-payment" style="margin-bottom:.5rem">
+        <option value="cod">Наложен платеж</option><option value="card">Карта</option>
+      </select>
+      <select class="status-select" id="mo-status">
+        ${Object.entries(STATUS_LABELS).map(([v,l])=>`<option value="${v}" ${v==='paid'?'selected':''}>${l}</option>`).join('')}
+      </select>
+    </div>
+    <div class="od-section">
+      <div class="od-field"><span class="od-field-label">Общо</span><span class="od-field-val" id="mo-total" style="color:var(--GD);font-size:18px;font-family:'Tenor Sans',sans-serif">0.00 €</span></div>
+      <button class="save-status-btn" onclick="saveManualOrder()">СЪЗДАЙ ПОРЪЧКА</button>
+    </div>`;
+  document.getElementById('order-drawer').classList.add('on');
+}
+function recalcManual() {
+  let t = 0;
+  document.querySelectorAll('.mo-prod:checked').forEach(c=>t += Number(c.dataset.price)||0);
+  document.getElementById('mo-total').textContent = t.toFixed(2) + ' €';
+}
+async function saveManualOrder() {
+  const picked = Array.from(document.querySelectorAll('.mo-prod:checked'));
+  if (!picked.length) { adminToast('Избери поне един продукт', true); return; }
+  const name = document.getElementById('mo-name').value.trim();
+  if (!name) { adminToast('Въведи име на клиента', true); return; }
+  const items = picked.map(c=>({ id:Number(c.value), name:c.dataset.name, sz:'Универсален', qty:1, price:Number(c.dataset.price)||0, type:'product' }));
+  const total = items.reduce((s,i)=>s+i.price,0);
+  const payload = {
+    p_customer_name: name,
+    p_customer_email: document.getElementById('mo-email').value.trim(),
+    p_customer_phone: document.getElementById('mo-phone').value.trim(),
+    p_customer_city: document.getElementById('mo-city').value.trim(),
+    p_customer_address: document.getElementById('mo-address').value.trim(),
+    p_delivery_method: document.getElementById('mo-delivery').value,
+    p_payment_method: document.getElementById('mo-payment').value,
+    p_items: JSON.stringify(items),
+    p_total: total,
+    p_status: document.getElementById('mo-status').value,
+    p_stripe_payment_method: null
+  };
+  try {
+    const res = await authFetch(`${SUPABASE_URL}/rest/v1/rpc/create_order`, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(await res.text());
+    closeDrawer();
+    await loadOrders();
+    adminToast('✓ Поръчката е създадена');
+  } catch(e) { adminToast('Грешка: '+e.message, true); }
 }
 
 // ===== TABS & VOUCHERS =====
@@ -553,13 +765,16 @@ function renderVouchers() {
 
   document.getElementById('vouchers-wrap').innerHTML = `<table class="orders-table">
     <thead><tr>
-      <th>Код</th><th>Получател</th><th>Дата</th><th>Стойност</th><th>Наличност</th><th>Статус</th><th>Поръчка</th><th>Използван</th>
+      <th>Код</th><th>Получател</th><th>Дата</th><th>Стойност</th><th>Наличност</th><th>Статус</th><th>Поръчка</th><th>Използван</th><th></th>
     </tr></thead>
     <tbody>${vouchers.map(v => {
       const date = new Date(v.created_at).toLocaleDateString('bg-BG',{day:'2-digit',month:'2-digit',year:'numeric'});
       const used = v.last_used_at ? new Date(v.last_used_at).toLocaleDateString('bg-BG',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
       const sClass = `s-${v.status||'active'}`;
       const orderRef = v.order_id ? '#'+String(v.order_id).substring(0,8).toUpperCase() : '—';
+      const voidBtn = v.status==='active'
+        ? `<button class="filter-btn" style="padding:5px 10px;font-size:8px;border-color:rgba(224,112,112,.3);color:#e07070" onclick="voidVoucher('${(v.code||'').replace(/'/g,"")}')">Анулирай</button>`
+        : '';
       return `<tr>
         <td><span class="voucher-code">${v.code||'—'}</span></td>
         <td style="font-size:12px;color:rgba(228,216,192,.45)">${v.recipient_email||'—'}</td>
@@ -569,13 +784,77 @@ function renderVouchers() {
         <td><span class="status-badge ${sClass}">${VOUCHER_STATUS_LABELS[v.status]||v.status}</span></td>
         <td style="font-size:12px;color:rgba(228,216,192,.4)">${orderRef}</td>
         <td style="font-size:12px;color:rgba(228,216,192,.4)">${used}</td>
+        <td style="text-align:right">${voidBtn}</td>
       </tr>`;
     }).join('')}</tbody>
   </table>`;
 }
 
+// ===== VOUCHER ACTIONS (#4) =====
+async function voidVoucher(code) {
+  if (!confirm('Анулиране на ваучер ' + code + '? Кодът няма да може да се използва.')) return;
+  try {
+    const res = await authFetch(`${SUPABASE_URL}/rest/v1/rpc/void_voucher`, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ p_code: code })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    await loadVouchers();
+    adminToast('✓ Ваучерът е анулиран');
+  } catch(e) { adminToast('Грешка: '+e.message, true); }
+}
+
+function newVoucher() {
+  document.getElementById('drawer-title').textContent = 'ИЗДАЙ ВАУЧЕР';
+  document.getElementById('drawer-body').innerHTML = `
+    <div class="od-section">
+      <div class="od-section-title">Нов ваучер</div>
+      <label style="font-size:8.5px;letter-spacing:.3em;text-transform:uppercase;color:rgba(228,216,192,.4);display:block;margin-bottom:.4rem">Стойност (€)</label>
+      <input class="status-select" id="nv-amount" type="number" min="1" step="1" placeholder="напр. 100" style="margin-bottom:.8rem"/>
+      <label style="font-size:8.5px;letter-spacing:.3em;text-transform:uppercase;color:rgba(228,216,192,.4);display:block;margin-bottom:.4rem">Имейл на получателя (по желание)</label>
+      <input class="status-select" id="nv-email" placeholder="за изпращане на кода" style="margin-bottom:.8rem"/>
+      <label style="display:flex;align-items:center;gap:.5rem;font-size:12px;color:rgba(228,216,192,.6);cursor:pointer">
+        <input type="checkbox" id="nv-send" style="width:auto"/> Изпрати кода по имейл
+      </label>
+      <button class="save-status-btn" onclick="saveVoucher()">ИЗДАЙ</button>
+    </div>`;
+  document.getElementById('order-drawer').classList.add('on');
+}
+
+function randomVoucherCode() {
+  const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const blk = () => Array.from({length:4},()=>a[Math.floor(Math.random()*a.length)]).join('');
+  return `KIN-${blk()}-${blk()}`;
+}
+
+async function saveVoucher() {
+  const amount = Number(document.getElementById('nv-amount').value);
+  if (!amount || amount <= 0) { adminToast('Въведи валидна стойност', true); return; }
+  const email = document.getElementById('nv-email').value.trim();
+  const send = document.getElementById('nv-send').checked;
+  const code = randomVoucherCode();
+  try {
+    const res = await authFetch(`${SUPABASE_URL}/rest/v1/rpc/issue_voucher`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ p_code:code, p_amount:amount, p_order_id:null, p_recipient_email:email||null })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    if (send && email) {
+      try {
+        await fetch('/api/send-voucher-mail', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ code, amount, recipientEmail:email })
+        });
+      } catch(e){}
+    }
+    closeDrawer();
+    await loadVouchers();
+    adminToast('✓ Издаден ваучер ' + code);
+  } catch(e) { adminToast('Грешка: '+e.message, true); }
+}
+
 // ===== PRODUCTS =====
 let allProducts = [];
+let productView = [];
 let productFilter = 'all';
 let productsLoaded = false;
 let soldProductIds = new Set();
@@ -625,21 +904,62 @@ function renderProducts() {
     document.getElementById('products-wrap').innerHTML = `<div class="empty-state"><h3>НЯМА ПРОДУКТИ</h3><p>Натисни „+ Нов продукт", за да добавиш.</p></div>`;
     return;
   }
+  productView = list;
+  const ab = 'background:none;border:1px solid rgba(228,216,192,.15);color:rgba(228,216,192,.5);width:26px;height:26px;cursor:pointer;font-size:11px';
   document.getElementById('products-wrap').innerHTML = `<table class="orders-table">
-    <thead><tr><th></th><th>Име</th><th>Тип</th><th>Цена</th><th>Състояние</th><th></th></tr></thead>
-    <tbody>${list.map(p=>{
+    <thead><tr><th>Ред</th><th></th><th>Име</th><th>Тип</th><th>Цена</th><th>Състояние</th><th></th></tr></thead>
+    <tbody>${list.map((p,idx)=>{
       const thumb = p.img ? `<img class="p-thumb-sm" src="${p.img}" alt=""/>` : `<div class="p-thumb-sm" style="background:${p.bg||'#0c0608'}"></div>`;
       const sold = soldProductIds.has(p.id) ? `<span class="b-sold-sm">Изчерпан</span>` : '';
       const state = p.is_active ? `<span class="status-badge s-active">Активен</span>` : `<span class="status-badge s-depleted">Скрит</span>`;
       return `<tr onclick="editProduct(${p.id})">
+        <td onclick="event.stopPropagation()" style="white-space:nowrap">
+          <button style="${ab}" ${idx===0?'disabled':''} onclick="moveProduct(${p.id},-1)">↑</button>
+          <button style="${ab}" ${idx===list.length-1?'disabled':''} onclick="moveProduct(${p.id},1)">↓</button>
+        </td>
         <td>${thumb}</td>
         <td><div style="font-weight:500">${p.name||'—'}${sold}</div><div style="font-size:11px;color:rgba(228,216,192,.3)">${p.cat||''}</div></td>
         <td style="font-size:12px;color:rgba(228,216,192,.4)">${p.type==='haori'?'Хаори':'Кимоно'}</td>
         <td style="color:var(--GD);font-family:'Tenor Sans',sans-serif;font-size:15px">${Number(p.price||0).toFixed(2)} €</td>
         <td>${state}</td>
-        <td style="text-align:right;color:rgba(228,216,192,.3)">✎</td>
+        <td onclick="event.stopPropagation()" style="text-align:right;white-space:nowrap">
+          <button class="filter-btn" style="padding:5px 10px;font-size:8px" onclick="toggleProductActive(${p.id})">${p.is_active?'Скрий':'Покажи'}</button>
+        </td>
       </tr>`;
     }).join('')}</tbody></table>`;
+}
+
+// Quick show/hide without opening the editor (#8)
+async function toggleProductActive(id) {
+  const p = allProducts.find(x=>x.id===id); if(!p) return;
+  try {
+    const res = await authFetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}`, {
+      method:'PATCH', headers:{'Content-Type':'application/json','Prefer':'return=minimal'},
+      body: JSON.stringify({ is_active: !p.is_active })
+    });
+    if(!res.ok) throw new Error(await res.text());
+    p.is_active = !p.is_active;
+    updateProductStats(); renderProducts();
+    adminToast(p.is_active ? '✓ Показан в магазина' : '✓ Скрит от магазина');
+  } catch(e){ adminToast('Грешка: '+e.message, true); }
+}
+
+// Reorder by swapping sort_order with the visible neighbour (#8)
+async function moveProduct(id, dir) {
+  const i = productView.findIndex(p=>p.id===id);
+  const j = i + dir;
+  if (i<0 || j<0 || j>=productView.length) return;
+  const a = productView[i], b = productView[j];
+  const ao = a.sort_order||0, bo = b.sort_order||0;
+  try {
+    await Promise.all([
+      authFetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${a.id}`, {method:'PATCH',headers:{'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({sort_order:bo})}),
+      authFetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${b.id}`, {method:'PATCH',headers:{'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({sort_order:ao})})
+    ]);
+    a.sort_order = bo; b.sort_order = ao;
+    allProducts.sort((x,y)=>(x.sort_order||0)-(y.sort_order||0));
+    renderProducts();
+  } catch(e){ adminToast('Грешка при подредба', true); }
 }
 
 function productForm(p) {
@@ -769,6 +1089,20 @@ async function deleteProduct(id) {
     await loadProductsAdmin();
   } catch(e){ alert('Грешка при изтриване: '+e.message); }
 }
+
+// ===== KEYBOARD SHORTCUTS (#10) =====
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.getElementById('order-drawer')?.classList.remove('on');
+    document.getElementById('product-drawer')?.classList.remove('on');
+  }
+  // "/" focuses the active tab's search (unless already typing)
+  if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) {
+    const id = activeTab==='vouchers' ? 'voucher-search' : activeTab==='products' ? 'product-search' : 'search-input';
+    const el = document.getElementById(id);
+    if (el) { e.preventDefault(); el.focus(); }
+  }
+});
 
 // Auto-refresh every 60 seconds — refreshes whichever tab is open.
 setInterval(() => { if(getToken()) refreshActive(); }, 60000);

@@ -92,17 +92,6 @@
 
   .rationale { margin-top: 1.2rem; font-size: 11.5px; color: rgba(228,216,192,.5); font-style: italic; border-left: 2px solid var(--gold); padding-left: .8rem; }
 
-  /* ---- measurements confirm block ---- */
-  .measure { margin-top: 1.4rem; border: 1px solid var(--line); border-radius: 2px; padding: 1rem 1.1rem 1.1rem; background: var(--panel); }
-  .measure h4 { font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase; color: rgba(228,216,192,.45); font-weight: 500; margin-bottom: .2rem; }
-  .measure .flag { font-size: 10px; color: var(--gold); font-style: italic; margin-bottom: .9rem; }
-  .m-row { display: flex; align-items: center; gap: .8rem; margin-bottom: .6rem; }
-  .m-row label { flex: 1; font-size: 11.5px; color: rgba(228,216,192,.65); }
-  .m-row .unit { font-size: 10px; color: rgba(228,216,192,.4); }
-  .m-row input { width: 86px; background: #070303; color: var(--ink); border: 1px solid var(--line-strong); padding: 7px 9px; font-family: inherit; font-size: 13px; border-radius: 2px; text-align: right; }
-  .m-row input::placeholder { color: rgba(228,216,192,.3); }
-  .m-note { font-size: 10.5px; color: rgba(228,216,192,.42); margin-top: .6rem; line-height: 1.6; }
-
   .out { margin-top: 1.4rem; }
   .out-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; }
   .out-head h3 { font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase; color: rgba(228,216,192,.4); font-weight: 500; }
@@ -148,35 +137,13 @@
       <div class="result" id="result">
         <div class="card" id="card"></div>
         <div class="rationale" id="rationale"></div>
-
-        <div class="measure" id="measure">
-          <h4>Мерки (см)</h4>
-          <div class="flag">Оценка от снимката — потвърдете преди публикуване.</div>
-          <div class="m-row">
-            <label>Дължина на ръкава</label>
-            <input id="m-sleeve" type="number" min="0" step="1" placeholder="—" />
-            <span class="unit">см</span>
-          </div>
-          <div class="m-row">
-            <label>Дължина</label>
-            <input id="m-length" type="number" min="0" step="1" placeholder="—" />
-            <span class="unit">см</span>
-          </div>
-          <div class="m-row">
-            <label>Ширина на гърба с ръкави</label>
-            <input id="m-back" type="number" min="0" step="1" placeholder="—" />
-            <span class="unit">см</span>
-          </div>
-          <div class="m-note" id="m-note"></div>
-        </div>
-
         <div class="out">
           <div class="out-head">
             <h3>PRODUCTS обект</h3>
             <button class="copy" id="copy">Копирай</button>
           </div>
           <pre id="code"></pre>
-          <div class="note">Поставете този ред в масива <code>PRODUCTS</code> в index.html. Заменете <code>/* set id */</code> с уникален номер и добавете път към снимка в <code>img</code>, когато е готова. Мерките по-горе са оценка от снимката — редактирайте полетата и обектът се обновява автоматично.</div>
+          <div class="note">Поставете този ред в масива <code>PRODUCTS</code> в index.html. Заменете <code>/* set id */</code> с уникален номер и добавете път към снимка в <code>img</code>, когато е готова.</div>
         </div>
       </div>
     </section>
@@ -262,9 +229,7 @@ goBtn.addEventListener('click', async () => {
   }
 });
 
-let currentLine = ''; // the rendered PRODUCTS line; measurements are patched in on edit
-
-function render({ product: p, rationale, measurementsNote, line }) {
+function render({ product: p, rationale, line }) {
   const art = p.type === 'kimono' ? kSVG(p.bg, p.acc) : hSVG(p.bg, p.acc);
   const badge = p.lbl ? `<span class="badge">${p.lbl}</span>` : '';
   $('card').innerHTML = `
@@ -278,37 +243,10 @@ function render({ product: p, rationale, measurementsNote, line }) {
     <div class="swatches">${p.colors.map((c) => `<span style="background:${c}"></span>`).join('')}</div>
   `;
   $('rationale').textContent = rationale;
-
-  const m = p.measurements || {};
-  $('m-sleeve').value = m.sleeve == null ? '' : m.sleeve;
-  $('m-length').value = m.length == null ? '' : m.length;
-  $('m-back').value = m.back == null ? '' : m.back;
-  $('m-note').textContent = measurementsNote || '';
-
-  currentLine = line;
   $('code').textContent = line;
   $('empty').style.display = 'none';
   $('result').classList.add('show');
 }
-
-// Rebuild the measurements:{...} segment of the line from the (possibly edited)
-// inputs, so the copy-paste object always reflects what you confirmed.
-function syncMeasurements() {
-  const val = (id) => {
-    const v = $(id).value.trim();
-    if (v === '') return 'null';
-    const n = Number(v);
-    return Number.isFinite(n) && n >= 0 ? n : 'null';
-  };
-  const seg = `measurements:{sleeve:${val('m-sleeve')},length:${val('m-length')},back:${val('m-back')}}`;
-  if (!currentLine) return;
-  currentLine = currentLine.replace(/measurements:\{[^}]*\}/, seg);
-  $('code').textContent = currentLine;
-}
-
-['m-sleeve', 'm-length', 'm-back'].forEach((id) =>
-  $(id).addEventListener('input', syncMeasurements)
-);
 
 function esc(s) {
   return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

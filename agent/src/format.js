@@ -8,13 +8,6 @@ function arr(items) {
   return `[${items.map(q).join(',')}]`
 }
 
-// Render measurements as {sleeve:N,length:N,back:N}, using null for any value
-// the agent couldn't read from a scale. Numbers/null are emitted unquoted.
-function measurementsObj(m = {}) {
-  const v = (n) => (n == null ? 'null' : n)
-  return `{sleeve:${v(m.sleeve)},length:${v(m.length)},back:${v(m.back)}}`
-}
-
 /**
  * Render a validated product as a one-line PRODUCTS object string, matching the
  * field order and quoting of the existing rows in index.html so it pastes 1:1.
@@ -30,6 +23,6 @@ export function formatProduct(product, { id } = {}) {
     `price:${product.price},colors:${arr(product.colors)},` +
     `desc:${q(product.desc)},sizes:${arr(product.sizes)},` +
     `details:${arr(product.details)},bg:${q(product.bg)},` +
-    `acc:${q(product.acc)},measurements:${measurementsObj(product.measurements)},img:''},`
+    `acc:${q(product.acc)},img:''},`
   )
 }

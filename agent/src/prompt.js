@@ -11,10 +11,9 @@ const refDir = join(here, '..', 'reference')
  * source of truth — no code change needed to refine voice or pricing.
  */
 export async function buildSystemPrompt() {
-  const [style, pricing, measuring, examplesRaw] = await Promise.all([
+  const [style, pricing, examplesRaw] = await Promise.all([
     readFile(join(refDir, 'style.md'), 'utf8'),
     readFile(join(refDir, 'pricing.md'), 'utf8'),
-    readFile(join(refDir, 'measuring.md'), 'utf8'),
     readFile(join(refDir, 'examples.json'), 'utf8'),
   ])
 
@@ -41,9 +40,6 @@ export async function buildSystemPrompt() {
     '',
     '=== PRICING ===',
     pricing.trim(),
-    '',
-    '=== MEASUREMENTS ===',
-    measuring.trim(),
     '',
     '=== PRICED CATALOG EXAMPLES (your reference for voice AND price) ===',
     renderedExamples,
@@ -72,11 +68,9 @@ export function buildUserContent(imageBlocks, { type, id }) {
         '`emit_product` once with a complete catalogue entry: an evocative ' +
         'uppercase Bulgarian name, a EUR price anchored on the closest catalog ' +
         'comparable(s), a 1–2 sentence Bulgarian description in the house voice, ' +
-        '3–5 detail bullets, palette colours derived from the garment, and the ' +
-        'measurements (sleeve/length/back in cm) read from any ruler or tape ' +
-        'visible in a flat-lay photo — null for anything you cannot read from a ' +
-        'visible scale. Describe only what you can actually see — do not invent ' +
-        'certificates, ateliers, periods, fibre claims, or measurements.',
+        '3–5 detail bullets, palette colours derived from the garment, and a ' +
+        'short price rationale. Describe only what you can actually see — do not ' +
+        'invent certificates, ateliers, periods, or fibre claims.',
     },
   ]
 }

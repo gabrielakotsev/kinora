@@ -3,22 +3,9 @@ import { z } from 'zod'
 const HEX = /^#[0-9a-fA-F]{6}$/
 const hex = z.string().regex(HEX, 'must be a 6-digit hex colour like #2e3018')
 
-// A measurement in cm, or null when the photo has no readable scale.
-// Bounded loosely to catch nonsense while allowing real haori/kimono dimensions.
-const cm = z.number().positive().max(400).nullable()
-
-// measurements: { sleeve, length, back } in cm — дължина на ръкава / дължина /
-// ширина на гърба с ръкави. All null when no ruler/tape is visible in the photo.
-const measurements = z.object({
-  sleeve: cm,
-  length: cm,
-  back: cm,
-})
-
 /**
  * Zod schema mirroring the fields of a Kinora PRODUCTS entry the agent controls.
- * `priceRationale` and `measurementsNote` are captured for the owner but stripped
- * before formatting.
+ * `priceRationale` is captured for the owner but stripped before formatting.
  */
 export const productSchema = z.object({
   type: z.enum(['haori', 'kimono']),
@@ -33,8 +20,6 @@ export const productSchema = z.object({
   details: z.array(z.string().min(1)).min(3).max(5),
   bg: hex,
   acc: hex,
-  measurements,
-  measurementsNote: z.string().min(1),
   priceRationale: z.string().min(1),
 })
 
@@ -72,25 +57,6 @@ export const productInputSchema = {
     },
     bg: { type: 'string', description: 'Dominant dark hex background.' },
     acc: { type: 'string', description: 'Light/metallic accent hex.' },
-    measurements: {
-      type: 'object',
-      additionalProperties: false,
-      description:
-        'Measurements in cm, read from the ruler/tape in a flat-lay photo. ' +
-        'Use null for any value you cannot read from a visible scale — never guess.',
-      properties: {
-        sleeve: { type: ['number', 'null'], description: 'дължина на ръкава (sleeve length), cm or null.' },
-        length: { type: ['number', 'null'], description: 'дължина (length), cm or null.' },
-        back: { type: ['number', 'null'], description: 'ширина на гърба с ръкави (back width incl. sleeves), cm or null.' },
-      },
-      required: ['sleeve', 'length', 'back'],
-    },
-    measurementsNote: {
-      type: 'string',
-      description:
-        'Short note (Bulgarian or English) on how the scale was read, or why a ' +
-        'value is null (e.g. "няма видим мащаб" / "no ruler visible"). Always an estimate.',
-    },
     priceRationale: {
       type: 'string',
       description: 'Short rationale: which catalog comparable(s) and signals set the price.',
@@ -98,20 +64,16 @@ export const productInputSchema = {
   },
   required: [
     'type', 'lbl', 'cat', 'name', 'sub', 'price', 'colors',
-    'desc', 'sizes', 'details', 'bg', 'acc',
-    'measurements', 'measurementsNote', 'priceRationale',
+    'desc', 'sizes', 'details', 'bg', 'acc', 'priceRationale',
   ],
 }
 
 /**
- * Validate raw tool output. Returns { product, rationale, measurementsNote }.
- * `priceRationale` and `measurementsNote` are split out of the product object
- * (they are owner-facing notes, not catalogue fields). `measurements` stays on
- * the product so it can flow into the formatted PRODUCTS entry.
- * Throws a zod error on failure.
+ * Validate raw tool output. Returns { product, rationale } on success.
+ * Throws a zod error (with the raw input attached) on failure.
  */
 export function validateProduct(raw) {
   const parsed = productSchema.parse(raw)
-  const { priceRationale, measurementsNote, ...product } = parsed
-  return { product, rationale: priceRationale, measurementsNote }
+  const { priceRationale, ...product } = parsed
+  return { product, rationale: priceRationale }
 }

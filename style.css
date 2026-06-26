@@ -262,7 +262,7 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
 .fbot a:hover{color:var(--GD)}
 
 @media(max-width:900px){
-  .haori-split,.modal{grid-template-columns:1fr}
+  .haori-split{grid-template-columns:1fr}
   .m-vis{min-height:280px}
   .styling-grid{grid-template-columns:1fr 1fr}
   .sg-item:nth-child(1){grid-row:auto}
@@ -285,6 +285,7 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
   .hero-actions{width:100%;align-items:stretch;gap:.7rem}
   .hero-scroll{display:none}
   .sec{padding:4rem 1.3rem}
+  .modal{grid-template-columns:1fr}
   .m-bod{padding:2.2rem 1.5rem}
   .m-name{font-size:32px}
   .m-price{font-size:26px}
@@ -295,8 +296,17 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
   .haori-split h3{font-size:clamp(30px,8vw,46px)!important}
   #styling-sec>div:first-child{grid-template-columns:1fr!important;gap:1.4rem!important;margin-bottom:2.4rem!important}
 }
+/* Touch / no-hover devices (iPad, phones): hide the custom cursor dot and
+   restore real cursors so an attached trackpad still shows a pointer. Also
+   reveal hover-only affordances since hover never fires on touch. */
 @media(hover:none){
   #CUR,#CUR2{display:none!important}
+  body,a,button{cursor:auto}
+  .btn-A,.btn-B,.abtn,.bnow,.wbtn,.sz,.qb,.mx,.pco-b,.burger,.nav-cart-btn,
+  .fm-link,.pc,.sg-item,.cchk,.ccx,.abtn{cursor:pointer}
+  /* product cards: show the "Бърз преглед" overlay so they read as tappable */
+  .pc .pco{opacity:1;transform:none;background:linear-gradient(to top,rgba(12,6,8,.72) 0%,rgba(12,6,8,.15) 45%,transparent 70%)}
+  .pc .pco-b{background:rgba(228,216,192,.92)}
 }
 
 /* STYLING teaser (начална страница) */

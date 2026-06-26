@@ -6,10 +6,11 @@ and is never exposed to the browser.
 
 ## Endpoints
 
-| Route                  | Method | Purpose                                                        |
-| ---------------------- | ------ | -------------------------------------------------------------- |
-| `/api/send-order-mail` | POST   | Customer confirmation + admin alert + a voucher email per voucher item |
-| `/api/contact`         | POST   | Generic contact / enquiry → admin inbox (Reply-To = visitor)   |
+| Route                   | Method | Purpose                                                        |
+| ----------------------- | ------ | -------------------------------------------------------------- |
+| `/api/send-order-mail`  | POST   | Customer confirmation + admin alert + a voucher email per voucher item |
+| `/api/contact`          | POST   | Generic contact / enquiry → admin inbox (Reply-To = visitor)   |
+| `/api/generate-product` | POST   | Admin AI auto-fill: photos → draft product copy (name, desc, details, colours…). Reuses `agent/src`; the Anthropic key stays server-side. Returns no price. |
 
 Shared code: `_mailer.js` (Mailgun transport) and `_templates.js` (HTML emails).
 Files prefixed with `_` are helpers, not routes.
@@ -27,6 +28,7 @@ Set these in **Vercel → Project → Settings → Environment Variables**:
 | `ADMIN_EMAIL`     | no       | `hello@kinorabg.com`             | Where new-order alerts & contact messages go. |
 | `SUPABASE_URL`    | vouchers | `https://xxxx.supabase.co`       | Needed so purchased vouchers are persisted (redeemable). |
 | `SUPABASE_ANON_KEY` | vouchers | `eyJhbGci…`                    | Anon key; used to call the `issue_voucher` RPC. |
+| `ANTHROPIC_API_KEY` | autofill | `sk-ant-…`                     | Used **only** by `/api/generate-product` for AI product auto-fill. Stays server-side; never sent to the browser. |
 
 > Voucher persistence: run `vouchers-schema.sql` in Supabase first. Without
 > `SUPABASE_URL` / `SUPABASE_ANON_KEY`, voucher **emails** still send but the codes

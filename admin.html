@@ -109,6 +109,9 @@ body{font-family:'Golos Text',sans-serif;background:var(--NV);color:var(--BG);mi
 .pf-colors{display:flex;gap:.6rem}
 .pf-colors input[type=color],.pf-color{width:100%;height:38px;padding:2px;cursor:pointer;background:rgba(228,216,192,.04);border:1px solid rgba(228,216,192,.14)}
 .pf-thumb{width:90px;height:120px;object-fit:cover;border:1px solid var(--line);background:var(--NV);display:block;margin-bottom:.6rem}
+.pf-ai{width:100%;background:none;color:var(--GD);border:1px solid var(--GD);padding:10px;font-family:inherit;font-size:9px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;margin-top:.5rem;transition:all .2s}
+.pf-ai:hover:not(:disabled){background:var(--GD);color:var(--B)}
+.pf-ai:disabled{opacity:.45;cursor:not-allowed}
 .pf-save{width:100%;background:var(--BG);color:var(--B);border:none;padding:13px;font-family:inherit;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;font-weight:500;margin-top:.6rem;transition:all .2s}
 .pf-save:hover{background:var(--GD)}
 .pf-del{width:100%;background:none;color:#e07070;border:1px solid rgba(224,112,112,.3);padding:11px;font-family:inherit;font-size:9px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;margin-top:.6rem;transition:all .2s}
@@ -1024,6 +1027,8 @@ function productForm(p) {
       <input type="file" id="pf-file" accept="image/*" onchange="uploadProductImage(this)"/>
       <input type="hidden" id="pf-img" value="${p.img||''}"/>
       <div id="pf-upmsg" style="font-size:10px;color:var(--OL3);margin-top:.3rem"></div>
+      <button type="button" class="pf-ai" id="pf-ai" onclick="aiAutofill()">✨ AI попълни от снимка</button>
+      <div id="pf-aimsg" style="font-size:10px;color:var(--OL3);margin-top:.3rem"></div>
     </div>
     <div class="pf-group"><label>Име</label><input id="pf-name" value="${(p.name||'').replace(/"/g,'&quot;')}"/></div>
     <div class="pf-row">
@@ -1089,6 +1094,53 @@ async function uploadProductImage(input){
     t.outerHTML = `<img class="pf-thumb" id="pf-thumb" src="${url}"/>`;
     msg.textContent = '✓ Качено';
   } catch(e){ msg.textContent = 'Грешка при качване'; msg.style.color='#e07070'; }
+}
+
+// Read the selected photo(s) and let Claude draft the product copy, then fill
+// the form. Fills name/type/cat/sub/lbl/desc/sizes/details/colors only — never
+// price, measurements, the image, or the active toggle (owner-controlled).
+function fileToImage(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=()=>resolve({ data:String(r.result).split(',')[1], mediaType:file.type });
+    r.onerror=()=>reject(new Error('Грешка при четене на файла.'));
+    r.readAsDataURL(file);
+  });
+}
+
+async function aiAutofill(){
+  const fileInput=document.getElementById('pf-file');
+  const msg=document.getElementById('pf-aimsg');
+  const btn=document.getElementById('pf-ai');
+  msg.style.color='var(--OL3)';
+  const files=fileInput && fileInput.files ? [...fileInput.files] : [];
+  if(!files.length){ msg.textContent='Първо избери снимка по-горе.'; msg.style.color='#e07070'; return; }
+  btn.disabled=true; msg.textContent='Анализирам снимката… (10–30 сек)';
+  try {
+    const images=await Promise.all(files.slice(0,6).map(fileToImage));
+    const typeEl=document.getElementById('pf-type');
+    const res=await fetch('/api/generate-product',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ type:(typeEl&&typeEl.value)||undefined, images })
+    });
+    const body=await res.json();
+    if(!res.ok) throw new Error(body.error||'Грешка при генериране.');
+    const p=body.product||{};
+    const set=(id,val)=>{ const el=document.getElementById(id); if(el!=null&&val!=null) el.value=val; };
+    set('pf-name',p.name);
+    if(p.type) set('pf-type',p.type);
+    set('pf-cat',p.cat);
+    set('pf-sub',p.sub);
+    const lblEl=document.getElementById('pf-lbl'); if(lblEl&&p.lbl!=null) lblEl.value=p.lbl;
+    set('pf-desc',p.desc);
+    if(Array.isArray(p.sizes)) set('pf-sizes',p.sizes.join(', '));
+    if(Array.isArray(p.details)) set('pf-details',p.details.join('\n'));
+    if(Array.isArray(p.colors)){ p.colors.slice(0,3).forEach((c,i)=>set('pf-c'+i,c)); }
+    set('pf-bg',p.bg);
+    set('pf-acc',p.acc);
+    msg.textContent='✓ Попълнено — прегледай, задай цена и запази.';
+  } catch(e){ msg.textContent=e.message; msg.style.color='#e07070'; }
+  finally { btn.disabled=false; }
 }
 
 function collectProduct() {

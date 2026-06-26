@@ -4,6 +4,10 @@
   "private": true,
   "description": "Kinora storefront — static HTML + Vercel serverless API (Mailgun email).",
   "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
+    "zod": "^3.25.0"
+  },
   "engines": {
     "node": ">=18"
   }

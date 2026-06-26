@@ -1,4 +1,10 @@
 {
+  "functions": {
+    "api/generate-product.js": {
+      "includeFiles": "agent/**",
+      "maxDuration": 60
+    }
+  },
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
     { "source": "/haori", "destination": "/haori.html" },

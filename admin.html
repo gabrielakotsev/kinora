@@ -1016,11 +1016,11 @@ function productForm(p) {
     <div class="pf-group"><label>Описание</label><textarea id="pf-desc">${p.description||''}</textarea></div>
     <div class="pf-group"><label>Размери (разделени със запетая)</label><input id="pf-sizes" value="${(p.sizes||[]).join(', ').replace(/"/g,'&quot;')}"/></div>
     <div class="pf-group"><label>Детайли (по един на ред)</label><textarea id="pf-details">${(p.details||[]).join('\n')}</textarea></div>
-    <div class="pf-group"><label>Мерки (см) — гръб / дължина / ръкав</label>
+    <div class="pf-group"><label>Мерки (см) — дължина на ръкава / дължина / ширина на гърба с ръкави</label>
       <div class="pf-row">
-        <input id="pf-m-back" type="number" placeholder="гръб" value="${m.back!=null?m.back:''}"/>
+        <input id="pf-m-sleeve" type="number" placeholder="дължина на ръкава" value="${m.sleeve!=null?m.sleeve:''}"/>
         <input id="pf-m-length" type="number" placeholder="дължина" value="${m.length!=null?m.length:''}"/>
-        <input id="pf-m-sleeve" type="number" placeholder="ръкав" value="${m.sleeve!=null?m.sleeve:''}"/>
+        <input id="pf-m-back" type="number" placeholder="ширина на гърба с ръкави" value="${m.back!=null?m.back:''}"/>
       </div>
     </div>
     <div class="pf-group"><label>Цветове (точки на картата)</label>

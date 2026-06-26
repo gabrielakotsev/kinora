@@ -205,7 +205,7 @@ function measureBlock(p){
   if(!p.measure) return '';
   const m = p.measure, row = (lbl,v)=> v==null ? '' :
     `<div><dt>${lbl}</dt><dd>${v}<span>см</span></dd></div>`;
-  const inner = row('Гръб',m.back)+row('Дължина',m.length)+row('Ръкав',m.sleeve);
+  const inner = row('Дължина на ръкава',m.sleeve)+row('Дължина',m.length)+row('Ширина на гърба с ръкави',m.back);
   return inner ? `<p class="m-lbl" style="margin-top:1.6rem">Мерки</p><dl class="m-measure">${inner}</dl>` : '';
 }
 // Скрий списъка с детайли, докато все още са незапълнени плейсхолдъри ("— попълни").

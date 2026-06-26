@@ -236,7 +236,6 @@ function openM(id) {
       ? `<button class="abtn sold-out" disabled>ИЗЧЕРПАН</button>`
       : `<button class="abtn" onclick="addC(${id})">ДОБАВИ — ${p.price.toLocaleString('bg-BG')} €</button>
          <button class="bnow" onclick="buyNow(${id})">Купи сега</button>`}
-    <button class="wbtn tryon-btn" onclick="tryOnSoon()">Виртуална проба <span class="soon">скоро</span></button>
     ${measureBlock(p)}
     ${detailsBlock(p)}`;
   document.getElementById('mw').classList.add('on');
@@ -246,7 +245,6 @@ function setSz(id,s,btn){selSz[id]=s;btn.closest('.szr').querySelectorAll('.sz')
 function chQ(id,d){selQty[id]=Math.max(1,(selQty[id]||1)+d);const e=document.getElementById(`qd${id}`);if(e)e.textContent=selQty[id]}
 function cMW(e){if(e.target===document.getElementById('mw'))cMD()}
 function cMD(){document.getElementById('mw').classList.remove('on');document.body.classList.remove('no-scroll')}
-function tryOnSoon(){showToast('Виртуалната проба идва скоро ✦')}
 
 /* VOUCHER */
 let voucherAmt = 50;

@@ -221,7 +221,7 @@ function detailsBlock(p){
   const real = (p.details||[]).filter(d => !isPlaceholder(d));
   if(!real.length) return '';
   const render = d => /^\s*Инструкции за грижа/i.test(d)
-    ? `<li><a href="care.html">Инструкции за грижа</a></li>`
+    ? `<li><a href="/care.html">Инструкции за грижа</a></li>`
     : `<li>${d}</li>`;
   return `<ul class="detl">${real.map(render).join('')}</ul>`;
 }
@@ -281,7 +281,7 @@ function renderProductPage(){
     root.innerHTML = `<div class="product-missing">
       <h2 class="m-name">Продуктът не е намерен</h2>
       <p class="m-desc">Този артикул вече не е наличен или връзката е невалидна.</p>
-      <a class="abtn" href="index.html" style="display:inline-block;width:auto;padding:16px 32px;text-decoration:none;text-align:center">Към началото</a>
+      <a class="abtn" href="/index.html" style="display:inline-block;width:auto;padding:16px 32px;text-decoration:none;text-align:center">Към началото</a>
     </div>`;
     return;
   }
@@ -317,7 +317,7 @@ function renderProductPageError(){
   root.innerHTML = `<div class="product-missing">
     <h2 class="m-name">Грешка при зареждане</h2>
     <p class="m-desc">Продуктът не може да се зареди в момента. Моля, опитайте отново по-късно.</p>
-    <a class="abtn" href="index.html" style="display:inline-block;width:auto;padding:16px 32px;text-decoration:none;text-align:center">Към началото</a>
+    <a class="abtn" href="/index.html" style="display:inline-block;width:auto;padding:16px 32px;text-decoration:none;text-align:center">Към началото</a>
   </div>`;
 }
 

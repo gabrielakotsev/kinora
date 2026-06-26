@@ -51,11 +51,11 @@ function mkCard(p) {
   const badge = sold
     ? `<div class="badge b-sold">Изчерпан</div>`
     : (p.lbl ? `<div class="badge ${p.lbl==='Винтидж'?'b-vtg':'b-new'}">${p.lbl}</div>` : '');
-  return `<div class="pc" onclick="openM(${p.id})">
+  return `<a class="pc" href="/product/${p.id}">
     <div class="pcv" style="background:${p.bg}">
       ${getVisual(p, 155)}
       ${badge}
-      <div class="pco"><button class="pco-b">Бърз преглед</button></div>
+      <div class="pco"><button class="pco-b" onclick="event.preventDefault();event.stopPropagation();openM(${p.id})">Бърз преглед</button></div>
     </div>
     <div class="pcbody">
       <p class="pc-cat">${p.cat}</p>
@@ -66,7 +66,7 @@ function mkCard(p) {
         <div style="display:flex;gap:4px">${p.colors.map(c=>`<div style="width:9px;height:9px;background:${c};border:1px solid rgba(228,216,192,.16)"></div>`).join('')}</div>
       </div>
     </div>
-  </div>`;
+  </a>`;
 }
 
 /* GRID RENDER — работи на всяка страница според наличните елементи */
@@ -178,9 +178,11 @@ async function boot(){
     await loadProducts();
     await loadSoldIds().catch(()=>{}); // изчерпани — по желание; не блокира
     renderAllGrids();
+    renderProductPage();              // продуктова страница (само ако има #product-root)
     revalidateCart(); // сверявай количката с каталога след зареждане
   } catch(e){
     renderProductsError();
+    renderProductPageError();         // покажи грешка и на продуктовата страница
   }
 }
 boot();
@@ -254,6 +256,70 @@ function setSz(id,s,btn){selSz[id]=s;btn.closest('.szr').querySelectorAll('.sz')
 function chQ(id,d){selQty[id]=Math.max(1,(selQty[id]||1)+d);const e=document.getElementById(`qd${id}`);if(e)e.textContent=selQty[id]}
 function cMW(e){if(e.target===document.getElementById('mw'))cMD()}
 function cMD(){document.getElementById('mw').classList.remove('on');document.body.classList.remove('no-scroll')}
+
+/* PRODUCT PAGE — /product/ID (рендерира се само ако е налично #product-root) */
+function productPageId(){
+  const m = location.pathname.match(/\/product\/(\d+)/);
+  return m ? parseInt(m[1],10) : NaN;
+}
+function setProductMeta(p){
+  // Дефанзивен ъпдейт от страна на клиента; авторитетният източник за SEO е api/product.js.
+  const title = `KINORA — ${p.name}${p.sub ? ' · '+p.sub : ''}`;
+  document.title = title;
+  const desc = (p.desc||'').trim() || 'Автентични японски хаори и кимона от KINORA.';
+  const set = (sel,val) => { const el = document.querySelector(sel); if(el) el.setAttribute('content', val); };
+  set('meta[name="description"]', desc);
+  set('meta[property="og:title"]', title);
+  set('meta[property="og:description"]', desc);
+}
+function renderProductPage(){
+  const root = document.getElementById('product-root');
+  if(!root) return;
+  const id = productPageId();
+  const p = Number.isNaN(id) ? null : PRODUCTS.find(x=>x.id===id);
+  if(!p){
+    root.innerHTML = `<div class="product-missing">
+      <h2 class="m-name">Продуктът не е намерен</h2>
+      <p class="m-desc">Този артикул вече не е наличен или връзката е невалидна.</p>
+      <a class="abtn" href="index.html" style="display:inline-block;width:auto;padding:16px 32px;text-decoration:none;text-align:center">Към началото</a>
+    </div>`;
+    return;
+  }
+  selSz[id] = selSz[id] || p.sizes[0];
+  selQty[id] = selQty[id] || 1;
+  setProductMeta(p);
+  const vis = p.img
+    ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;min-height:520px"/>`
+    : `<div class="m-vis-svg" style="background:${p.bg}">${p.type==='haori'?hSVG(p.bg,p.acc,240):kSVG(p.bg,p.acc,240)}</div>`;
+  root.innerHTML = `<div class="product-page">
+    <div class="m-vis">${vis}</div>
+    <div class="m-bod">
+      <p class="m-cat">${p.cat}</p>
+      <h1 class="m-name">${p.name}</h1>
+      <p class="m-sub">${p.sub}</p>
+      <p class="m-price">${p.price.toLocaleString('bg-BG')} €</p>
+      <p class="m-desc">${p.desc}</p>
+      <p class="m-lbl">Размер</p>
+      <div class="szr">${p.sizes.map(s=>`<button class="sz ${selSz[id]===s?'sel':''}" onclick="setSz(${id},'${s}',this)">${s}</button>`).join('')}</div>
+      <p class="m-unique">✦ Уникат — само 1 наличен брой</p>
+      ${isSold(id)
+        ? `<button class="abtn sold-out" disabled>ИЗЧЕРПАН</button>`
+        : `<button class="abtn" onclick="addC(${id})">ДОБАВИ — ${p.price.toLocaleString('bg-BG')} €</button>
+           <button class="bnow" onclick="buyNow(${id})">Купи сега</button>`}
+      ${measureBlock(p)}
+      ${detailsBlock(p)}
+    </div>
+  </div>`;
+}
+function renderProductPageError(){
+  const root = document.getElementById('product-root');
+  if(!root) return;
+  root.innerHTML = `<div class="product-missing">
+    <h2 class="m-name">Грешка при зареждане</h2>
+    <p class="m-desc">Продуктът не може да се зареди в момента. Моля, опитайте отново по-късно.</p>
+    <a class="abtn" href="index.html" style="display:inline-block;width:auto;padding:16px 32px;text-decoration:none;text-align:center">Към началото</a>
+  </div>`;
+}
 
 /* VOUCHER */
 let voucherAmt = 50;

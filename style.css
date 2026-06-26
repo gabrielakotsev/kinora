@@ -123,7 +123,7 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .pager button.active{background:var(--GD);border-color:var(--GD);color:var(--NV)}
 .pager button:disabled{opacity:.3;cursor:default}
 .pager .pager-gap{color:rgba(228,216,192,.3);padding:0 2px}
-.pc{background:var(--NV2);position:relative;cursor:none;overflow:hidden;transition:transform .55s cubic-bezier(.23,1,.32,1)}
+.pc{display:block;text-decoration:none;color:inherit;background:var(--NV2);position:relative;cursor:none;overflow:hidden;transition:transform .55s cubic-bezier(.23,1,.32,1)}
 .pc:hover{transform:translateY(-8px)}
 .pc:hover .pco{opacity:1;transform:translateY(0)}
 .pcv{display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;aspect-ratio:3/4;background:var(--NV2)}
@@ -168,6 +168,11 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .m-vis img{width:100%;height:100%;object-fit:cover}
 .m-vis-svg{display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:520px}
 .m-bod{padding:3.5rem 3rem;display:flex;flex-direction:column;border-left:1px solid rgba(228,216,192,.06);overflow-y:auto}
+/* PRODUCT PAGE — пълноекранен изглед, преизползва .m-* класовете */
+.product-page{display:grid;grid-template-columns:1fr 1fr;background:var(--B);border:1px solid rgba(228,216,192,.07);margin-top:1rem}
+.product-page .m-vis{min-height:560px}
+.product-missing{padding:5rem 1rem;text-align:center}
+.product-missing .m-desc{text-align:center;max-width:480px;margin:.6rem auto 2rem}
 .mx{position:absolute;top:1rem;right:1rem;background:none;border:1px solid rgba(228,216,192,.18);width:36px;height:36px;color:var(--BG);font-size:18px;cursor:none;display:flex;align-items:center;justify-content:center;z-index:10;transition:background .2s}
 .mx:hover{background:var(--B3)}
 .m-cat{font-size:7.5px;letter-spacing:.44em;text-transform:uppercase;color:var(--OL3);margin-bottom:.6rem}
@@ -287,7 +292,8 @@ footer{background:var(--NV);border-top:1px solid rgba(228,216,192,.05);padding:7
   .hero-actions{width:100%;align-items:stretch;gap:.7rem}
   .hero-scroll{display:none}
   .sec{padding:4rem 1.3rem}
-  .modal{grid-template-columns:1fr}
+  .modal,.product-page{grid-template-columns:1fr}
+  .product-page .m-vis{min-height:340px}
   .m-bod{padding:2.2rem 1.5rem}
   .m-name{font-size:32px}
   .m-price{font-size:26px}

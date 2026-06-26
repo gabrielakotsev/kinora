@@ -14,7 +14,8 @@
     { "source": "/cookies", "destination": "/cookies.html" },
     { "source": "/checkout", "destination": "/checkout.html" },
     { "source": "/success", "destination": "/success.html" },
-    { "source": "/admin", "destination": "/admin.html" }
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/product/:id", "destination": "/api/product?id=:id" }
   ],
   "headers": [
     {

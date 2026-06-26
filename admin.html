@@ -231,6 +231,14 @@ body{font-family:'Golos Text',sans-serif;background:var(--NV);color:var(--BG);mi
         <button class="filter-btn" onclick="filterProducts('kimono',this)">Кимоно</button>
         <button class="filter-btn" onclick="filterProducts('hidden',this)">Скрити</button>
         <button class="filter-btn" style="border-color:var(--GD);color:var(--GD)" onclick="newProduct()">+ Нов продукт</button>
+        <select class="search-input" id="product-sort" style="width:auto;margin-left:auto" onchange="renderProducts()">
+          <option value="manual">Подредба: ръчна</option>
+          <option value="name-asc">Име А–Я</option>
+          <option value="name-desc">Име Я–А</option>
+          <option value="price-asc">Цена ↑</option>
+          <option value="price-desc">Цена ↓</option>
+          <option value="new">Първо новите</option>
+        </select>
         <input class="search-input" id="product-search" placeholder="Търси по име..." oninput="renderProducts()"/>
       </div>
       <div id="products-wrap"><div class="loading">Зарежда продукти...</div></div>
@@ -923,12 +931,24 @@ function filterProducts(f, btn) {
   renderProducts();
 }
 
+const PRODUCT_SORTERS = {
+  manual:      (a,b) => (a.sort_order||0) - (b.sort_order||0),
+  'name-asc':  (a,b) => (a.name||'').localeCompare(b.name||'', 'bg'),
+  'name-desc': (a,b) => (b.name||'').localeCompare(a.name||'', 'bg'),
+  'price-asc': (a,b) => Number(a.price||0) - Number(b.price||0),
+  'price-desc':(a,b) => Number(b.price||0) - Number(a.price||0),
+  new:         (a,b) => (b.lbl==='Ново'?1:0) - (a.lbl==='Ново'?1:0),
+};
+
 function renderProducts() {
   const search = (document.getElementById('product-search').value||'').toLowerCase();
-  let list = allProducts;
+  const sortKey = (document.getElementById('product-sort')||{}).value || 'manual';
+  let list = allProducts.slice();
   if (productFilter==='haori' || productFilter==='kimono') list = list.filter(p=>p.type===productFilter);
   else if (productFilter==='hidden') list = list.filter(p=>!p.is_active);
   if (search) list = list.filter(p=>(p.name||'').toLowerCase().includes(search));
+  list.sort(PRODUCT_SORTERS[sortKey] || PRODUCT_SORTERS.manual);
+  const manualSort = sortKey === 'manual';
 
   if (!list.length) {
     document.getElementById('products-wrap').innerHTML = `<div class="empty-state"><h3>НЯМА ПРОДУКТИ</h3><p>Натисни „+ Нов продукт", за да добавиш.</p></div>`;
@@ -944,8 +964,10 @@ function renderProducts() {
       const state = p.is_active ? `<span class="status-badge s-active">Активен</span>` : `<span class="status-badge s-depleted">Скрит</span>`;
       return `<tr onclick="editProduct(${p.id})">
         <td onclick="event.stopPropagation()" style="white-space:nowrap">
-          <button style="${ab}" ${idx===0?'disabled':''} onclick="moveProduct(${p.id},-1)">↑</button>
-          <button style="${ab}" ${idx===list.length-1?'disabled':''} onclick="moveProduct(${p.id},1)">↓</button>
+          ${manualSort
+            ? `<button style="${ab}" ${idx===0?'disabled':''} onclick="moveProduct(${p.id},-1)">↑</button>
+               <button style="${ab}" ${idx===list.length-1?'disabled':''} onclick="moveProduct(${p.id},1)">↓</button>`
+            : `<span style="color:rgba(228,216,192,.15);font-size:11px" title="Подреждането работи само при ръчна подредба">↕</span>`}
         </td>
         <td>${thumb}</td>
         <td><div style="font-weight:500">${p.name||'—'}${sold}</div><div style="font-size:11px;color:rgba(228,216,192,.3)">${p.cat||''}</div></td>

@@ -76,9 +76,9 @@ async function main() {
 
   const images = await loadImages(args.photos)
 
-  let product, rationale, line
+  let product, rationale, measurementsNote, line
   try {
-    ;({ product, rationale, line } = await generateFromImages(images, {
+    ;({ product, rationale, measurementsNote, line } = await generateFromImages(images, {
       type: args.type,
       id: args.id,
     }))
@@ -91,16 +91,23 @@ async function main() {
     throw error
   }
 
+  const m = product.measurements || {}
+  const cm = (n) => (n == null ? '—' : `${n} cm`)
+  const measureText =
+    `measurements (estimate, confirm): sleeve ${cm(m.sleeve)} · ` +
+    `length ${cm(m.length)} · back ${cm(m.back)} — ${measurementsNote}`
   const rationaleText = `price: ${product.price} € — ${rationale}`
 
   if (args.explain) {
     // Everything on stdout when explicitly asked.
     console.log(line)
     console.log(`\n// ${rationaleText}`)
+    console.log(`// ${measureText}`)
   } else {
-    // Clean object on stdout (pipe-friendly); rationale on stderr.
+    // Clean object on stdout (pipe-friendly); notes on stderr.
     console.log(line)
     console.error(rationaleText)
+    console.error(measureText)
   }
 }
 

@@ -208,11 +208,20 @@ function measureBlock(p){
   const inner = row('Дължина на ръкава',m.sleeve)+row('Дължина',m.length)+row('Ширина на гърба с ръкави',m.back);
   return inner ? `<p class="m-lbl" style="margin-top:1.6rem">Мерки</p><dl class="m-measure">${inner}</dl>` : '';
 }
-// Скрий списъка с детайли, докато все още са незапълнени плейсхолдъри ("— попълни").
+// Скрий незапълнените плейсхолдъри ("— попълни" / "— fill" / празна стойност).
+// Реда „Инструкции за грижа" става линк към страницата за грижа.
 function detailsBlock(p){
-  const real = (p.details||[]).filter(d => d && !/попълни/i.test(d));
+  const isPlaceholder = d => {
+    if(!d) return true;
+    if(/—\s*(попълни|fill)\s*$/i.test(d)) return true; // незапълнена стойност
+    return false;
+  };
+  const real = (p.details||[]).filter(d => !isPlaceholder(d));
   if(!real.length) return '';
-  return `<ul class="detl">${real.map(d=>`<li>${d}</li>`).join('')}</ul>`;
+  const render = d => /^\s*Инструкции за грижа/i.test(d)
+    ? `<li><a href="care.html">Инструкции за грижа</a></li>`
+    : `<li>${d}</li>`;
+  return `<ul class="detl">${real.map(render).join('')}</ul>`;
 }
 
 function openM(id) {

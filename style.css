@@ -204,6 +204,8 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .detl{list-style:none;margin-top:1.8rem;border-top:1px solid rgba(228,216,192,.06);padding-top:1.4rem}
 .detl li{font-size:13.5px;color:rgba(228,216,192,.5);padding:5px 0;display:flex;gap:.8rem;font-weight:300;line-height:1.5}
 .detl li::before{content:'⊹';color:var(--OL3);font-size:11px}
+.detl li a{color:var(--GD);text-decoration:none;border-bottom:1px solid rgba(196,164,100,.35);transition:color .2s,border-color .2s}
+.detl li a:hover{color:var(--GD2);border-color:var(--GD2)}
 .m-measure{display:flex;gap:1.8rem;flex-wrap:wrap;margin:.2rem 0 1.6rem;padding:1.1rem 0;border-top:1px solid rgba(228,216,192,.06);border-bottom:1px solid rgba(228,216,192,.06)}
 .m-measure div{display:flex;flex-direction:column;gap:4px}
 .m-measure dt{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--OL3)}

@@ -14,8 +14,8 @@ export async function generateFromImages(imageBlocks, { type, id } = {}) {
   const userContent = buildUserContent(imageBlocks, { type, id })
 
   const raw = await generateProduct({ system, userContent })
-  const { product, rationale } = validateProduct(raw)
+  const { product, rationale, measurementsNote } = validateProduct(raw)
   const line = formatProduct(product, { id })
 
-  return { product, rationale, line }
+  return { product, rationale, measurementsNote, line }
 }

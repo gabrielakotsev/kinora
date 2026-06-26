@@ -1068,7 +1068,8 @@ function openProductDrawer(p) {
   document.getElementById('product-drawer').classList.add('on');
 }
 function closeProductDrawer(){ document.getElementById('product-drawer').classList.remove('on'); }
-function newProduct(){ openProductDrawer({type:'haori',is_active:true,colors:[],sizes:[],details:[]}); }
+const DEFAULT_DETAILS = ['Материал — fill','Подплата — fill','Състояние — fill','Произход — Япония','Инструкции за грижа'];
+function newProduct(){ openProductDrawer({type:'haori',is_active:true,colors:[],sizes:[],details:DEFAULT_DETAILS.slice()}); }
 function editProduct(id){ const p=allProducts.find(x=>x.id===id); if(p) openProductDrawer(p); }
 
 async function uploadProductImage(input){

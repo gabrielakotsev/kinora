@@ -174,7 +174,7 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .m-name{font-family:'Tenor Sans',sans-serif;font-size:40px;letter-spacing:.08em;color:var(--BG);line-height:.9;margin-bottom:.3rem}
 .m-sub{font-family:'Yeseva One',serif;font-size:20px;color:var(--GD);margin-bottom:.8rem}
 .m-price{font-family:'Tenor Sans',sans-serif;font-size:30px;letter-spacing:.06em;color:var(--BG);margin-bottom:1.5rem}
-.m-desc{font-family:'Yeseva One',serif;font-size:15px;color:rgba(228,216,192,.42);line-height:1.9;margin-bottom:1.5rem;font-weight:300}
+.m-desc{font-family:'Yeseva One',serif;font-size:15px;color:rgba(228,216,192,.42);line-height:1.9;margin-bottom:1.5rem;font-weight:300;text-align:justify;white-space:pre-line;hyphens:auto;overflow-wrap:break-word}
 .m-lbl{font-size:8px;letter-spacing:.38em;text-transform:uppercase;color:rgba(228,216,192,.28);margin-bottom:.6rem}
 .szr{display:flex;gap:3px;margin-bottom:1.5rem;flex-wrap:wrap}
 .sz{background:none;border:1px solid rgba(228,216,192,.1);padding:9px 17px;font-family:inherit;font-size:12px;cursor:none;color:rgba(228,216,192,.42);transition:all .2s}

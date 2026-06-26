@@ -202,13 +202,13 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .v-custom{width:100%;background:none;border:1px solid rgba(228,216,192,.1);color:var(--BG);padding:13px 15px;font-family:'Golos Text',sans-serif;font-size:15px;margin-bottom:1.6rem;outline:none}
 .v-custom:focus{border-color:rgba(228,216,192,.3)}
 .detl{list-style:none;margin-top:1.8rem;border-top:1px solid rgba(228,216,192,.06);padding-top:1.4rem}
-.detl li{font-size:11.5px;color:rgba(228,216,192,.26);padding:4px 0;display:flex;gap:.8rem;font-weight:300}
-.detl li::before{content:'⊹';color:var(--OL3);font-size:10px}
-.m-measure{display:flex;gap:1.6rem;flex-wrap:wrap;margin:.2rem 0 1.6rem;padding:1rem 0;border-top:1px solid rgba(228,216,192,.06);border-bottom:1px solid rgba(228,216,192,.06)}
-.m-measure div{display:flex;flex-direction:column;gap:3px}
-.m-measure dt{font-size:8px;letter-spacing:.26em;text-transform:uppercase;color:var(--OL3)}
-.m-measure dd{font-family:'Tenor Sans',sans-serif;font-size:17px;color:var(--BG);margin:0}
-.m-measure dd span{font-size:10px;color:rgba(228,216,192,.3);margin-left:2px}
+.detl li{font-size:13.5px;color:rgba(228,216,192,.5);padding:5px 0;display:flex;gap:.8rem;font-weight:300;line-height:1.5}
+.detl li::before{content:'⊹';color:var(--OL3);font-size:11px}
+.m-measure{display:flex;gap:1.8rem;flex-wrap:wrap;margin:.2rem 0 1.6rem;padding:1.1rem 0;border-top:1px solid rgba(228,216,192,.06);border-bottom:1px solid rgba(228,216,192,.06)}
+.m-measure div{display:flex;flex-direction:column;gap:4px}
+.m-measure dt{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--OL3)}
+.m-measure dd{font-family:'Tenor Sans',sans-serif;font-size:20px;color:var(--BG);margin:0}
+.m-measure dd span{font-size:11px;color:rgba(228,216,192,.4);margin-left:2px}
 .m-unique{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--OL3);margin:.2rem 0 1.4rem}
 
 /* CART DRAWER */

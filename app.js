@@ -41,8 +41,17 @@ function kSVG(bg, ac, w=155) {
   return `<svg width="${w}" height="${h}" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg"><path d="M68,36 L34,62 L16,140 L14,258 L100,265 L186,258 L184,140 L166,62 L132,36 Z" fill="${bg}"/><path d="M100,36 L88,76 L100,100 L112,76 Z" fill="${ac}" opacity=".8"/><path d="M100,36 L68,36 L34,62 L52,86 L88,76 Z" fill="${bg}" stroke="${ac}" stroke-width=".4" opacity=".62"/><path d="M100,36 L132,36 L166,62 L148,86 L112,76 Z" fill="${bg}" stroke="${ac}" stroke-width=".4" opacity=".62"/><path d="M14,140 L34,62 L-4,74 L-6,165 L14,172 Z" fill="${bg}" opacity=".76"/><path d="M186,140 L166,62 L204,74 L206,165 L186,172 Z" fill="${bg}" opacity=".76"/><rect x="32" y="150" width="136" height="32" fill="#2e3018" opacity=".82"/><ellipse cx="100" cy="166" rx="16" ry="11" fill="#4a4e28"/><path d="M14,245 Q57,234 100,240 Q143,246 186,236 L186,265 L14,265 Z" fill="${bg}" opacity=".5"/></svg>`;
 }
 
+// Кориците: първата снимка от галерията, иначе legacy img, иначе нищо.
+function coverImg(p){ return (p.images && p.images[0]) || p.img || ''; }
+// Всички снимки на продукта (галерия), с резервен вариант към legacy img.
+function productImgs(p){
+  if (p.images && p.images.length) return p.images;
+  return p.img ? [p.img] : [];
+}
+
 function getVisual(p, w) {
-  if (p.img) return `<img src="${p.img}" alt="${p.name}" loading="lazy"/>`;
+  const cover = coverImg(p);
+  if (cover) return `<img src="${cover}" alt="${p.name}" loading="lazy"/>`;
   return p.type === 'haori' ? hSVG(p.bg, p.acc, w) : kSVG(p.bg, p.acc, w);
 }
 
@@ -163,7 +172,8 @@ async function loadProducts(){
     id:r.id, type:r.type, lbl:r.lbl||'', cat:r.cat, name:r.name, sub:r.sub,
     price:Number(r.price)||0, colors:r.colors||[], desc:r.description||'',
     sizes:r.sizes||[], measure:r.measure||null, details:r.details||[],
-    bg:r.bg||'#0c0608', acc:r.acc||'#c4a464', img:r.img||''
+    bg:r.bg||'#0c0608', acc:r.acc||'#c4a464', img:r.img||'',
+    images: Array.isArray(r.images) ? r.images : []
   }));
 }
 function renderProductsError(){
@@ -226,14 +236,61 @@ function detailsBlock(p){
   return `<ul class="detl">${real.map(render).join('')}</ul>`;
 }
 
+/* ГАЛЕРИЯ / КАРУСЕЛ — до 10 снимки, плъзгане на телефон + стрелки/точки */
+let _galSeq = 0;
+const galIndex = {}; // gid -> текущ индекс
+function escAttr(s){ return String(s==null?'':s).replace(/"/g,'&quot;'); }
+function galleryHTML(p){
+  const imgs = productImgs(p);
+  if(imgs.length === 0){
+    return `<div class="m-vis-svg" style="background:${p.bg}">${p.type==='haori'?hSVG(p.bg,p.acc,200):kSVG(p.bg,p.acc,200)}</div>`;
+  }
+  if(imgs.length === 1){
+    return `<img src="${escAttr(imgs[0])}" alt="${escAttr(p.name)}" style="width:100%;height:100%;object-fit:cover;min-height:520px"/>`;
+  }
+  const gid = 'gal'+(++_galSeq);
+  galIndex[gid] = 0;
+  const slides = imgs.map(u=>`<div class="gal-slide"><img src="${escAttr(u)}" alt="${escAttr(p.name)}" loading="lazy"/></div>`).join('');
+  const dots = imgs.map((_,i)=>`<button class="gal-dot${i===0?' on':''}" onclick="carouselTo('${gid}',${i})" aria-label="Снимка ${i+1}"></button>`).join('');
+  return `<div class="gal" id="${gid}" data-count="${imgs.length}"
+      ontouchstart="galTouchStart(event,'${gid}')" ontouchend="galTouchEnd(event,'${gid}')">
+    <div class="gal-track" id="${gid}-track">${slides}</div>
+    <button class="gal-arrow gal-prev" onclick="carouselGo('${gid}',-1)" aria-label="Предишна">‹</button>
+    <button class="gal-arrow gal-next" onclick="carouselGo('${gid}',1)" aria-label="Следваща">›</button>
+    <div class="gal-dots">${dots}</div>
+  </div>`;
+}
+function carouselRender(gid){
+  const el = document.getElementById(gid); if(!el) return;
+  const track = document.getElementById(gid+'-track'); if(!track) return;
+  const count = parseInt(el.dataset.count,10) || 1;
+  let i = galIndex[gid] || 0;
+  i = Math.max(0, Math.min(count-1, i));
+  galIndex[gid] = i;
+  track.style.transform = `translateX(${-i*100}%)`;
+  el.querySelectorAll('.gal-dot').forEach((d,di)=>d.classList.toggle('on', di===i));
+}
+function carouselGo(gid,dir){
+  const el = document.getElementById(gid); if(!el) return;
+  const count = parseInt(el.dataset.count,10) || 1;
+  galIndex[gid] = ((galIndex[gid]||0) + dir + count) % count; // обхожда в кръг
+  carouselRender(gid);
+}
+function carouselTo(gid,i){ galIndex[gid] = i; carouselRender(gid); }
+let _galTouchX = null;
+function galTouchStart(e,gid){ _galTouchX = e.changedTouches[0].clientX; }
+function galTouchEnd(e,gid){
+  if(_galTouchX==null) return;
+  const dx = e.changedTouches[0].clientX - _galTouchX;
+  _galTouchX = null;
+  if(Math.abs(dx) > 40) carouselGo(gid, dx < 0 ? 1 : -1);
+}
+
 function openM(id) {
   const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
   selSz[id] = selSz[id] || p.sizes[0];
   selQty[id] = selQty[id] || 1;
-  const vis = p.img
-    ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;min-height:520px"/>`
-    : `<div class="m-vis-svg" style="background:${p.bg}">${p.type==='haori'?hSVG(p.bg,p.acc,200):kSVG(p.bg,p.acc,200)}</div>`;
-  document.getElementById('mvis').innerHTML = `<button class="mx" onclick="cMD()">×</button>${vis}`;
+  document.getElementById('mvis').innerHTML = `<button class="mx" onclick="cMD()">×</button>${galleryHTML(p)}`;
   document.getElementById('mbod').innerHTML = `
     <p class="m-cat">${p.cat}</p>
     <h2 class="m-name">${p.name}</h2>
@@ -288,11 +345,8 @@ function renderProductPage(){
   selSz[id] = selSz[id] || p.sizes[0];
   selQty[id] = selQty[id] || 1;
   setProductMeta(p);
-  const vis = p.img
-    ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;min-height:520px"/>`
-    : `<div class="m-vis-svg" style="background:${p.bg}">${p.type==='haori'?hSVG(p.bg,p.acc,240):kSVG(p.bg,p.acc,240)}</div>`;
   root.innerHTML = `<div class="product-page">
-    <div class="m-vis">${vis}</div>
+    <div class="m-vis">${galleryHTML(p)}</div>
     <div class="m-bod">
       <p class="m-cat">${p.cat}</p>
       <h1 class="m-name">${p.name}</h1>
@@ -347,7 +401,7 @@ function addC(id) {
   const sz = selSz[id]||p.sizes[0];
   // Всеки артикул е уникат (1/1) — не може да се добави повече от веднъж.
   if(cart.find(c=>c.id===id)){ showToast(`${p.name} вече е в количката — уникат`); cMD(); return; }
-  cart.push({id,name:p.name,sub:p.sub,sz,qty:1,price:p.price,bg:p.bg,acc:p.acc,type:p.type,img:p.img||'',addedAt:Date.now()});
+  cart.push({id,name:p.name,sub:p.sub,sz,qty:1,price:p.price,bg:p.bg,acc:p.acc,type:p.type,img:coverImg(p),addedAt:Date.now()});
   saveCart(); upC(); cMD(); showToast(`Добавено — ${p.name}`);
   return true;
 }
@@ -369,7 +423,7 @@ function revalidateCart(){
     const p = PRODUCTS.find(x=>x.id===it.id);
     if(!p || isSold(it.id)){ removed.push(it.name); return false; } // изтрит или продаден
     if(typeof p.price === 'number') it.price = p.price;   // синхронизирай цената
-    if(p.img!=null) it.img = p.img;                       // и снимката
+    it.img = coverImg(p);                                 // и корицата
     return true;
   });
   if(removed.length){

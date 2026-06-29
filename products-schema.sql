@@ -19,11 +19,15 @@ create table if not exists public.products (
   details      jsonb default '[]'::jsonb,
   bg           text default '#0c0608',
   acc          text default '#c4a464',
-  img          text default '',
+  img          text default '',                 -- legacy/back-compat cover; mirrors images[0]
+  images       jsonb default '[]'::jsonb,       -- up to 10 image URLs; images[0] is the cover
   is_active    boolean not null default true,
   sort_order   integer default 0,
   created_at   timestamptz not null default now()
 );
+
+-- Add images[] to pre-existing tables (idempotent).
+alter table public.products add column if not exists images jsonb default '[]'::jsonb;
 
 alter table public.products enable row level security;
 

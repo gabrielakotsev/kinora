@@ -39,7 +39,7 @@ async function fetchProduct(id) {
   const url =
     `${SUPABASE_URL}/rest/v1/products` +
     `?id=eq.${id}&is_active=eq.true` +
-    `&select=name,sub,description,price,img,type&limit=1`;
+    `&select=name,sub,description,price,img,images,type&limit=1`;
   const res = await fetch(url, {
     headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
   });
@@ -105,9 +105,10 @@ export default async function handler(req, res) {
 
   const title = `KINORA — ${product.name}${product.sub ? ' · ' + product.sub : ''}`;
   const desc = metaText(product.description) || FALLBACK_DESC;
+  const cover = (Array.isArray(product.images) && product.images[0]) || product.img || '';
 
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
   return res.status(200).send(
-    injectMeta(html, { title, desc, url, img: product.img || '' })
+    injectMeta(html, { title, desc, url, img: cover })
   );
 }

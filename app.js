@@ -51,7 +51,7 @@ function productImgs(p){
 
 function getVisual(p, w) {
   const cover = coverImg(p);
-  if (cover) return `<img src="${cover}" alt="${p.name}" loading="lazy"/>`;
+  if (cover) return `<img src="${cover}" alt="${p.name}" loading="lazy" decoding="async"/>`;
   return p.type === 'haori' ? hSVG(p.bg, p.acc, w) : kSVG(p.bg, p.acc, w);
 }
 
@@ -246,11 +246,13 @@ function galleryHTML(p){
     return `<div class="m-vis-svg" style="background:${p.bg}">${p.type==='haori'?hSVG(p.bg,p.acc,200):kSVG(p.bg,p.acc,200)}</div>`;
   }
   if(imgs.length === 1){
-    return `<img src="${escAttr(imgs[0])}" alt="${escAttr(p.name)}" style="width:100%;height:100%;object-fit:cover;min-height:520px"/>`;
+    // Главна снимка — зарежда се с приоритет (над сгъвката), без layout shift.
+    return `<img src="${escAttr(imgs[0])}" alt="${escAttr(p.name)}" fetchpriority="high" decoding="async" style="width:100%;height:100%;object-fit:cover;min-height:520px"/>`;
   }
   const gid = 'gal'+(++_galSeq);
   galIndex[gid] = 0;
-  const slides = imgs.map(u=>`<div class="gal-slide"><img src="${escAttr(u)}" alt="${escAttr(p.name)}" loading="lazy"/></div>`).join('');
+  // Първият кадър зарежда веднага и с приоритет; останалите — мързеливо.
+  const slides = imgs.map((u,i)=>`<div class="gal-slide"><img src="${escAttr(u)}" alt="${escAttr(p.name)}" ${i===0?'fetchpriority="high" decoding="async"':'loading="lazy" decoding="async"'}/></div>`).join('');
   const dots = imgs.map((_,i)=>`<button class="gal-dot${i===0?' on':''}" onclick="carouselTo('${gid}',${i})" aria-label="Снимка ${i+1}"></button>`).join('');
   return `<div class="gal" id="${gid}" data-count="${imgs.length}"
       ontouchstart="galTouchStart(event,'${gid}')" ontouchend="galTouchEnd(event,'${gid}')">

@@ -1089,7 +1089,7 @@ function editProduct(id){ const p=allProducts.find(x=>x.id===id); if(p) openProd
 
 /* СНИМКИ — до 10 на продукт; pfImages[0] е корицата. */
 const MAX_IMAGES = 10;
-const IMG_MAX_EDGE = 3200;   // дълъг ръб (px) за уеб; оригиналите остават при теб
+const IMG_MAX_EDGE = 3840;   // дълъг ръб (px) — 4K; оригиналите остават при теб
 const IMG_QUALITY = 0.95;    // WebP качество (висока рязкост за zoom/4K)
 let pfImages = [];
 let pfDragFrom = null;

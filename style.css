@@ -182,6 +182,7 @@ nav{position:fixed;inset:0 0 auto;z-index:800;height:60px;display:flex;align-ite
 .gal-arrow:hover{background:rgba(12,6,8,.78)}
 .gal-prev{left:.7rem}
 .gal-next{right:.7rem}
+.gal-arrow.off{opacity:0;pointer-events:none}
 .gal-dots{position:absolute;bottom:.9rem;left:0;right:0;display:flex;gap:7px;justify-content:center;z-index:6}
 .gal-dot{width:7px;height:7px;border-radius:50%;border:none;padding:0;background:rgba(228,216,192,.32);cursor:none;transition:background .2s,transform .2s}
 .gal-dot.on{background:var(--GD);transform:scale(1.25)}

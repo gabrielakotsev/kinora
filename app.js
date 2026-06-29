@@ -258,7 +258,7 @@ function galleryHTML(p){
   return `<div class="gal" id="${gid}" data-count="${imgs.length}"
       ontouchstart="galTouchStart(event,'${gid}')" ontouchend="galTouchEnd(event,'${gid}')">
     <div class="gal-track" id="${gid}-track">${slides}</div>
-    <button class="gal-arrow gal-prev" onclick="carouselGo('${gid}',-1)" aria-label="Предишна">‹</button>
+    <button class="gal-arrow gal-prev off" onclick="carouselGo('${gid}',-1)" aria-label="Предишна">‹</button>
     <button class="gal-arrow gal-next" onclick="carouselGo('${gid}',1)" aria-label="Следваща">›</button>
     <div class="gal-dots">${dots}</div>
   </div>`;
@@ -272,11 +272,15 @@ function carouselRender(gid){
   galIndex[gid] = i;
   track.style.transform = `translateX(${-i*100}%)`;
   el.querySelectorAll('.gal-dot').forEach((d,di)=>d.classList.toggle('on', di===i));
+  // Спира на краищата (без зацикляне) — стрелките се изключват в краищата.
+  const prev = el.querySelector('.gal-prev'), next = el.querySelector('.gal-next');
+  if(prev) prev.classList.toggle('off', i===0);
+  if(next) next.classList.toggle('off', i===count-1);
 }
 function carouselGo(gid,dir){
   const el = document.getElementById(gid); if(!el) return;
   const count = parseInt(el.dataset.count,10) || 1;
-  galIndex[gid] = ((galIndex[gid]||0) + dir + count) % count; // обхожда в кръг
+  galIndex[gid] = Math.max(0, Math.min(count-1, (galIndex[gid]||0) + dir)); // спира на краищата
   carouselRender(gid);
 }
 function carouselTo(gid,i){ galIndex[gid] = i; carouselRender(gid); }

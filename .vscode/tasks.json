@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Open current file in Opera",
+      "type": "shell",
+      "command": "open",
+      "args": ["-a", "Opera", "${file}"],
+      "presentation": { "reveal": "never", "close": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Open a URL in Opera",
+      "type": "shell",
+      "command": "open",
+      "args": ["-a", "Opera", "${input:url}"],
+      "presentation": { "reveal": "never", "close": true },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "url",
+      "type": "promptString",
+      "description": "URL to open in Opera"
+    }
+  ]
+}

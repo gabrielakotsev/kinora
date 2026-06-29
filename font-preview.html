@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>KINORA — Преглед на шрифтове</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Tenor+Sans&family=Golos+Text:wght@400;500;600&family=Yeseva+One&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --B:#4a0c1a;--B4:#3a0814;
+  --BG:#e4d8c0;--BG3:#faf5ec;
+  --NV:#0c0608;--NV2:#180c10;
+  --OL3:#7c8240;
+  --GD:#c4a464;--GD2:#dfc090;
+  --line:rgba(228,216,192,.08);
+}
+html{scroll-behavior:smooth}
+body{background:var(--B4);color:var(--BG);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+
+/* PAGE HEADER */
+.page-head{padding:3.4rem 2.8rem 2rem;border-bottom:1px solid var(--line);background:var(--NV)}
+.page-head h1{font-family:'Playfair Display',serif;font-weight:500;font-size:clamp(28px,4vw,46px);letter-spacing:.02em;color:var(--BG)}
+.page-head p{margin-top:.8rem;max-width:680px;font-size:14px;line-height:1.7;color:rgba(228,216,192,.5)}
+.page-head .note{margin-top:1rem;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--OL3)}
+.page-head .note b{color:var(--GD);font-weight:600}
+
+/* TRIO PANEL */
+.trio{padding:3.4rem 2.8rem 4.4rem;border-bottom:1px solid var(--line)}
+.trio-label{display:flex;flex-wrap:wrap;align-items:baseline;gap:.6rem 1.4rem;margin-bottom:2.6rem}
+.trio-label .tag{font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--GD);border:1px solid rgba(196,164,100,.4);padding:6px 14px}
+.trio-label .roles{font-size:12px;letter-spacing:.04em;color:rgba(228,216,192,.45)}
+.trio-label .roles b{color:rgba(228,216,192,.75);font-weight:600}
+
+/* representative composition — fonts driven by per-trio vars */
+.comp{--h:'Inter';--b:'Inter';--a:'Inter';--hw:600;--aw:400}
+.A{--h:'Playfair Display';--b:'Manrope';--a:'Cormorant Garamond';--hw:600;--aw:400}
+.B{--h:'Oswald';--b:'Inter';--a:'Cormorant Garamond';--hw:500;--aw:400}
+.C{--h:'Tenor Sans';--b:'Golos Text';--a:'Yeseva One';--hw:400;--aw:400}
+
+.comp{background:linear-gradient(160deg,var(--NV2),var(--B4));border:1px solid var(--line);overflow:hidden}
+
+/* nav strip */
+.c-nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:58px;border-bottom:1px solid var(--line);background:rgba(12,6,8,.45)}
+.c-logo{display:flex;flex-direction:column;gap:2px;line-height:1}
+.c-logo .m{font-family:var(--h),sans-serif;font-weight:var(--hw);font-size:20px;letter-spacing:.3em;color:var(--BG)}
+.c-logo .s{font-family:var(--a),serif;font-style:italic;font-size:10px;letter-spacing:.24em;color:var(--GD)}
+.c-navlinks{display:flex;gap:1.8rem}
+.c-navlinks span{font-family:var(--b),sans-serif;font-size:11px;letter-spacing:.22em;color:rgba(228,216,192,.55)}
+
+/* hero */
+.c-hero{padding:3.4rem 2.4rem 3rem}
+.c-eyebrow{font-family:var(--b),sans-serif;font-size:10px;letter-spacing:.45em;text-transform:uppercase;color:var(--GD);margin-bottom:1.2rem;display:flex;align-items:center;gap:12px}
+.c-eyebrow::before{content:'';width:30px;height:1px;background:var(--GD);opacity:.6}
+.c-h1{font-family:var(--h),sans-serif;font-weight:var(--hw);font-size:clamp(56px,9vw,108px);letter-spacing:.04em;line-height:.92;color:var(--BG)}
+.c-h1-sub{font-family:var(--a),serif;font-style:italic;font-weight:var(--aw);font-size:clamp(15px,2vw,24px);letter-spacing:.3em;color:var(--GD);display:block;margin-top:1rem}
+.c-desc{font-family:var(--a),serif;font-style:italic;font-size:17px;line-height:1.9;color:rgba(228,216,192,.5);max-width:440px;margin-top:1.8rem}
+
+/* section heading */
+.c-sec{padding:2.4rem 2.4rem;border-top:1px solid var(--line)}
+.c-sec-lbl{font-family:var(--b),sans-serif;font-size:10px;letter-spacing:.42em;text-transform:uppercase;color:var(--OL3);margin-bottom:.9rem}
+.c-sec-h{font-family:var(--h),sans-serif;font-weight:var(--hw);font-size:clamp(34px,5vw,62px);letter-spacing:.06em;line-height:.95;color:var(--BG)}
+.c-sec-h em{font-family:var(--a),serif;font-style:italic;font-weight:var(--aw);color:var(--GD)}
+
+/* body paragraph */
+.c-body{font-family:var(--b),sans-serif;font-size:14.5px;line-height:1.85;color:rgba(228,216,192,.66);max-width:560px;margin-top:1.4rem}
+
+/* product cards */
+.c-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:2px;margin-top:2rem;border-top:1px solid var(--line)}
+.c-card{background:var(--NV2);padding:1.6rem 1.6rem 1.8rem;border:1px solid var(--line)}
+.c-card .ph{aspect-ratio:3/4;background:linear-gradient(135deg,#241016,#0c0608);display:flex;align-items:center;justify-content:center;margin-bottom:1.2rem}
+.c-card .ph span{font-family:var(--b),sans-serif;font-size:9px;letter-spacing:.36em;text-transform:uppercase;color:rgba(228,216,192,.2)}
+.c-cat{font-family:var(--b),sans-serif;font-size:9px;letter-spacing:.36em;text-transform:uppercase;color:var(--OL3);margin-bottom:6px}
+.c-name{font-family:var(--h),sans-serif;font-weight:var(--hw);font-size:26px;letter-spacing:.06em;color:var(--BG);line-height:1}
+.c-sub{font-family:var(--a),serif;font-style:italic;font-weight:var(--aw);font-size:15px;color:var(--GD);margin-top:4px;margin-bottom:14px}
+.c-bot{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--line)}
+.c-price{font-family:var(--b),sans-serif;font-size:13px;color:rgba(228,216,192,.45)}
+.c-btn{font-family:var(--b),sans-serif;font-weight:600;font-size:9px;letter-spacing:.28em;text-transform:uppercase;background:var(--BG);color:var(--B);border:none;padding:10px 22px;cursor:pointer}
+
+/* footer line */
+.c-foot{padding:2rem 2.4rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;align-items:center}
+.c-foot .ft{font-family:var(--a),serif;font-style:italic;font-size:15px;color:rgba(228,216,192,.4)}
+.c-foot .big-btn{font-family:var(--b),sans-serif;font-weight:600;font-size:10px;letter-spacing:.28em;text-transform:uppercase;background:none;border:1px solid rgba(228,216,192,.25);color:var(--BG);padding:13px 30px;cursor:pointer}
+
+@media(max-width:600px){
+  .c-navlinks{display:none}
+  .trio,.page-head{padding-left:1.3rem;padding-right:1.3rem}
+}
+</style>
+</head>
+<body>
+
+<header class="page-head">
+  <h1>KINORA — три типографски посоки</h1>
+  <p>Една и съща композиция, рендерирана с три различни тройки шрифтове (заглавия / основен текст / акцент). Целта е да изберете посока. Превъртете, за да сравните.</p>
+  <p class="note">Всички шрифтове са с <b>пълна кирилица</b> — без системен fallback.</p>
+</header>
+
+<!-- ============ A. EDITORIAL ============ -->
+<section class="trio">
+  <div class="trio-label">
+    <span class="tag">A · Editorial елеганция</span>
+    <span class="roles">Заглавия <b>Playfair Display</b> · Текст <b>Manrope</b> · Акцент <b>Cormorant Garamond</b> <i>italic</i></span>
+  </div>
+  <div class="comp A">
+    <div class="c-nav">
+      <div class="c-logo"><span class="m">KINORA</span><span class="s">haori &amp; kimono</span></div>
+      <div class="c-navlinks"><span>ХАОРИ</span><span>КИМОНО</span><span>СТАЙЛИНГ</span><span>КОЛИЧКА</span></div>
+    </div>
+    <div class="c-hero">
+      <div class="c-eyebrow">Ателие · Киото</div>
+      <div class="c-h1">ХАОРИ<span class="c-h1-sub">изкуството на кимоното</span></div>
+      <div class="c-desc">Японски кимона и хаори, ръчно изтъкани в Киото — всяка нишка носи тишината на занаята.</div>
+    </div>
+    <div class="c-sec">
+      <div class="c-sec-lbl">Колекция · Пролет</div>
+      <div class="c-sec-h">Нашата <em>история</em></div>
+      <p class="c-body">Доставка в цяла България. Всяко изделие е подбрано на ръка и придружено със сертификат за автентичност. Размерната таблица и инструкциите за грижа са включени към всяка поръчка.</p>
+      <div class="c-grid">
+        <div class="c-card">
+          <div class="ph"><span>Снимка на продукт</span></div>
+          <div class="c-cat">Хаори</div>
+          <div class="c-name">САКУРА</div>
+          <div class="c-sub">копринено наметало</div>
+          <div class="c-bot"><span class="c-price">390 лв</span><button class="c-btn">В количка</button></div>
+        </div>
+        <div class="c-card">
+          <div class="ph"><span>Снимка на продукт</span></div>
+          <div class="c-cat">Кимоно</div>
+          <div class="c-name">ЦУКИ</div>
+          <div class="c-sub">нощно синьо, ръчно багрено</div>
+          <div class="c-bot"><span class="c-price">540 лв</span><button class="c-btn">В количка</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="c-foot">
+      <span class="ft">ръчно изтъкани в Киото</span>
+      <button class="big-btn">Добави в количката</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B. CINEMATIC / CONDENSED ============ -->
+<section class="trio">
+  <div class="trio-label">
+    <span class="tag">B · Кинематичен / condensed</span>
+    <span class="roles">Заглавия <b>Oswald</b> · Текст <b>Inter</b> · Акцент <b>Cormorant Garamond</b> <i>italic</i></span>
+  </div>
+  <div class="comp B">
+    <div class="c-nav">
+      <div class="c-logo"><span class="m">KINORA</span><span class="s">haori &amp; kimono</span></div>
+      <div class="c-navlinks"><span>ХАОРИ</span><span>КИМОНО</span><span>СТАЙЛИНГ</span><span>КОЛИЧКА</span></div>
+    </div>
+    <div class="c-hero">
+      <div class="c-eyebrow">Ателие · Киото</div>
+      <div class="c-h1">ХАОРИ<span class="c-h1-sub">изкуството на кимоното</span></div>
+      <div class="c-desc">Японски кимона и хаори, ръчно изтъкани в Киото — всяка нишка носи тишината на занаята.</div>
+    </div>
+    <div class="c-sec">
+      <div class="c-sec-lbl">Колекция · Пролет</div>
+      <div class="c-sec-h">Нашата <em>история</em></div>
+      <p class="c-body">Доставка в цяла България. Всяко изделие е подбрано на ръка и придружено със сертификат за автентичност. Размерната таблица и инструкциите за грижа са включени към всяка поръчка.</p>
+      <div class="c-grid">
+        <div class="c-card">
+          <div class="ph"><span>Снимка на продукт</span></div>
+          <div class="c-cat">Хаори</div>
+          <div class="c-name">САКУРА</div>
+          <div class="c-sub">копринено наметало</div>
+          <div class="c-bot"><span class="c-price">390 лв</span><button class="c-btn">В количка</button></div>
+        </div>
+        <div class="c-card">
+          <div class="ph"><span>Снимка на продукт</span></div>
+          <div class="c-cat">Кимоно</div>
+          <div class="c-name">ЦУКИ</div>
+          <div class="c-sub">нощно синьо, ръчно багрено</div>
+          <div class="c-bot"><span class="c-price">540 лв</span><button class="c-btn">В количка</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="c-foot">
+      <span class="ft">ръчно изтъкани в Киото</span>
+      <button class="big-btn">Добави в количката</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ C. MODERN BOUTIQUE ============ -->
+<section class="trio">
+  <div class="trio-label">
+    <span class="tag">C · Модерно бутик</span>
+    <span class="roles">Заглавия <b>Tenor Sans</b> · Текст <b>Golos Text</b> · Акцент <b>Yeseva One</b></span>
+  </div>
+  <div class="comp C">
+    <div class="c-nav">
+      <div class="c-logo"><span class="m">KINORA</span><span class="s">haori &amp; kimono</span></div>
+      <div class="c-navlinks"><span>ХАОРИ</span><span>КИМОНО</span><span>СТАЙЛИНГ</span><span>КОЛИЧКА</span></div>
+    </div>
+    <div class="c-hero">
+      <div class="c-eyebrow">Ателие · Киото</div>
+      <div class="c-h1">ХАОРИ<span class="c-h1-sub">изкуството на кимоното</span></div>
+      <div class="c-desc">Японски кимона и хаори, ръчно изтъкани в Киото — всяка нишка носи тишината на занаята.</div>
+    </div>
+    <div class="c-sec">
+      <div class="c-sec-lbl">Колекция · Пролет</div>
+      <div class="c-sec-h">Нашата <em>история</em></div>
+      <p class="c-body">Доставка в цяла България. Всяко изделие е подбрано на ръка и придружено със сертификат за автентичност. Размерната таблица и инструкциите за грижа са включени към всяка поръчка.</p>
+      <div class="c-grid">
+        <div class="c-card">
+          <div class="ph"><span>Снимка на продукт</span></div>
+          <div class="c-cat">Хаори</div>
+          <div class="c-name">САКУРА</div>
+          <div class="c-sub">копринено наметало</div>
+          <div class="c-bot"><span class="c-price">390 лв</span><button class="c-btn">В количка</button></div>
+        </div>
+        <div class="c-card">
+          <div class="ph"><span>Снимка на продукт</span></div>
+          <div class="c-cat">Кимоно</div>
+          <div class="c-name">ЦУКИ</div>
+          <div class="c-sub">нощно синьо, ръчно багрено</div>
+          <div class="c-bot"><span class="c-price">540 лв</span><button class="c-btn">В количка</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="c-foot">
+      <span class="ft">ръчно изтъкани в Киото</span>
+      <button class="big-btn">Добави в количката</button>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

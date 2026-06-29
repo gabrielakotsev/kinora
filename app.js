@@ -251,8 +251,9 @@ function galleryHTML(p){
   }
   const gid = 'gal'+(++_galSeq);
   galIndex[gid] = 0;
-  // Първият кадър зарежда веднага и с приоритет; останалите — мързеливо.
-  const slides = imgs.map((u,i)=>`<div class="gal-slide"><img src="${escAttr(u)}" alt="${escAttr(p.name)}" ${i===0?'fetchpriority="high" decoding="async"':'loading="lazy" decoding="async"'}/></div>`).join('');
+  // Отвореният продукт зарежда ВСИЧКИ свои снимки веднага (eager), за да е плъзгането мигновено.
+  // Първият кадър е с приоритет (видим); останалите се теглят веднага, но с по-нисък приоритет.
+  const slides = imgs.map((u,i)=>`<div class="gal-slide"><img src="${escAttr(u)}" alt="${escAttr(p.name)}" decoding="async" ${i===0?'fetchpriority="high"':'fetchpriority="low"'}/></div>`).join('');
   const dots = imgs.map((_,i)=>`<button class="gal-dot${i===0?' on':''}" onclick="carouselTo('${gid}',${i})" aria-label="Снимка ${i+1}"></button>`).join('');
   return `<div class="gal" id="${gid}" data-count="${imgs.length}"
       ontouchstart="galTouchStart(event,'${gid}')" ontouchend="galTouchEnd(event,'${gid}')">

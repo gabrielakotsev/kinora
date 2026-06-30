@@ -440,6 +440,22 @@ async function applyCode() {
 }
 
 // Atomically apply the voucher balance to this order. Returns amount applied.
+// Fresh server-side balance/status for a voucher (no order id needed) — used to
+// re-validate just before creating the order.
+async function checkVoucherBalance(code) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/check_voucher`, {
+      method: 'POST', headers: rpcHeaders, body: JSON.stringify({ p_code: code })
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return Array.isArray(rows) ? rows[0] : rows;
+  } catch (e) {
+    console.warn('checkVoucherBalance failed:', e);
+    return null;
+  }
+}
+
 async function redeemVoucher(orderId) {
   if (!appliedVoucher) return 0;
   const requested = getVoucherDiscount();
@@ -523,11 +539,26 @@ async function submitOrder() {
       orderData.status = 'paid';
     }
 
+    // Re-validate the voucher BEFORE creating the order, so an expired/spent
+    // voucher can't leave an orphaned order at the discounted total. redeem_voucher
+    // needs an order id, so the actual debit still happens just after the save.
+    if (appliedVoucher) {
+      const fresh = await checkVoucherBalance(appliedVoucher.code);
+      if (!fresh || fresh.status !== 'active' || Number(fresh.balance) < getVoucherDiscount() - 0.01) {
+        showVoucherMsg('Ваучерът вече не е валиден. Моля проверете отново.', false);
+        appliedVoucher = null;
+        updateTotals();
+        btn.disabled = false; loader.classList.remove('show');
+        document.getElementById('btn-text').textContent = `ПОТВЪРДИ — ${getTotal().toFixed(2)} €`;
+        return;
+      }
+    }
+
     const saved = await saveOrderToSupabase(orderData);
     const orderId = saved[0]?.id || 'N/A';
 
-    // Redeem the gift voucher (atomic, server-side balance check). If it fails,
-    // stop before clearing the cart so the customer isn't charged the wrong total.
+    // Redeem the gift voucher (atomic, server-side balance check). If it somehow
+    // fails between the pre-check and now, surface it (order already saved).
     if (appliedVoucher) {
       const applied = await redeemVoucher(orderId);
       if (applied <= 0) {

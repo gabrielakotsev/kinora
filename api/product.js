@@ -48,8 +48,33 @@ async function fetchProduct(id) {
   return Array.isArray(rows) && rows.length ? rows[0] : null;
 }
 
+// schema.org Product JSON-LD for Google rich results. Safely encoded so it
+// can't break out of the <script> tag. Returns '' when no product (id invalid).
+function jsonLdTag(product, url) {
+  if (!product) return '';
+  const cover = (Array.isArray(product.images) && product.images[0]) || product.img || '';
+  const data = {
+    '@context': 'https://schema.org/',
+    '@type': 'Product',
+    name: product.name,
+    description: metaText(product.description) || FALLBACK_DESC,
+    ...(cover ? { image: cover } : {}),
+    brand: { '@type': 'Brand', name: 'KINORA' },
+    offers: {
+      '@type': 'Offer',
+      url,
+      priceCurrency: 'EUR',
+      price: Number(product.price || 0).toFixed(2),
+      availability: 'https://schema.org/InStock'
+    }
+  };
+  // Escape '<' so a "</script>" inside any field can't terminate the tag.
+  const json = JSON.stringify(data).replace(/</g, '\\u003c');
+  return `<script type="application/ld+json">${json}</script>`;
+}
+
 // Replace the meta-tag tokens in product.html with real per-product values.
-function injectMeta(html, { title, desc, url, img }) {
+function injectMeta(html, { title, desc, url, img, jsonLd }) {
   const imageTag = img
     ? `<meta property="og:image" content="${esc(img)}"/>\n<meta name="twitter:card" content="summary_large_image"/>`
     : '';
@@ -57,7 +82,8 @@ function injectMeta(html, { title, desc, url, img }) {
     .replaceAll('__OG_TITLE__', esc(title))
     .replaceAll('__OG_DESC__', esc(desc))
     .replaceAll('__OG_URL__', esc(url))
-    .replace('<!--__OG_IMAGE__-->', imageTag);
+    .replace('<!--__OG_IMAGE__-->', imageTag)
+    .replace('<!--__JSONLD__-->', jsonLd || '');
 }
 
 export default async function handler(req, res) {
@@ -109,6 +135,6 @@ export default async function handler(req, res) {
 
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
   return res.status(200).send(
-    injectMeta(html, { title, desc, url, img: cover })
+    injectMeta(html, { title, desc, url, img: cover, jsonLd: jsonLdTag(product, url) })
   );
 }

@@ -79,8 +79,47 @@ language plpgsql
 security definer
 set search_path = public
 as $$
-declare new_id uuid;
+declare
+  new_id uuid;
+  v_items jsonb;
+  it jsonb;
+  v_real_price numeric;
+  v_claimed_subtotal numeric := 0;  -- sum of item prices the client sent
+  v_real_subtotal numeric := 0;     -- sum recomputed from the products table
 begin
+  -- SECURITY: never trust client-sent item prices. Recompute each physical
+  -- product's price from the catalog; if the client undercharged any item,
+  -- reject the order. Vouchers (string id, type='voucher') are skipped — they
+  -- have their own server-side balance checks (check_voucher/redeem_voucher).
+  begin
+    v_items := p_items::jsonb;
+  exception when others then
+    raise exception 'invalid items payload';
+  end;
+
+  if jsonb_typeof(v_items) = 'array' then
+    for it in select * from jsonb_array_elements(v_items) loop
+      if coalesce(it->>'type','') = 'voucher' then
+        continue;  -- voucher line: validated elsewhere
+      end if;
+      -- physical product: id must reference an active product
+      select price into v_real_price
+        from public.products
+        where id = (it->>'id')::int and is_active = true;
+      if v_real_price is null then
+        raise exception 'unknown or inactive product in order: %', it->>'id';
+      end if;
+      v_real_subtotal   := v_real_subtotal   + v_real_price * coalesce((it->>'qty')::numeric, 1);
+      v_claimed_subtotal := v_claimed_subtotal + coalesce((it->>'price')::numeric,0) * coalesce((it->>'qty')::numeric, 1);
+    end loop;
+
+    -- Reject if the client claimed cheaper prices than the real catalog
+    -- (1 cent tolerance for float rounding). Overpaying is allowed.
+    if v_claimed_subtotal < v_real_subtotal - 0.01 then
+      raise exception 'order total mismatch: claimed % < real %', v_claimed_subtotal, v_real_subtotal;
+    end if;
+  end if;
+
   insert into public.orders (
     customer_name, customer_email, customer_phone, customer_city, customer_address,
     delivery_method, payment_method, items, total, status, stripe_payment_method

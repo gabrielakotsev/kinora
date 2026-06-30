@@ -254,12 +254,15 @@ function galleryHTML(p){
   // Отвореният продукт зарежда ВСИЧКИ свои снимки веднага (eager), за да е плъзгането мигновено.
   // Първият кадър е с приоритет (видим); останалите се теглят веднага, но с по-нисък приоритет.
   const slides = imgs.map((u,i)=>`<div class="gal-slide"><img src="${escAttr(u)}" alt="${escAttr(p.name)}" decoding="async" ${i===0?'fetchpriority="high"':'fetchpriority="low"'}/></div>`).join('');
-  const dots = imgs.map((_,i)=>`<button class="gal-dot${i===0?' on':''}" onclick="carouselTo('${gid}',${i})" aria-label="Снимка ${i+1}"></button>`).join('');
-  return `<div class="gal" id="${gid}" data-count="${imgs.length}"
+  const n = imgs.length;
+  const dots = imgs.map((_,i)=>`<button class="gal-dot${i===0?' on':''}" onclick="carouselTo('${gid}',${i})" aria-label="Към снимка ${i+1} от ${n}"${i===0?' aria-current="true"':''}></button>`).join('');
+  return `<div class="gal" id="${gid}" data-count="${n}" tabindex="0"
+      role="group" aria-roledescription="карусел" aria-label="Снимки на продукта (${n})"
+      onkeydown="galKey(event,'${gid}')"
       ontouchstart="galTouchStart(event,'${gid}')" ontouchend="galTouchEnd(event,'${gid}')">
     <div class="gal-track" id="${gid}-track">${slides}</div>
-    <button class="gal-arrow gal-prev off" onclick="carouselGo('${gid}',-1)" aria-label="Предишна">‹</button>
-    <button class="gal-arrow gal-next" onclick="carouselGo('${gid}',1)" aria-label="Следваща">›</button>
+    <button class="gal-arrow gal-prev off" onclick="carouselGo('${gid}',-1)" aria-label="Предишна снимка">‹</button>
+    <button class="gal-arrow gal-next" onclick="carouselGo('${gid}',1)" aria-label="Следваща снимка">›</button>
     <div class="gal-dots">${dots}</div>
   </div>`;
 }
@@ -271,7 +274,10 @@ function carouselRender(gid){
   i = Math.max(0, Math.min(count-1, i));
   galIndex[gid] = i;
   track.style.transform = `translateX(${-i*100}%)`;
-  el.querySelectorAll('.gal-dot').forEach((d,di)=>d.classList.toggle('on', di===i));
+  el.querySelectorAll('.gal-dot').forEach((d,di)=>{
+    d.classList.toggle('on', di===i);
+    if(di===i) d.setAttribute('aria-current','true'); else d.removeAttribute('aria-current');
+  });
   // Спира на краищата (без зацикляне) — стрелките се изключват в краищата.
   const prev = el.querySelector('.gal-prev'), next = el.querySelector('.gal-next');
   if(prev) prev.classList.toggle('off', i===0);
@@ -284,6 +290,11 @@ function carouselGo(gid,dir){
   carouselRender(gid);
 }
 function carouselTo(gid,i){ galIndex[gid] = i; carouselRender(gid); }
+// Клавиатура: ← / → местят между снимките (когато каруселът е на фокус).
+function galKey(e,gid){
+  if(e.key==='ArrowLeft'){ e.preventDefault(); carouselGo(gid,-1); }
+  else if(e.key==='ArrowRight'){ e.preventDefault(); carouselGo(gid,1); }
+}
 let _galTouchX = null;
 function galTouchStart(e,gid){ _galTouchX = e.changedTouches[0].clientX; }
 function galTouchEnd(e,gid){
@@ -305,7 +316,7 @@ function openM(id) {
     <p class="m-price">${p.price.toLocaleString('bg-BG')} €</p>
     <p class="m-desc">${p.desc}</p>
     <p class="m-lbl">Размер</p>
-    <div class="szr">${p.sizes.map(s=>`<button class="sz ${selSz[id]===s?'sel':''}" onclick="setSz(${id},'${s}',this)">${s}</button>`).join('')}</div>
+    <div class="szr">${p.sizes.map((s,si)=>`<button class="sz ${selSz[id]===s?'sel':''}" onclick="setSz(${id},${si},this)">${escAttr(s)}</button>`).join('')}</div>
     <p class="m-unique">✦ Уникат — само 1 наличен брой</p>
     ${isSold(id)
       ? `<button class="abtn sold-out" disabled>ИЗЧЕРПАН</button>`
@@ -316,7 +327,13 @@ function openM(id) {
   document.getElementById('mw').classList.add('on');
   document.body.classList.add('no-scroll');
 }
-function setSz(id,s,btn){selSz[id]=s;btn.closest('.szr').querySelectorAll('.sz').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel')}
+// Приема ИНДЕКС на размера (не текста) — така етикети с кавички/апострофи не чупят onclick.
+function setSz(id,si,btn){
+  const p=PRODUCTS.find(x=>x.id===id);
+  if(p&&p.sizes[si]!=null) selSz[id]=p.sizes[si];
+  btn.closest('.szr').querySelectorAll('.sz').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
 function chQ(id,d){selQty[id]=Math.max(1,(selQty[id]||1)+d);const e=document.getElementById(`qd${id}`);if(e)e.textContent=selQty[id]}
 function cMW(e){if(e.target===document.getElementById('mw'))cMD()}
 function cMD(){document.getElementById('mw').classList.remove('on');document.body.classList.remove('no-scroll')}
@@ -361,7 +378,7 @@ function renderProductPage(){
       <p class="m-price">${p.price.toLocaleString('bg-BG')} €</p>
       <p class="m-desc">${p.desc}</p>
       <p class="m-lbl">Размер</p>
-      <div class="szr">${p.sizes.map(s=>`<button class="sz ${selSz[id]===s?'sel':''}" onclick="setSz(${id},'${s}',this)">${s}</button>`).join('')}</div>
+      <div class="szr">${p.sizes.map((s,si)=>`<button class="sz ${selSz[id]===s?'sel':''}" onclick="setSz(${id},${si},this)">${escAttr(s)}</button>`).join('')}</div>
       <p class="m-unique">✦ Уникат — само 1 наличен брой</p>
       ${isSold(id)
         ? `<button class="abtn sold-out" disabled>ИЗЧЕРПАН</button>`
@@ -405,6 +422,8 @@ function addVoucher(){
 function addC(id) {
   const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
   if(isSold(id)){ showToast(`${p.name} е изчерпан`); cMD(); return; }
+  // Размерът е задължителен: продукт без зададени размери не може да се добави.
+  if(!p.sizes || !p.sizes.length){ showToast('Този продукт няма наличен размер'); return; }
   const sz = selSz[id]||p.sizes[0];
   // Всеки артикул е уникат (1/1) — не може да се добави повече от веднъж.
   if(cart.find(c=>c.id===id)){ showToast(`${p.name} вече е в количката — уникат`); cMD(); return; }

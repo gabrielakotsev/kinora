@@ -3,3 +3,6 @@
 .env*.local
 node_modules/
 .env
+
+# Supabase CLI local link/temp (no project config tracked)
+supabase/

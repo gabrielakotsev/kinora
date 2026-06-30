@@ -73,7 +73,9 @@ create or replace function public.create_order(
   p_items                 text,
   p_total                 numeric,
   p_status                text,
-  p_stripe_payment_method text default null
+  p_stripe_payment_method text default null,
+  p_referral_code         text default null,
+  p_referral_discount     numeric default 0
 ) returns uuid
 language plpgsql
 security definer
@@ -83,6 +85,7 @@ declare
   new_id uuid;
   v_items jsonb;
   it jsonb;
+  v_pid int;
   v_real_price numeric;
   v_claimed_subtotal numeric := 0;  -- sum of item prices the client sent
   v_real_subtotal numeric := 0;     -- sum recomputed from the products table
@@ -102,13 +105,27 @@ begin
       if coalesce(it->>'type','') = 'voucher' then
         continue;  -- voucher line: validated elsewhere
       end if;
+      v_pid := (it->>'id')::int;
       -- physical product: id must reference an active product
       select price into v_real_price
         from public.products
-        where id = (it->>'id')::int and is_active = true;
+        where id = v_pid and is_active = true;
       if v_real_price is null then
-        raise exception 'unknown or inactive product in order: %', it->>'id';
+        raise exception 'unknown or inactive product in order: %', v_pid;
       end if;
+
+      -- INVENTORY: every item is a 1-of-1 уникат. Reject if it is already in a
+      -- non-cancelled order (prevents selling the same piece twice / race).
+      if exists (
+        select 1 from public.orders o,
+             lateral jsonb_array_elements(o.items::jsonb) as oi
+        where (oi->>'id') ~ '^[0-9]+$'
+          and (oi->>'id')::int = v_pid
+          and coalesce(o.status,'') <> 'cancelled'
+      ) then
+        raise exception 'product already sold: %', v_pid;
+      end if;
+
       v_real_subtotal   := v_real_subtotal   + v_real_price * coalesce((it->>'qty')::numeric, 1);
       v_claimed_subtotal := v_claimed_subtotal + coalesce((it->>'price')::numeric,0) * coalesce((it->>'qty')::numeric, 1);
     end loop;
@@ -122,18 +139,20 @@ begin
 
   insert into public.orders (
     customer_name, customer_email, customer_phone, customer_city, customer_address,
-    delivery_method, payment_method, items, total, status, stripe_payment_method
+    delivery_method, payment_method, items, total, status, stripe_payment_method,
+    referral_code, referral_discount
   ) values (
     p_customer_name, p_customer_email, p_customer_phone, p_customer_city, p_customer_address,
-    p_delivery_method, p_payment_method, p_items, p_total, p_status, p_stripe_payment_method
+    p_delivery_method, p_payment_method, p_items, p_total, p_status, p_stripe_payment_method,
+    p_referral_code, coalesce(p_referral_discount, 0)
   ) returning id into new_id;
   return new_id;
 end;
 $$;
 
 revoke all on function public.create_order(
-  text, text, text, text, text, text, text, text, numeric, text, text
+  text, text, text, text, text, text, text, text, numeric, text, text, text, numeric
 ) from public;
 grant execute on function public.create_order(
-  text, text, text, text, text, text, text, text, numeric, text, text
+  text, text, text, text, text, text, text, text, numeric, text, text, text, numeric
 ) to anon;

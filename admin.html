@@ -1228,7 +1228,7 @@ async function aiAutofill(){
   try {
     const images=await Promise.all(files.slice(0,6).map(fileToImage));
     const typeEl=document.getElementById('pf-type');
-    const res=await fetch('/api/generate-product',{
+    const res=await authFetch('/api/generate-product',{
       method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ type:(typeEl&&typeEl.value)||undefined, images })
     });

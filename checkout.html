@@ -318,12 +318,22 @@ function getFormData() {
   };
 }
 
+// Български телефон: +359XXXXXXXXX или 0XXXXXXXXX (9 цифри след кода),
+// толерира интервали/тирета/скоби. Мобилен или стационарен.
+function isValidBgPhone(s) {
+  const d = String(s || '').replace(/[\s\-().]/g, '');
+  return /^(\+359|0)\d{8,9}$/.test(d);
+}
+function isValidEmail(s) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || ''));
+}
 function validateForm(data) {
   const required = isVoucherOnly() ? ['first_name','last_name','email','phone'] : ['first_name','last_name','email','phone','city','address'];
   for (const f of required) {
     if (!data[f]) { alert('Моля попълнете всички задължителни полета.'); return false; }
   }
-  if (!data.email.includes('@')) { alert('Невалиден имейл адрес.'); return false; }
+  if (!isValidEmail(data.email)) { alert('Невалиден имейл адрес.'); return false; }
+  if (!isValidBgPhone(data.phone)) { alert('Невалиден телефонен номер. Пример: +359 88 888 8888 или 0888 888 888.'); return false; }
   return true;
 }
 

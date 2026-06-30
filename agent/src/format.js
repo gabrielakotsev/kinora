@@ -1,7 +1,11 @@
-// Single-quote a JS string the way the existing PRODUCTS rows are written,
-// escaping backslashes and single quotes only.
+// Single-quote a JS string the way the existing PRODUCTS rows are written.
+// Escapes backslashes, single quotes, and newlines (descriptions can be
+// multi-paragraph) so the emitted line is always valid one-line JS.
 function q(str) {
-  return `'${String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
+  return `'${String(str)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\r\n|\r|\n/g, '\\n')}'`
 }
 
 function arr(items) {

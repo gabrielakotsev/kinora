@@ -44,7 +44,7 @@ export const productInputSchema = {
       items: { type: 'string' },
       description: 'Exactly 3 dark hex swatch colours from the site palette.',
     },
-    desc: { type: 'string', description: 'Bulgarian description, 1–2 sentences in the house voice.' },
+    desc: { type: 'string', description: 'Rich narrative Bulgarian description in the house voice — evocative hook, who it suits, visible colours/motif/finish, and how to wear it. Paragraphs allowed (blank-line separated).' },
     sizes: {
       type: 'array',
       items: { type: 'string' },

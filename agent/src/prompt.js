@@ -67,10 +67,13 @@ export function buildUserContent(imageBlocks, { type, id }) {
         'Study the fabric, motif, technique, colour and condition. Then call ' +
         '`emit_product` once with a complete catalogue entry: an evocative ' +
         'uppercase Bulgarian name, a EUR price anchored on the closest catalog ' +
-        'comparable(s), a 1–2 sentence Bulgarian description in the house voice, ' +
-        '3–5 detail bullets, palette colours derived from the garment, and a ' +
-        'short price rationale. Describe only what you can actually see — do not ' +
-        'invent certificates, ateliers, periods, or fibre claims.',
+        'comparable(s), a rich narrative Bulgarian description in the house voice ' +
+        '(see the HOUSE VOICE guide — an evocative hook, who it suits, the visible ' +
+        'colours/motif/finish, and how it can be worn; paragraphs allowed), ' +
+        '3–5 factual detail bullets, palette colours derived from the garment, and a ' +
+        'short price rationale. You may invent the creative/styling layer freely, ' +
+        'but describe only what you can actually see for the facts — do not invent ' +
+        'certificates, ateliers, periods, fibre claims, or a reversible second side.',
     },
   ]
 }

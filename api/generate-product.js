@@ -17,6 +17,37 @@ import { z } from 'zod'
 import { imageBlockFromBuffer } from '../agent/src/images.js'
 import { generateFromImages } from '../agent/src/generate.js'
 
+// This endpoint runs a paid Anthropic vision call, so it must be admin-only —
+// otherwise anyone could spam it and run up the bill. We verify the caller's
+// Supabase JWT against the project's own is_admin() RPC (the same source of
+// truth used by RLS), reusing the SUPABASE_URL / anon key already configured.
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://owkoprksrvjlebonaehj.supabase.co'
+// Anon key is public (same one embedded in the client) — safe as a fallback so
+// the admin check still works even if the env var isn't configured.
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93a29wcmtzcnZqbGVib25hZWhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2NTIxNzgsImV4cCI6MjA5NjIyODE3OH0.UZdyvXOmEJTZ6r54fSlVgNNBja98qx-dpJqu9yGNlFA'
+
+async function isAdminRequest(req) {
+  const auth = req.headers.authorization || ''
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : ''
+  if (!token || !SUPABASE_ANON_KEY) return false
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/is_admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+      body: '{}',
+    })
+    if (!r.ok) return false
+    return (await r.json()) === true
+  } catch {
+    return false
+  }
+}
+
 const requestSchema = z.object({
   type: z.enum(['haori', 'kimono']).optional(),
   images: z
@@ -41,6 +72,11 @@ export default async function handler(req, res) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed.' })
+  }
+
+  // Admin-only: this triggers a paid AI call.
+  if (!(await isAdminRequest(req))) {
+    return res.status(401).json({ error: 'Unauthorized.' })
   }
 
   let payload

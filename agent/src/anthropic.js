@@ -1,7 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { productInputSchema } from './schema.js'
 
-const MODEL = 'claude-opus-4-8'
+// Sonnet: ~1/3 the cost of Opus, very strong at catalogue copy + vision.
+// To switch to the most capable model, change this to 'claude-opus-4-8'.
+const MODEL = 'claude-sonnet-4-6'
 
 /**
  * Send the photos + prompt to Claude and force a single structured tool call.

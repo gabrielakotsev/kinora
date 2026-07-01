@@ -109,6 +109,13 @@ body{font-family:'Golos Text',sans-serif;background:var(--NV);color:var(--BG);mi
 .pf-colors{display:flex;gap:.6rem}
 .pf-colors input[type=color],.pf-color{width:100%;height:38px;padding:2px;cursor:pointer;background:rgba(228,216,192,.04);border:1px solid rgba(228,216,192,.14)}
 .pf-thumb{width:90px;height:120px;object-fit:cover;border:1px solid var(--line);background:var(--NV);display:block;margin-bottom:.6rem}
+.pf-gallery{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.6rem}
+.pf-noimg{font-size:10px;color:rgba(228,216,192,.25);padding:.6rem 0}
+.pf-tile{position:relative;width:74px;height:98px;border:1px solid var(--line);background:var(--NV);cursor:grab}
+.pf-tile img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.pf-cover{position:absolute;left:0;bottom:0;right:0;background:rgba(196,164,100,.92);color:var(--B);font-size:8px;letter-spacing:.12em;text-transform:uppercase;text-align:center;padding:2px 0}
+.pf-del-img{position:absolute;top:2px;right:2px;width:18px;height:18px;line-height:1;background:rgba(12,6,8,.78);border:1px solid rgba(228,216,192,.25);color:var(--BG);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.pf-del-img:hover{background:#7a1414}
 .pf-ai{width:100%;background:none;color:var(--GD);border:1px solid var(--GD);padding:10px;font-family:inherit;font-size:9px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;margin-top:.5rem;transition:all .2s}
 .pf-ai:hover:not(:disabled){background:var(--GD);color:var(--B)}
 .pf-ai:disabled{opacity:.45;cursor:not-allowed}
@@ -962,7 +969,8 @@ function renderProducts() {
   document.getElementById('products-wrap').innerHTML = `<table class="orders-table">
     <thead><tr><th>Ред</th><th></th><th>Име</th><th>Тип</th><th>Цена</th><th>Състояние</th><th></th></tr></thead>
     <tbody>${list.map((p,idx)=>{
-      const thumb = p.img ? `<img class="p-thumb-sm" src="${p.img}" alt=""/>` : `<div class="p-thumb-sm" style="background:${p.bg||'#0c0608'}"></div>`;
+      const cover = (p.images&&p.images[0]) || p.img;
+      const thumb = cover ? `<img class="p-thumb-sm" src="${cover}" alt=""/>` : `<div class="p-thumb-sm" style="background:${p.bg||'#0c0608'}"></div>`;
       const sold = soldProductIds.has(p.id) ? `<span class="b-sold-sm">Изчерпан</span>` : '';
       const state = p.is_active ? `<span class="status-badge s-active">Активен</span>` : `<span class="status-badge s-depleted">Скрит</span>`;
       return `<tr onclick="editProduct(${p.id})">
@@ -1022,10 +1030,9 @@ function productForm(p) {
   const lblOpts = LBL_OPTIONS.map(o=>`<option value="${o}" ${p.lbl===o?'selected':''}>${o||'— без —'}</option>`).join('');
   const m = p.measure || {};
   return `
-    <div class="pf-group"><label>Снимка</label>
-      ${p.img ? `<img class="pf-thumb" id="pf-thumb" src="${p.img}"/>` : `<div class="pf-thumb" id="pf-thumb" style="display:flex;align-items:center;justify-content:center;color:rgba(228,216,192,.2);font-size:10px">Няма</div>`}
-      <input type="file" id="pf-file" accept="image/*" onchange="uploadProductImage(this)"/>
-      <input type="hidden" id="pf-img" value="${p.img||''}"/>
+    <div class="pf-group"><label>Снимки (до 10 — първата е корица; влачи за подредба)</label>
+      <div class="pf-gallery" id="pf-gallery"></div>
+      <input type="file" id="pf-files" accept="image/*" multiple onchange="addProductImages(this)"/>
       <div id="pf-upmsg" style="font-size:10px;color:var(--OL3);margin-top:.3rem"></div>
       <button type="button" class="pf-ai" id="pf-ai" onclick="aiAutofill()">✨ AI попълни от снимка</button>
       <div id="pf-aimsg" style="font-size:10px;color:var(--OL3);margin-top:.3rem"></div>
@@ -1069,7 +1076,10 @@ function productForm(p) {
 
 function openProductDrawer(p) {
   document.getElementById('pd-title').textContent = p.id ? '#'+p.id+' '+(p.name||'') : 'НОВ ПРОДУКТ';
+  // Снимки: галерия (images[]) с резервен вариант към legacy единичен img.
+  pfImages = (Array.isArray(p.images) && p.images.length) ? p.images.slice(0,10) : (p.img ? [p.img] : []);
   document.getElementById('pd-body').innerHTML = productForm(p);
+  renderPfGallery();
   document.getElementById('product-drawer').classList.add('on');
 }
 function closeProductDrawer(){ document.getElementById('product-drawer').classList.remove('on'); }
@@ -1077,23 +1087,122 @@ const DEFAULT_DETAILS = ['Материал — fill','Подплата — fill'
 function newProduct(){ openProductDrawer({type:'haori',is_active:true,colors:[],sizes:[],details:DEFAULT_DETAILS.slice()}); }
 function editProduct(id){ const p=allProducts.find(x=>x.id===id); if(p) openProductDrawer(p); }
 
-async function uploadProductImage(input){
-  const file = input.files[0]; if(!file) return;
-  const msg = document.getElementById('pf-upmsg');
-  msg.textContent = 'Качване...';
-  const ext = (file.name.split('.').pop()||'jpg').toLowerCase();
-  const path = `p-${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
-  try {
-    const res = await authFetch(`${SUPABASE_URL}/storage/v1/object/product-images/${path}`, {
-      method:'POST', headers:{ 'Content-Type': file.type }, body:file
-    });
-    if(!res.ok) throw new Error(await res.text());
-    const url = `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
-    document.getElementById('pf-img').value = url;
-    const t = document.getElementById('pf-thumb');
-    t.outerHTML = `<img class="pf-thumb" id="pf-thumb" src="${url}"/>`;
-    msg.textContent = '✓ Качено';
-  } catch(e){ msg.textContent = 'Грешка при качване'; msg.style.color='#e07070'; }
+/* СНИМКИ — до 10 на продукт; pfImages[0] е корицата. */
+const MAX_IMAGES = 10;
+const IMG_MAX_EDGE = 3840;   // дълъг ръб (px) — 4K; оригиналите остават при теб
+const IMG_QUALITY = 0.95;    // WebP качество (висока рязкост за zoom/4K)
+let pfImages = [];
+let pfDragFrom = null;
+
+const IMG_SIZE_CAP = 4.5 * 1024 * 1024;  // под лимита на bucket-а (5 MB) — гаранция срещу отказ
+
+// Свежда снимката до уеб-размер в браузъра (canvas → WebP), без да пипа оригинала.
+// Кодира при високо качество; ако излезе твърде голяма, сваля качеството докато се побере.
+function encodeWebp(canvas, q){
+  return new Promise((resolve,reject)=> canvas.toBlob(
+    b => b ? resolve(b) : reject(new Error('Грешка при обработка на снимката')), 'image/webp', q
+  ));
+}
+function compressImage(file){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = async () => {
+      URL.revokeObjectURL(url);
+      try {
+        let edge = Math.min(IMG_MAX_EDGE, Math.max(img.width, img.height));
+        let blob = null;
+        // Външен цикъл: ако и при по-ниско качество не се побира, свали и размера.
+        for (let attempt = 0; attempt < 4; attempt++) {
+          const scale = edge / Math.max(img.width, img.height);
+          const w = Math.round(img.width * scale);
+          const h = Math.round(img.height * scale);
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, w, h);
+          blob = await encodeWebp(canvas, IMG_QUALITY);
+          for (let q = IMG_QUALITY - 0.07; blob.size > IMG_SIZE_CAP && q >= 0.7; q -= 0.07) {
+            blob = await encodeWebp(canvas, q);
+          }
+          if (blob.size <= IMG_SIZE_CAP) break;
+          edge = Math.round(edge * 0.85); // последна мярка — намали размера и опитай пак
+        }
+        resolve(blob);
+      } catch(e){ reject(e); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('decode')); };
+    img.src = url;
+  });
+}
+
+async function uploadOne(file){
+  const blob = await compressImage(file); // винаги WebP след свеждане
+  const path = `p-${Date.now()}-${Math.random().toString(36).slice(2,7)}.webp`;
+  const res = await authFetch(`${SUPABASE_URL}/storage/v1/object/product-images/${path}`, {
+    method:'POST', headers:{ 'Content-Type': 'image/webp' }, body:blob
+  });
+  if(!res.ok) throw new Error(await res.text());
+  return `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
+}
+
+async function addProductImages(input){
+  const files = input.files ? [...input.files] : [];
+  if(!files.length) return;
+  const msg = document.getElementById('pf-upmsg'); msg.style.color='var(--OL3)';
+  const room = MAX_IMAGES - pfImages.length;
+  if(room <= 0){ msg.textContent = `Максимум ${MAX_IMAGES} снимки.`; msg.style.color='#e07070'; input.value=''; return; }
+  const take = files.slice(0, room);
+  const skipped = files.length - take.length;
+  let done = 0;
+  for(const file of take){
+    if(!/^image\//.test(file.type) && !/\.(jpe?g|png|webp|avif|heic|heif)$/i.test(file.name)){
+      msg.textContent = `„${file.name}" не е изображение`; msg.style.color='#e07070'; input.value=''; return;
+    }
+    msg.textContent = `Обработка и качване ${done+1}/${take.length}…`;
+    try {
+      const url = await uploadOne(file);
+      pfImages = [...pfImages, url];
+      renderPfGallery();
+    } catch(e){
+      msg.textContent = e.message==='decode'
+        ? `Браузърът не може да прочете „${file.name}" (опитай JPG/PNG)`
+        : 'Грешка при качване';
+      msg.style.color='#e07070'; input.value=''; return;
+    }
+    done++;
+  }
+  msg.textContent = `✓ Качени ${done}${skipped?` (пропуснати ${skipped} — лимит ${MAX_IMAGES})`:''}`;
+  input.value = '';
+}
+
+function removePfImage(i){
+  pfImages = pfImages.filter((_,idx)=>idx!==i);
+  renderPfGallery();
+}
+function pfDragStart(i){ pfDragFrom = i; }
+function pfDrop(i){
+  if(pfDragFrom==null || pfDragFrom===i){ pfDragFrom=null; return; }
+  const arr = pfImages.slice();
+  const [moved] = arr.splice(pfDragFrom,1);
+  arr.splice(i,0,moved);
+  pfImages = arr; pfDragFrom = null;
+  renderPfGallery();
+}
+function renderPfGallery(){
+  const el = document.getElementById('pf-gallery'); if(!el) return;
+  if(!pfImages.length){
+    el.innerHTML = `<div class="pf-noimg">Няма снимки</div>`;
+    return;
+  }
+  el.innerHTML = pfImages.map((url,i)=>`
+    <div class="pf-tile" draggable="true"
+         ondragstart="pfDragStart(${i})" ondragover="event.preventDefault()" ondrop="pfDrop(${i})">
+      <img src="${url}"/>
+      ${i===0?`<span class="pf-cover">Корица</span>`:''}
+      <button type="button" class="pf-del-img" onclick="removePfImage(${i})" aria-label="Изтрий">×</button>
+    </div>`).join('');
 }
 
 // Read the selected photo(s) and let Claude draft the product copy, then fill
@@ -1109,7 +1218,7 @@ function fileToImage(file){
 }
 
 async function aiAutofill(){
-  const fileInput=document.getElementById('pf-file');
+  const fileInput=document.getElementById('pf-files');
   const msg=document.getElementById('pf-aimsg');
   const btn=document.getElementById('pf-ai');
   msg.style.color='var(--OL3)';
@@ -1119,7 +1228,7 @@ async function aiAutofill(){
   try {
     const images=await Promise.all(files.slice(0,6).map(fileToImage));
     const typeEl=document.getElementById('pf-type');
-    const res=await fetch('/api/generate-product',{
+    const res=await authFetch('/api/generate-product',{
       method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ type:(typeEl&&typeEl.value)||undefined, images })
     });
@@ -1158,7 +1267,8 @@ function collectProduct() {
     details: document.getElementById('pf-details').value.split('\n').map(s=>s.trim()).filter(Boolean),
     measure, colors,
     bg: document.getElementById('pf-bg').value, acc: document.getElementById('pf-acc').value,
-    img: document.getElementById('pf-img').value,
+    images: pfImages.slice(0, MAX_IMAGES),
+    img: pfImages[0] || '',                 // legacy корица — синхронизирана с images[0]
     is_active: document.getElementById('pf-active').checked,
     sort_order: allProducts.length ? Math.max(...allProducts.map(p=>p.sort_order||0))+1 : 0
   };
